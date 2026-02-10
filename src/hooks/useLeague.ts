@@ -1,16 +1,6 @@
 // Update useLeague.ts
 import { useQuery } from '@tanstack/react-query';
-import { getLeagueById, searchLeagues } from '@/services/theSportsDbApi';
 import { footballApi, TeamStanding } from '@/services/footballApi';
-
-export function useLeague(leagueId?: string) {
-  return useQuery({
-    queryKey: ['league', leagueId],
-    queryFn: () => leagueId ? getLeagueById(leagueId) : null,
-    enabled: !!leagueId,
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
-  });
-}
 
 export function useLeagueStandings(leagueId?: string, season?: string) {
   return useQuery<TeamStanding[] | null>({
@@ -36,14 +26,5 @@ export function useLeagueStandings(leagueId?: string, season?: string) {
     staleTime: 1000 * 60 * 15, // 15 minutes for live updates
     refetchInterval: 1000 * 30, // Refetch every 30 seconds for live matches
     refetchIntervalInBackground: false, // Stop refetching when tab is inactive
-  });
-}
-
-export function useSearchLeagues(query: string) {
-  return useQuery({
-    queryKey: ['leagues', query],
-    queryFn: () => searchLeagues(query),
-    enabled: query.length > 2,
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 }
