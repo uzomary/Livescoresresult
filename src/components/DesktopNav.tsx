@@ -8,7 +8,6 @@ const DesktopNav = () => {
 
   const navItems = [
     { label: "Home", path: "/" },
-    { label: "Leagues", path: "/leagues" },
     { label: "News", path: "https://blog.livescoreresult.com", target: "_blank" },
   ];
 
@@ -19,8 +18,8 @@ const DesktopNav = () => {
           key={item.label}
           variant="ghost"
           className={`text-white px-4 py-2 ${location.pathname === item.path
-              ? "bg-primary/20 text-primary"
-              : ""
+            ? "bg-primary/20 text-primary"
+            : ""
             }`}
           onClick={() => item.target === "_blank" ? window.open(item.path, '_blank') : navigate(item.path)}
         >

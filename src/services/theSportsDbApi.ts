@@ -143,5 +143,79 @@ export const theSportsDbApi = {
       console.error('Error fetching results:', error);
       return [];
     }
+  },
+
+  getLeagueById: async (leagueId: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/lookupleague.php?id=${leagueId}`);
+      const data = await response.json();
+      return { leagues: Array.isArray(data.leagues) ? data.leagues : (data.leagues ? [data.leagues] : []) };
+    } catch (error) {
+      console.error('Error fetching league by ID:', error);
+      return { leagues: [] };
+    }
+  },
+
+  searchLeagues: async (query: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/searchleagues.php?l=${query}`);
+      const data = await response.json();
+      return { leagues: Array.isArray(data.leagues) ? data.leagues : (data.leagues ? [data.leagues] : []) };
+    } catch (error) {
+      console.error('Error searching leagues:', error);
+      return { leagues: [] };
+    }
   }
 };
+
+export const getLeagueById = theSportsDbApi.getLeagueById;
+export const searchLeagues = theSportsDbApi.searchLeagues;
+
+export interface League {
+  idLeague: string;
+  strLeague: string;
+  strSport: string;
+  strLeagueAlternate?: string;
+  intForm?: string;
+  strCup?: string;
+  idCup?: string;
+  strCurrentSeason?: string;
+  intFormedYear?: string;
+  dateFirstEvent?: string;
+  strGender?: string;
+  strCountry?: string;
+  strWebsite?: string;
+  strFacebook?: string;
+  strInstagram?: string;
+  strTwitter?: string;
+  strYoutube?: string;
+  strRSS?: string;
+  strDescriptionEN?: string;
+  strDescriptionDE?: string;
+  strDescriptionFR?: string;
+  strDescriptionIT?: string;
+  strDescriptionCN?: string;
+  strDescriptionJP?: string;
+  strDescriptionRU?: string;
+  strDescriptionES?: string;
+  strDescriptionPT?: string;
+  strDescriptionSE?: string;
+  strDescriptionNL?: string;
+  strDescriptionHU?: string;
+  strDescriptionNO?: string;
+  strDescriptionPL?: string;
+  strDescriptionIL?: string;
+  strTvRights?: string;
+  strFanart1?: string;
+  strFanart2?: string;
+  strFanart3?: string;
+  strFanart4?: string;
+  strBanner?: string;
+  strBadge?: string;
+  strLogo?: string;
+  strPoster?: string;
+  strTrophy?: string;
+  strNaming?: string;
+  strComplete?: string;
+  strLocked?: string;
+}

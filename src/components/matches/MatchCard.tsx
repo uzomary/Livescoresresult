@@ -192,15 +192,7 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
   const roundInfo = getRoundInfo();
   const showRoundInfo = isFifaClubWorldCup && roundInfo && match.round.match(/Group\s+[A-Z0-9]+/i);
 
-  const handleGroupClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const leagueName = typeof match.league === 'string' ? match.league : match.league?.name || '';
-    if (leagueName) {
-      const leaguePath = leagueName.toLowerCase().replace(/\s+/g, '-');
-      const countryPath = 'fifa-club-world-cup';
-      navigate(`/leagues/${countryPath}/${leaguePath}?tab=standings`);
-    }
-  };
+
 
 
 
@@ -247,13 +239,12 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
           matchDate={match.date}
         />
         {showRoundInfo && (
-          <button
-            onClick={handleGroupClick}
-            className="hidden sm:block bg-muted hover:bg-muted/80 transition-all text-muted-foreground text-[10px] font-medium px-2 py-1 rounded-sm whitespace-nowrap w-full truncate"
-            title="View group standings"
+          <div
+            className="hidden sm:block bg-muted text-muted-foreground text-[10px] font-medium px-2 py-1 rounded-sm whitespace-nowrap w-full truncate text-center"
+            title="Group info"
           >
             {roundInfo}
-          </button>
+          </div>
         )}
       </div>
 

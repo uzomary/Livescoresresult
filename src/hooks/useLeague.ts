@@ -17,15 +17,15 @@ export function useLeagueStandings(leagueId?: string, season?: string) {
     queryKey: ['league-standings', leagueId, season],
     queryFn: async () => {
       if (!leagueId) return null;
-      
+
       try {
         const result = await footballApi.getLeagueStandings(parseInt(leagueId), season ? parseInt(season) : undefined);
-        
+
         // The API returns { response: TeamStanding[] }, we need to extract the standings array
         if (result && result.response && Array.isArray(result.response) && result.response.length > 0) {
           return result.response;
         }
-        
+
         return [];
       } catch (error) {
         console.error('Error fetching league standings:', error);
