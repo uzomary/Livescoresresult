@@ -1,4 +1,5 @@
 // Update useLeague.ts
+// Force rebuild
 import { useQuery } from '@tanstack/react-query';
 import { footballApi, TeamStanding } from '@/services/footballApi';
 
