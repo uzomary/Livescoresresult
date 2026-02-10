@@ -146,6 +146,35 @@ function setCachedData(key: string, data: any, duration: number) {
   }
 }
 
+// Permanent cache helper functions for odds (never expire)
+function getPermanentOddsCache(date: string) {
+  try {
+    const cached = localStorage.getItem(`livescore_odds_permanent_${date}`);
+    if (!cached) return null;
+
+    const { data } = JSON.parse(cached);
+    console.log(`📦 Retrieved permanent odds cache for ${date}`);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function setPermanentOddsCache(date: string, data: any) {
+  try {
+    const cacheItem = {
+      data,
+      timestamp: Date.now(),
+      // No duration - permanent cache
+    };
+    localStorage.setItem(`livescore_odds_permanent_${date}`, JSON.stringify(cacheItem));
+    console.log(`💾 Stored permanent odds cache for ${date}`);
+  } catch (error) {
+    console.warn('Failed to store permanent odds cache:', error);
+  }
+}
+
+
 // Enhanced API request function with caching and request queuing
 async function makeApiRequestWithCache(endpoint: string, params: Record<string, string> = {}, cacheDuration: number = CACHE_DURATION.FIXTURES) {
   // Sort keys to ensure consistent cache key regardless of param order
@@ -852,7 +881,6 @@ export const footballApi = {
     if (!data?.response || !Array.isArray(data.response)) {
       return [];
     }
-
     return data.response;
   },
 
@@ -863,13 +891,16 @@ export const footballApi = {
     const currentDay = String(currentDate.getDate()).padStart(2, '0');
     const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-    // Fetch fixtures and odds in parallel
+    // Check permanent odds cache first
+    const cachedOdds = getPermanentOddsCache(formattedDate);
+
+    // Fetch fixtures and odds in parallel (skip odds if cached)
     const [fixturesData, oddsData] = await Promise.all([
       makeApiRequestWithCache('/fixtures', {
         date: formattedDate,
         timezone: 'Africa/Lagos'
       }),
-      this.getOddsByDate(formattedDate)
+      cachedOdds ? Promise.resolve({ response: cachedOdds }) : this.getOddsByDate(formattedDate)
     ]);
 
     if (!fixturesData.response || !Array.isArray(fixturesData.response)) {
@@ -886,7 +917,13 @@ export const footballApi = {
     // Create a map of fixture ID to odds
     const oddsMap = new Map();
     if (oddsData?.response && Array.isArray(oddsData.response)) {
-      console.log(`📊 Fetched ${oddsData.response.length} odds from API for date ${formattedDate}`);
+      // Store in permanent cache if this was a fresh fetch
+      if (!cachedOdds) {
+        setPermanentOddsCache(formattedDate, oddsData.response);
+        console.log(`📊 Fetched ${oddsData.response.length} odds from API for date ${formattedDate} (stored permanently)`);
+      } else {
+        console.log(`📦 Using ${oddsData.response.length} cached odds for date ${formattedDate} (no API call)`);
+      }
 
       oddsData.response.forEach((oddsItem: any) => {
         const fixtureId = oddsItem.fixture?.id;
