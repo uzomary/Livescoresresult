@@ -153,7 +153,6 @@ function getPermanentOddsCache(date: string) {
     if (!cached) return null;
 
     const { data } = JSON.parse(cached);
-    console.log(`📦 Retrieved permanent odds cache for ${date}`);
     return data;
   } catch {
     return null;
@@ -168,7 +167,6 @@ function setPermanentOddsCache(date: string, data: any) {
       // No duration - permanent cache
     };
     localStorage.setItem(`livescore_odds_permanent_${date}`, JSON.stringify(cacheItem));
-    console.log(`💾 Stored permanent odds cache for ${date}`);
   } catch (error) {
     console.warn('Failed to store permanent odds cache:', error);
   }
@@ -920,9 +918,6 @@ export const footballApi = {
       // Store in permanent cache if this was a fresh fetch
       if (!cachedOdds) {
         setPermanentOddsCache(formattedDate, oddsData.response);
-        console.log(`📊 Fetched ${oddsData.response.length} odds from API for date ${formattedDate} (stored permanently)`);
-      } else {
-        console.log(`📦 Using ${oddsData.response.length} cached odds for date ${formattedDate} (no API call)`);
       }
 
       oddsData.response.forEach((oddsItem: any) => {
@@ -948,7 +943,7 @@ export const footballApi = {
         }
       });
 
-      console.log(`✅ Successfully mapped odds for ${oddsMap.size} fixtures`);
+
     } else {
       console.warn(`⚠️ No odds data available for date ${formattedDate}`);
     }
