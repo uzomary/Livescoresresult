@@ -97,6 +97,16 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
 
   const { toast } = useToast();
 
+  const handleGroupClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const leagueName = typeof match.league === 'string' ? match.league : match.league?.name || '';
+    if (leagueName) {
+      const leaguePath = leagueName.toLowerCase().replace(/\s+/g, '-');
+      const countryPath = 'fifa-club-world-cup';
+      navigate(`/leagues/${countryPath}/${leaguePath}?tab=standings`);
+    }
+  };
+
   const handleFavoriteToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -239,12 +249,13 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
           matchDate={match.date}
         />
         {showRoundInfo && (
-          <div
-            className="hidden sm:block bg-muted text-muted-foreground text-[10px] font-medium px-2 py-1 rounded-sm whitespace-nowrap w-full truncate text-center"
-            title="Group info"
+          <button
+            onClick={handleGroupClick}
+            className="hidden sm:block bg-muted hover:bg-muted/80 transition-all text-muted-foreground text-[10px] font-medium px-2 py-1 rounded-sm whitespace-nowrap w-full truncate"
+            title="View group standings"
           >
             {roundInfo}
-          </div>
+          </button>
         )}
       </div>
 

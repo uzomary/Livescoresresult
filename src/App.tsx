@@ -13,6 +13,8 @@ const Index = lazy(() => import("@/pages/Index"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Fixtures = lazy(() => import("@/pages/Fixtures"));
 const Standings = lazy(() => import("@/pages/Standings"));
+const Leagues = lazy(() => import("@/pages/Leagues"));
+const LeagueDetailsPage = lazy(() => import("@/pages/LeagueDetailsPage"));
 const MatchDetails = lazy(() => import("@/components/MatchDetails"));
 const CountryDetailsPage = lazy(() => import("@/pages/CountryDetailsPage"));
 const PlayerDetailsPage = lazy(() => import("@/pages/PlayerDetailsPage"));
@@ -66,8 +68,10 @@ function App() {
             }>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/leagues" element={<Leagues />} />
+                <Route path="/leagues/:leagueId" element={<Leagues />} />
+                <Route path="/leagues/:country/:leagueName" element={<LeagueDetailsPage />} />
                 <Route path="/standings/:leagueId" element={<Standings />} />
-                <Route path="/fixtures" element={<Fixtures />} />
                 <Route path="/country/:countryName" element={<CountryDetailsPage />} />
                 {/* Support both old ID-only URLs and new SEO-friendly URLs */}
                 <Route path="/match/:matchId" element={<MatchDetailsWrapper />} />

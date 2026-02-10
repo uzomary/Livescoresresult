@@ -36,23 +36,23 @@ const LEAGUE_API_MAPPING: Record<string, number> = {
   'world-cup-women': 13,              // FIFA Women's World Cup
 };
 
-// Base league configuration without paths
+// Base league configuration with paths
 const BASE_LEAGUES: Omit<League, 'logo' | 'flag'>[] = [
-  { id: 'premier-league-england', name: 'Premier League', type: 'country', apiLeagueId: 39 },
-  { id: 'laliga', name: 'LaLiga', type: 'country', apiLeagueId: 140 },
-  { id: 'bundesliga', name: 'Bundesliga', type: 'country', apiLeagueId: 78 },
-  { id: 'serie-a', name: 'Serie A', type: 'country', apiLeagueId: 135 },
-  { id: 'ligue-1', name: 'Ligue 1', type: 'country', apiLeagueId: 61 },
-  { id: 'eredivisie', name: 'Eredivisie', type: 'country', apiLeagueId: 88 },
-  { id: 'africa-cup-of-nations', name: 'Africa Cup of Nations', type: 'international', apiLeagueId: 6 },
-  { id: 'euro', name: 'Euro', type: 'international', apiLeagueId: 4 },
-  { id: 'champions-league', name: 'Champions League', type: 'international', apiLeagueId: 2 },
-  { id: 'europa-league', name: 'Europa League', type: 'international', apiLeagueId: 3 },
-  { id: 'conference-league', name: 'Conference League', type: 'international', apiLeagueId: 848 },
-  { id: 'uefa-nations-league', name: 'UEFA Nations League', type: 'international', apiLeagueId: 5 },
-  { id: 'copa-america', name: 'Copa América', type: 'international', apiLeagueId: 9 },
-  { id: 'world-cup', name: 'World Cup', type: 'international', apiLeagueId: 1 },
-  { id: 'world-cup-women', name: 'World Cup Women', type: 'international', apiLeagueId: 13 },
+  { id: 'premier-league-england', name: 'Premier League', type: 'country', path: '/leagues/england/premier-league', apiLeagueId: 39 },
+  { id: 'laliga', name: 'LaLiga', type: 'country', path: '/leagues/spain/laliga', apiLeagueId: 140 },
+  { id: 'bundesliga', name: 'Bundesliga', type: 'country', path: '/leagues/germany/bundesliga', apiLeagueId: 78 },
+  { id: 'serie-a', name: 'Serie A', type: 'country', path: '/leagues/italy/serie-a', apiLeagueId: 135 },
+  { id: 'ligue-1', name: 'Ligue 1', type: 'country', path: '/leagues/france/ligue-1', apiLeagueId: 61 },
+  { id: 'eredivisie', name: 'Eredivisie', type: 'country', path: '/leagues/netherlands/eredivisie', apiLeagueId: 88 },
+  { id: 'africa-cup-of-nations', name: 'Africa Cup of Nations', type: 'international', path: '/leagues/africa/africa-cup-of-nations', apiLeagueId: 6 },
+  { id: 'euro', name: 'Euro', type: 'international', path: '/leagues/europe/euro-championship', apiLeagueId: 4 },
+  { id: 'champions-league', name: 'Champions League', type: 'international', path: '/leagues/europe/champions-league', apiLeagueId: 2 },
+  { id: 'europa-league', name: 'Europa League', type: 'international', path: '/leagues/europe/europa-league', apiLeagueId: 3 },
+  { id: 'conference-league', name: 'Conference League', type: 'international', path: '/leagues/europe/uefa-conference-league', apiLeagueId: 848 },
+  { id: 'uefa-nations-league', name: 'UEFA Nations League', type: 'international', path: '/leagues/europe/uefa-nations-league', apiLeagueId: 5 },
+  { id: 'copa-america', name: 'Copa América', type: 'international', path: '/leagues/south-america/copa-america', apiLeagueId: 9 },
+  { id: 'world-cup', name: 'World Cup', type: 'international', path: '/leagues/fifa/world-cup', apiLeagueId: 1 },
+  { id: 'world-cup-women', name: 'World Cup Women', type: 'international', path: '/leagues/fifa/womens-world-cup', apiLeagueId: 13 },
 ];
 
 interface SidebarProps {
@@ -128,7 +128,7 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
         <button
           onClick={() => {
             onLeagueSelect?.(league.id);
-            // Navigation disabled
+            if (league.path) navigate(league.path);
           }}
           className={cn(
             "w-full flex items-center gap-3 px-4 py-2 text-left transition-colors relative",
