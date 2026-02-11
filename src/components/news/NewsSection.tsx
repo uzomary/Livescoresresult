@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NewsCard } from './NewsCard';
 import { NewsLoader } from './NewsLoader';
-import { rssApi, NewsItem } from '@/services/rssApi';
-import { Newspaper, RefreshCw, AlertCircle, ExternalLink, TrendingUp } from 'lucide-react';
+import { blogService, BlogPost } from '@/services/blogService';
+import { Newspaper, RefreshCw, AlertCircle, ArrowRight, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface NewsSectionProps {
   maxPosts?: number;
@@ -19,30 +20,28 @@ export const NewsSection = ({
   className = ''
 }: NewsSectionProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const {
-    data: posts,
-    isLoading,
-    error,
-    refetch,
-    dataUpdatedAt
-  } = useQuery({
-    queryKey: ['rss-news', maxPosts],
-    queryFn: () => rssApi.getLatestNews(maxPosts),
-    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
-    refetchOnWindowFocus: true,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
-
-  const handleRefresh = async () => {
+  const loadPosts = async () => {
     setIsRefreshing(true);
-    await refetch();
+    const publishedPosts = await blogService.getPublished();
+    setPosts(publishedPosts.slice(0, maxPosts));
+    setIsLoading(false);
     setIsRefreshing(false);
   };
 
-  const handlePostClick = (post: NewsItem) => {
-    window.open(post.link, '_blank', 'noopener,noreferrer');
+  useEffect(() => {
+    loadPosts();
+  }, [maxPosts]);
+
+  const handleRefresh = async () => {
+    await loadPosts();
+  };
+
+  const handlePostClick = (post: BlogPost) => {
+    navigate(`/news/${post.slug}`);
   };
 
   return (
@@ -82,31 +81,8 @@ export const NewsSection = ({
         {/* Loading State */}
         {isLoading && <NewsLoader count={maxPosts} />}
 
-        {/* Error State */}
-        {error && !isLoading && (
-          <Card className="bg-red-50 border-red-200 p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
-              <div>
-                <h4 className="text-red-900 font-semibold text-sm">Failed to Load News</h4>
-                <p className="text-red-700 text-xs">
-                  Unable to fetch latest articles
-                </p>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              className="w-full bg-white border-red-300 text-red-700 hover:bg-red-50"
-            >
-              Try Again
-            </Button>
-          </Card>
-        )}
-
         {/* Empty State */}
-        {!isLoading && !error && (!posts || posts.length === 0) && (
+        {!isLoading && (!posts || posts.length === 0) && (
           <Card className="bg-gray-50 border-gray-200 p-6 text-center">
             <Newspaper className="h-12 w-12 mx-auto mb-3 text-gray-400" />
             <h4 className="text-gray-900 font-semibold mb-1">No News Available</h4>
@@ -136,16 +112,16 @@ export const NewsSection = ({
             ))}
 
             {/* View More Link */}
-            {posts.length >= maxPosts && (
-              <Card className="bg-gradient-to-r from-blue-50 to-white border-blue-200 p-3 text-center">
+            {posts.length > 0 && (
+              <Card className="bg-gradient-to-r from-red-50 to-white border-red-100 p-3 text-center">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.open('https://www.skysports.com/football', '_blank')}
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 w-full font-semibold"
+                  onClick={() => navigate('/news')}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-100 w-full font-semibold"
                 >
                   <span>View All Articles</span>
-                  <ExternalLink className="h-3 w-3 ml-2" />
+                  <ArrowRight className="h-3 w-3 ml-2" />
                 </Button>
               </Card>
             )}
@@ -155,8 +131,8 @@ export const NewsSection = ({
         {/* Last Updated Info */}
         {!isLoading && posts && posts.length > 0 && (
           <div className="mt-4 pt-3 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
-              Last updated: {new Date(dataUpdatedAt).toLocaleTimeString()}
+            <p className="text-xs text-gray-500 text-center italic">
+              Updated in real-time
             </p>
           </div>
         )}

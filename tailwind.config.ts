@@ -23,12 +23,12 @@ export default {
 			}
 		},
 		extend: {
-            fontFamily: {
-                sans: ['Sofia Sans', 'sans-serif'],
-            },
-            scrollbar: {
-                none: 'none',
-            },
+			fontFamily: {
+				sans: ['Sofia Sans', 'sans-serif'],
+			},
+			scrollbar: {
+				none: 'none',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -99,10 +99,10 @@ export default {
 						height: '0'
 					}
 				},
-                'pulse-live': {
-                    '0%, 100%': { opacity: '1' },
-                    '50%': { opacity: '.5' },
-                },
+				'pulse-live': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '.5' },
+				},
 				shimmer: {
 					from: { transform: 'translateX(-100%)' },
 					to: { transform: 'translateX(100%)' }
@@ -111,26 +111,27 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-                'pulse-live': 'pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'pulse-live': 'pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 				shimmer: 'shimmer 1.5s linear infinite'
 			}
 		}
 	},
 	plugins: [
 		require("tailwindcss-animate"),
-		plugin(function({ addUtilities }) {
+		require("@tailwindcss/typography"),
+		plugin(function ({ addUtilities }) {
 			addUtilities({
 				'.scrollbar-none': {
 					/* For Firefox */
 					scrollbarWidth: 'none',
-                    /* For IE and Edge */
-                    '-ms-overflow-style': 'none',
-                    /* For WebKit (Chrome, Safari) */
-                    '&::-webkit-scrollbar': {
-                        display: 'none',
-                    },
-                },
-            });
-        }),
-    ],
+					/* For IE and Edge */
+					'-ms-overflow-style': 'none',
+					/* For WebKit (Chrome, Safari) */
+					'&::-webkit-scrollbar': {
+						display: 'none',
+					},
+				},
+			});
+		}),
+	],
 } satisfies Config;

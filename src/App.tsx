@@ -24,7 +24,14 @@ const Advertise = lazy(() => import("@/pages/static/Advertise"));
 const Contact = lazy(() => import("@/pages/static/Contact"));
 
 // Layouts
+// Layouts
 import MainLayout from "@/layouts/MainLayout";
+import AdminLayout from "@/layouts/AdminLayout";
+import { AuthProvider } from "@/context/AuthContext";
+import { AdminDashboard } from "@/pages/admin/Dashboard";
+import { PostEditor } from "@/pages/admin/PostEditor";
+import { ArticlePage } from "@/pages/ArticlePage";
+import { LoginPage } from "@/pages/admin/LoginPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,36 +65,52 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <BrowserRouter>
-          <MainLayout>
-            <Suspense fallback={
-              <div className="flex-1 flex items-center justify-center min-h-screen">
-                <div className="animate-pulse">Loading...</div>
-              </div>
-            }>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/leagues/:country/:leagueName" element={<LeagueDetailsPage />} />
-                <Route path="/standings/:leagueId" element={<Standings />} />
-                <Route path="/country/:countryName" element={<CountryDetailsPage />} />
-                {/* Support both old ID-only URLs and new SEO-friendly URLs */}
-                <Route path="/match/:matchId" element={<MatchDetailsWrapper />} />
-                <Route path="/match/:slug/:matchId" element={<MatchDetailsWrapper />} />
-                <Route path="/player/:playerId" element={<PlayerDetailsPage />} />
-                <Route path="/news" element={<NewsPage />} />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Admin Routes - No MainLayout */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="posts/new" element={<PostEditor />} />
+                <Route path="posts/edit/:id" element={<PostEditor />} />
+              </Route>
+              <Route path="/admin/login" element={<LoginPage />} />
 
-                {/* Static Pages */}
-                <Route path="/terms" element={<TermsOfUse />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/advertise" element={<Advertise />} />
-                <Route path="/contact" element={<Contact />} />
+              {/* Public Routes - Wrapped in MainLayout */}
+              <Route path="*" element={
+                <MainLayout>
+                  <Suspense fallback={
+                    <div className="flex-1 flex items-center justify-center min-h-screen">
+                      <div className="animate-pulse">Loading...</div>
+                    </div>
+                  }>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/leagues/:country/:leagueName" element={<LeagueDetailsPage />} />
+                      <Route path="/standings/:leagueId" element={<Standings />} />
+                      <Route path="/country/:countryName" element={<CountryDetailsPage />} />
+                      {/* Support both old ID-only URLs and new SEO-friendly URLs */}
+                      <Route path="/match/:matchId" element={<MatchDetailsWrapper />} />
+                      <Route path="/match/:slug/:matchId" element={<MatchDetailsWrapper />} />
+                      <Route path="/player/:playerId" element={<PlayerDetailsPage />} />
+                      <Route path="/news" element={<NewsPage />} />
+                      <Route path="/news/:slug" element={<ArticlePage />} />
 
-                <Route path="/not-found" element={<NotFound />} />
-                <Route path="*" element={<Navigate to="/not-found" replace />} />
-              </Routes>
-            </Suspense>
-          </MainLayout>
-        </BrowserRouter>
+                      {/* Static Pages */}
+                      <Route path="/terms" element={<TermsOfUse />} />
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/advertise" element={<Advertise />} />
+                      <Route path="/contact" element={<Contact />} />
+
+                      <Route path="/not-found" element={<NotFound />} />
+                      <Route path="*" element={<Navigate to="/not-found" replace />} />
+                    </Routes>
+                  </Suspense>
+                </MainLayout>
+              } />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -1,43 +1,58 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { BlogPost } from '@/services/blogService';
 import { NewsItem } from '@/services/rssApi';
 import { formatDistanceToNow } from 'date-fns';
-import { ExternalLink, Clock, Image as ImageIcon } from 'lucide-react';
+import { ExternalLink, Clock, Image as ImageIcon, Tag, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface NewsCardProps {
-  post: NewsItem;
-  onClick?: (post: NewsItem) => void;
+  post: BlogPost | NewsItem;
+  onClick?: (post: any) => void;
 }
 
 export const NewsCard = ({ post, onClick }: NewsCardProps) => {
   const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
+
+  const isBlogPost = (p: any): p is BlogPost => 'slug' in p;
 
   const handleClick = () => {
     if (onClick) {
       onClick(post);
+    } else if (isBlogPost(post)) {
+      navigate(`/news/${post.slug}`);
     } else {
       window.open(post.link, '_blank', 'noopener,noreferrer');
     }
   };
 
-  // RSS feed thumbnails are directly in the item
-  const featuredImage = post.thumbnail;
+  const featuredImage = isBlogPost(post) ? post.image : post.thumbnail;
+  const title = post.title;
+  const dateStr = isBlogPost(post) ? post.createdAt : post.pubDate;
 
   // Handle various date formats effectively or fallback to current date
   let timeAgo = '';
   try {
-    timeAgo = formatDistanceToNow(new Date(post.pubDate), { addSuffix: true });
+    timeAgo = formatDistanceToNow(new Date(dateStr), { addSuffix: true });
   } catch (e) {
     timeAgo = 'Recently';
   }
 
   return (
     <Card
-      className="bg-white border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
+      className="bg-white border-gray-100 hover:border-red-200 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
       onClick={handleClick}
     >
       <div className="p-3">
+        {isBlogPost(post) && post.category && (
+          <div className="absolute top-2 left-2 z-10">
+            <Badge className="bg-[#ff0046] hover:bg-[#ff0046] text-white text-[9px] px-1.5 py-0">
+              {post.category}
+            </Badge>
+          </div>
+        )}
         {/* Featured Image */}
         {featuredImage && !imageError && (
           <div className="relative mb-3 rounded-lg overflow-hidden bg-gray-100 aspect-video">
@@ -61,8 +76,8 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
         {/* Content */}
         <div className="space-y-2">
           {/* Title */}
-          <h4 className="text-[#00141e] font-bold text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {post.title}
+          <h4 className="text-[#00141e] font-bold text-sm leading-tight line-clamp-2 group-hover:text-[#ff0046] transition-colors">
+            {title}
           </h4>
 
           {/* Meta Info */}
@@ -72,9 +87,9 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
               <span>{timeAgo}</span>
             </div>
 
-            <div className="flex items-center gap-1 text-[10px] text-blue-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 text-[10px] text-[#ff0046] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
               <span>Read</span>
-              <ExternalLink className="h-3 w-3" />
+              {isBlogPost(post) ? <ArrowRight className="h-3 w-3" /> : <ExternalLink className="h-3 w-3" />}
             </div>
           </div>
         </div>
