@@ -149,7 +149,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
 
         {/* Scores Column */}
         {showScore && (
-          <div className="flex flex-col items-end justify-center gap-2 px-1 min-w-[24px]">
+          <div className="flex flex-col items-end justify-center gap-2 -mx-4 sm:px-1 min-w-[24px]">
             <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.home}</span>
             <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.away}</span>
           </div>
