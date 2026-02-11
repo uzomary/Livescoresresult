@@ -140,7 +140,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
         {/* Odds Section - Only shown for football (clickable) cards */}
         {isClickable && (
           match.odds ? (
-            <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2">
+            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2">
               <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
                 <span className="text-xs font-bold text-gray-700">{match.odds.home}</span>
               </div>
@@ -152,7 +152,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2 opacity-30">
+            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2 opacity-30">
               <div className="min-w-[40px] text-center text-xs">-</div>
               <div className="min-w-[40px] text-center text-xs">-</div>
               <div className="min-w-[40px] text-center text-xs">-</div>
