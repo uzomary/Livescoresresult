@@ -25,170 +25,235 @@ interface DualTeamPitchProps {
 }
 
 const DualTeamPitch = ({ homeTeam, awayTeam }: DualTeamPitchProps) => {
-    // Convert grid position to pitch coordinates
-    const getPlayerPosition = (grid?: string, isAway: boolean = false): { x: number; y: number } => {
+
+    // Determine how many rows a team's grid data uses
+    const getMaxRow = (players: Player[]): number => {
+        let maxRow = 1;
+        players.forEach(p => {
+            if (p.grid && p.grid !== '0:0') {
+                const row = parseInt(p.grid.split(':')[0], 10);
+                if (row > maxRow) maxRow = row;
+            }
+        });
+        return maxRow;
+    };
+
+    // Count players in each row for dynamic X spreading
+    const getPlayersPerRow = (players: Player[]): Map<number, number> => {
+        const rowCounts = new Map<number, number>();
+        players.forEach(p => {
+            if (p.grid && p.grid !== '0:0') {
+                const row = parseInt(p.grid.split(':')[0], 10);
+                rowCounts.set(row, (rowCounts.get(row) || 0) + 1);
+            }
+        });
+        return rowCounts;
+    };
+
+    /**
+     * Convert grid position (row:col) to pitch coordinates.
+     * Home team occupies the TOP half (y: 5% to 47%).
+     * Away team occupies the BOTTOM half (y: 53% to 95%).
+     */
+    const getPlayerPosition = (
+        grid: string | undefined,
+        isAway: boolean,
+        maxRow: number,
+        playersPerRow: Map<number, number>
+    ): { x: number; y: number } => {
         if (!grid || grid === '0:0') {
-            return { x: 50, y: 50 };
+            return { x: 50, y: isAway ? 75 : 25 };
         }
 
         const [row, col] = grid.split(':').map(Number);
 
-        // Y-axis positions for rows 1-4 (1 = attack, 4 = defense)
-        // Home team: row 1 at top (attacking upward), row 4 at bottom (defending)
-        // Away team: row 1 at bottom (attacking downward), row 4 at top (defending)
-        const homeYPositions = [10, 30, 50, 70]; // Row 1-4 for home team
-        const awayYPositions = [90, 70, 50, 30]; // Row 1-4 for away team (flipped)
+        // Y positions - each team gets its own half
+        const homeYStart = 5;
+        const homeYEnd = 47;
+        const awayYStart = 95;
+        const awayYEnd = 53;
 
-        const y = isAway ? awayYPositions[row - 1] || 50 : homeYPositions[row - 1] || 50;
+        let y: number;
+        if (maxRow <= 1) {
+            y = isAway ? awayYStart : homeYStart;
+        } else {
+            const fraction = (row - 1) / (maxRow - 1);
+            if (isAway) {
+                y = awayYStart + fraction * (awayYEnd - awayYStart);
+            } else {
+                y = homeYStart + fraction * (homeYEnd - homeYStart);
+            }
+        }
 
-        // X-axis positions for columns 1-5
-        const xPositions = [15, 32.5, 50, 67.5, 85];
-        const x = xPositions[col - 1] || 50;
+        // X positions - dynamic spreading with padding based on player count
+        // Fewer players = more padding = narrower band (closer to center)
+        const playersInThisRow = playersPerRow.get(row) || 1;
+        let x: number;
+
+        if (playersInThisRow === 1) {
+            x = 50;
+        } else {
+            // Scale padding: 2 players ~30%-70%, 3 ~18%-82%, 4 ~12%-88%, 5+ ~8%-92%
+            const padding = playersInThisRow === 2 ? 30
+                : playersInThisRow === 3 ? 18
+                    : playersInThisRow === 4 ? 12
+                        : 8;
+            const availableWidth = 100 - 2 * padding;
+            x = padding + ((col - 1) / (playersInThisRow - 1)) * availableWidth;
+        }
 
         return { x, y };
     };
 
-    const generateRandomRating = () => {
-        return (Math.random() * 3 + 6).toFixed(1);
+    const homeMaxRow = getMaxRow(homeTeam.players);
+    const awayMaxRow = getMaxRow(awayTeam.players);
+    const homePlayersPerRow = getPlayersPerRow(homeTeam.players);
+    const awayPlayersPerRow = getPlayersPerRow(awayTeam.players);
+
+    // Get short name (surname only)
+    const getShortName = (name: string) => {
+        const parts = name.split(' ');
+        return parts.length > 1 ? parts[parts.length - 1] : name;
     };
 
     return (
-        <div className="w-full">
-            {/* Team Headers */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="w-full max-w-lg mx-auto">
+            {/* Home Team Header */}
+            <div className="flex items-center justify-between px-1 py-2">
                 <div className="flex items-center gap-2">
-                    <img src={homeTeam.logo} className="w-6 h-6 object-contain" alt="" />
-                    <h3 className="font-bold text-white">{homeTeam.name}</h3>
-                    <span className="ml-auto text-xs text-gray-400 font-bold">{homeTeam.formation}</span>
+                    <img src={homeTeam.logo} className="w-5 h-5 object-contain" alt="" />
+                    <span className="text-xs font-bold text-[#00141e] uppercase tracking-wide">{homeTeam.name}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <img src={awayTeam.logo} className="w-6 h-6 object-contain" alt="" />
-                    <h3 className="font-bold text-white">{awayTeam.name}</h3>
-                    <span className="ml-auto text-xs text-gray-400 font-bold">{awayTeam.formation}</span>
-                </div>
+                <span className="text-xs font-bold text-gray-500">{homeTeam.formation}</span>
             </div>
 
-            {/* Combined Pitch */}
-            <div className="relative w-full aspect-[3/4] bg-gradient-to-b from-green-500 to-green-600 rounded-lg overflow-hidden shadow-lg">
-                {/* Pitch SVG */}
-                <svg
-                    className="absolute inset-0 w-full h-full"
-                    viewBox="0 0 300 400"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    {/* Grass pattern */}
-                    <defs>
-                        <pattern id="grass-dual" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-                            <rect x="0" y="0" width="15" height="30" fill="#22c55e" opacity="0.3" />
-                            <rect x="15" y="0" width="15" height="30" fill="#16a34a" opacity="0.3" />
-                        </pattern>
-                    </defs>
-                    <rect width="300" height="400" fill="url(#grass-dual)" />
+            {/* Combined Pitch - constrained size */}
+            <div className="relative w-full bg-[#4a8c3f] rounded-lg overflow-hidden shadow-lg" style={{ paddingBottom: '140%' }}>
+                <div className="absolute inset-0">
+                    {/* Grass stripes */}
+                    <div className="absolute inset-0">
+                        {Array.from({ length: 14 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-full"
+                                style={{
+                                    top: `${(i / 14) * 100}%`,
+                                    height: `${100 / 14}%`,
+                                    backgroundColor: i % 2 === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                                }}
+                            />
+                        ))}
+                    </div>
 
-                    {/* Pitch lines */}
-                    <g stroke="white" strokeWidth="1.5" fill="none" opacity="0.9">
-                        <rect x="15" y="15" width="270" height="370" />
-                        <line x1="15" y1="200" x2="285" y2="200" />
-                        <circle cx="150" cy="200" r="45" />
-                        <circle cx="150" cy="200" r="1.5" fill="white" />
-                        <rect x="60" y="15" width="180" height="90" />
-                        <rect x="60" y="295" width="180" height="90" />
-                        <rect x="105" y="15" width="90" height="30" />
-                        <rect x="105" y="355" width="90" height="30" />
-                        <circle cx="150" cy="70" r="1.5" fill="white" />
-                        <circle cx="150" cy="330" r="1.5" fill="white" />
-                        <path d="M 105 70 A 45 45 0 0 1 195 70" />
-                        <path d="M 105 330 A 45 45 0 0 0 195 330" />
-                        <path d="M 15 27 A 12 12 0 0 1 27 15" />
-                        <path d="M 273 15 A 12 12 0 0 1 285 27" />
-                        <path d="M 285 373 A 12 12 0 0 1 273 385" />
-                        <path d="M 27 385 A 12 12 0 0 1 15 373" />
-                        <rect x="135" y="8" width="30" height="7" stroke="white" strokeWidth="2" fill="none" />
-                        <rect x="135" y="385" width="30" height="7" stroke="white" strokeWidth="2" fill="none" />
-                    </g>
-                </svg>
+                    {/* Pitch markings SVG */}
+                    <svg
+                        className="absolute inset-0 w-full h-full"
+                        viewBox="0 0 340 476"
+                        xmlns="http://www.w3.org/2000/svg"
+                        preserveAspectRatio="xMidYMid meet"
+                    >
+                        <g stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" fill="none">
+                            {/* Outer boundary */}
+                            <rect x="20" y="14" width="300" height="448" />
 
-                {/* Home Team Players (attacking upward) */}
-                {homeTeam.players.map((player, index) => {
-                    const position = getPlayerPosition(player.grid, false);
-                    const rating = generateRandomRating();
+                            {/* Center line */}
+                            <line x1="20" y1="238" x2="320" y2="238" />
 
-                    return (
-                        <div
-                            key={`home-${player.name}-${index}`}
-                            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-                            style={{
-                                left: `${position.x}%`,
-                                top: `${position.y}%`,
-                            }}
-                        >
-                            <div className="relative">
+                            {/* Center circle */}
+                            <circle cx="170" cy="238" r="40" />
+                            <circle cx="170" cy="238" r="2" fill="rgba(255,255,255,0.5)" />
+
+                            {/* Top 18-yard box */}
+                            <rect x="60" y="14" width="220" height="80" />
+                            {/* Top 6-yard box */}
+                            <rect x="110" y="14" width="120" height="28" />
+                            {/* Top penalty spot */}
+                            <circle cx="170" cy="64" r="1.5" fill="rgba(255,255,255,0.5)" />
+                            {/* Top penalty arc - "D" outside the box */}
+                            <path d="M 130 94 A 40 40 0 0 1 210 94" />
+
+                            {/* Bottom 18-yard box */}
+                            <rect x="60" y="382" width="220" height="80" />
+                            {/* Bottom 6-yard box */}
+                            <rect x="110" y="434" width="120" height="28" />
+                            {/* Bottom penalty spot */}
+                            <circle cx="170" cy="412" r="1.5" fill="rgba(255,255,255,0.5)" />
+                            {/* Bottom penalty arc - "D" outside the box */}
+                            <path d="M 130 382 A 40 40 0 0 0 210 382" />
+
+                            {/* Goal posts */}
+                            <rect x="145" y="6" width="50" height="8" strokeWidth="1.5" />
+                            <rect x="145" y="462" width="50" height="8" strokeWidth="1.5" />
+
+                            {/* Corner arcs */}
+                            <path d="M 20 22 A 8 8 0 0 1 28 14" />
+                            <path d="M 312 14 A 8 8 0 0 1 320 22" />
+                            <path d="M 320 454 A 8 8 0 0 1 312 462" />
+                            <path d="M 28 462 A 8 8 0 0 1 20 454" />
+                        </g>
+                    </svg>
+
+                    {/* Home Team Players (top half) */}
+                    {homeTeam.players.map((player, index) => {
+                        const position = getPlayerPosition(player.grid, false, homeMaxRow, homePlayersPerRow);
+
+                        return (
+                            <div
+                                key={`home-${player.name}-${index}`}
+                                className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                                style={{
+                                    left: `${position.x}%`,
+                                    top: `${position.y}%`,
+                                }}
+                            >
                                 <div
-                                    className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg transition-all duration-200 group-hover:scale-110 flex items-center justify-center text-white font-bold text-xs md:text-sm relative z-10"
+                                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-[1.5px] border-white/80 shadow-md flex items-center justify-center text-white font-bold text-[11px] sm:text-xs"
                                     style={{ backgroundColor: homeTeam.color }}
                                 >
                                     {player.number || index + 1}
                                 </div>
-
-                                <div
-                                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
-                                    style={{
-                                        backgroundColor: parseFloat(rating) >= 7.5 ? '#22c55e' :
-                                            parseFloat(rating) >= 6.5 ? '#f97316' : '#ef4444'
-                                    }}
-                                >
-                                    {rating}
-                                </div>
+                                <span className="text-[8px] sm:text-[9px] text-white font-medium mt-0.5 text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] max-w-[60px] truncate">
+                                    {getShortName(player.name)}
+                                </span>
                             </div>
+                        );
+                    })}
 
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-black/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
-                                <div className="font-medium">{player.name}</div>
-                                <div className="text-xs text-gray-300">{player.position}</div>
-                            </div>
-                        </div>
-                    );
-                })}
+                    {/* Away Team Players (bottom half) */}
+                    {awayTeam.players.map((player, index) => {
+                        const position = getPlayerPosition(player.grid, true, awayMaxRow, awayPlayersPerRow);
 
-                {/* Away Team Players (attacking downward) */}
-                {awayTeam.players.map((player, index) => {
-                    const position = getPlayerPosition(player.grid, true);
-                    const rating = generateRandomRating();
-
-                    return (
-                        <div
-                            key={`away-${player.name}-${index}`}
-                            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-                            style={{
-                                left: `${position.x}%`,
-                                top: `${position.y}%`,
-                            }}
-                        >
-                            <div className="relative">
+                        return (
+                            <div
+                                key={`away-${player.name}-${index}`}
+                                className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                                style={{
+                                    left: `${position.x}%`,
+                                    top: `${position.y}%`,
+                                }}
+                            >
                                 <div
-                                    className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg transition-all duration-200 group-hover:scale-110 flex items-center justify-center text-black font-bold text-xs md:text-sm relative z-10"
+                                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-[1.5px] border-gray-300 shadow-md flex items-center justify-center text-[#00141e] font-bold text-[11px] sm:text-xs"
                                     style={{ backgroundColor: awayTeam.color }}
                                 >
                                     {player.number || index + 1}
                                 </div>
-
-                                <div
-                                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
-                                    style={{
-                                        backgroundColor: parseFloat(rating) >= 7.5 ? '#22c55e' :
-                                            parseFloat(rating) >= 6.5 ? '#f97316' : '#ef4444'
-                                    }}
-                                >
-                                    {rating}
-                                </div>
+                                <span className="text-[8px] sm:text-[9px] text-white font-medium mt-0.5 text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] max-w-[60px] truncate">
+                                    {getShortName(player.name)}
+                                </span>
                             </div>
+                        );
+                    })}
+                </div>
+            </div>
 
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-black/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
-                                <div className="font-medium">{player.name}</div>
-                                <div className="text-xs text-gray-300">{player.position}</div>
-                            </div>
-                        </div>
-                    );
-                })}
+            {/* Away Team Footer */}
+            <div className="flex items-center justify-between px-1 py-2">
+                <div className="flex items-center gap-2">
+                    <img src={awayTeam.logo} className="w-5 h-5 object-contain" alt="" />
+                    <span className="text-xs font-bold text-[#00141e] uppercase tracking-wide">{awayTeam.name}</span>
+                </div>
+                <span className="text-xs font-bold text-gray-500">{awayTeam.formation}</span>
             </div>
         </div>
     );
