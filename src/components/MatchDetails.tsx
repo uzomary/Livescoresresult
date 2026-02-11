@@ -321,8 +321,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             />
 
             {/* Breadcrumb Header */}
-            <div className="max-w-4xl mx-auto px-0 sm:px-4 py-4">
-                <div className="flex items-center justify-between mx-2 sm:mx-0">
+            <div className="max-w-4xl mx-auto px-4 sm:px-4 py-4">
+                <div className="flex items-center justify-between sm:mx-0">
                     <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide cursor-pointer hover:text-[#00141e] transition-colors" onClick={onBack}>
                         <ArrowLeft className="w-4 h-4" />
                         <span className="hover:underline">{match.league.country || 'International'}</span>
@@ -346,7 +346,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             </div>
 
             {/* Match Header */}
-            <div className="max-w-4xl mx-auto px-0 sm:px-4 mb-8">
+            <div className="max-w-4xl mx-auto px-4 sm:px-4 mb-8">
                 <div className="flex items-center justify-between relative py-6">
                     {/* Home Team */}
                     <div className="flex flex-col items-center gap-4 flex-1">
@@ -362,11 +362,21 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         <div className="text-gray-500 text-xs font-semibold mb-2">
                             {match.date ? new Date(match.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : ''}
                         </div>
-                        <div className="text-5xl md:text-6xl font-bold tracking-tighter mb-1">
+                        <div className={`text-5xl md:text-6xl font-bold tracking-tighter mb-1 ${['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY', 'AET'].includes(match.status || '')
+                            ? 'text-[#ff0046]'
+                            : 'text-[#00141e]'
+                            }`}>
                             {match.status !== 'SCHEDULED' ? `${match.homeTeam.score} - ${match.awayTeam.score}` : '- vs -'}
                         </div>
-                        <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">
-                            {getStatusText(match.status || 'SCHEDULED')}
+                        <div className={`text-xs font-bold uppercase tracking-wider mt-1 ${['LIVE', '1H', '2H'].includes(match.status || '')
+                            ? 'text-[#ff0046]'
+                            : 'text-gray-500'
+                            }`}>
+                            {['LIVE', '1H', '2H'].includes(match.status || '') ? (
+                                <span className="animate-pulse">{match.minute}'</span>
+                            ) : (
+                                getStatusText(match.status || 'SCHEDULED')
+                            )}
                         </div>
                     </div>
 
@@ -382,8 +392,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             </div>
 
             {/* Main Navigation */}
-            <div className="max-w-4xl mx-auto px-0 sm:px-4 border-b border-gray-200 mb-6">
-                <div className="flex items-center gap-6 overflow-x-auto no-scrollbar mx-2 sm:mx-0">
+            <div className="max-w-4xl mx-auto px-4 sm:px-4 border-b border-gray-200 mb-6">
+                <div className="flex items-center gap-6 overflow-x-auto no-scrollbar sm:mx-0">
                     {['MATCH', 'REPORT', 'ODDS', 'H2H', 'STANDINGS'].map((tab) => (
                         <button
                             key={tab}
@@ -401,7 +411,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
             {/* Sub Navigation */}
             {activeMainTab === 'MATCH' && (
-                <div className="max-w-4xl mx-auto px-0 sm:px-4 mb-6">
+                <div className="max-w-4xl mx-auto px-4 sm:px-4 mb-6">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                         {['SUMMARY', 'STATS', 'LINEUPS'].map((tab) => (
                             <button
@@ -420,7 +430,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             )}
 
             {/* Content Area */}
-            <div className="max-w-4xl mx-auto px-0 sm:px-4">
+            <div className="max-w-4xl mx-auto px-4 sm:px-4">
 
                 {/* Summary Tab */}
                 {activeMainTab === 'MATCH' && activeSubTab === 'SUMMARY' && (
@@ -428,7 +438,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 1st Half */}
                         {firstHalfEvents.length > 0 && (
-                            <div className="bg-white rounded-lg overflow-hidden mx-2 sm:mx-0 border border-gray-100 shadow-sm">
+                            <div className="bg-white rounded-lg overflow-hidden sm:mx-0 border border-gray-100 shadow-sm">
                                 <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center">
                                     <span>1ST HALF</span>
                                     <span className="text-white">{match.score?.halftime?.home ?? 0} - {match.score?.halftime?.away ?? 0}</span>
@@ -464,7 +474,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 2nd Half */}
                         {secondHalfEvents.length > 0 && (
-                            <div className="bg-white rounded-lg overflow-hidden mt-2 mx-2 sm:mx-0 border border-gray-100 shadow-sm">
+                            <div className="bg-white rounded-lg overflow-hidden mt-2 sm:mx-0 border border-gray-100 shadow-sm">
                                 <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center">
                                     <span>2ND HALF</span>
                                     <span className="text-white">{match.homeTeam.score} - {match.awayTeam.score}</span>
@@ -499,7 +509,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         )}
 
                         {/* 1. Odds */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 mx-2 sm:mx-0">
+                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
                             <h3 className="text-[#00141e] font-bold text-lg mb-4">Betting Odds</h3>
                             {homeOdds && drawOdds && awayOdds ? (
                                 <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
@@ -529,7 +539,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 2. Winning Probability */}
                         {homeOdds && drawOdds && awayOdds && (
-                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 mx-2 sm:mx-0">
+                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
                                 <h3 className="text-[#00141e] font-bold text-lg mb-4">Winning Probability</h3>
                                 {(() => {
                                     const homeOdd = parseFloat(homeOdds);
@@ -572,7 +582,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         )}
 
                         {/* 3. Injured/Suspended Players */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 mx-2 sm:mx-0">
+                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
                             <h3 className="text-[#00141e] font-bold text-lg mb-4">Injuries & Suspensions</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Home Team */}
@@ -596,7 +606,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 4. Match Information */}
-                        <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 mx-2 sm:mx-0">
+                        <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 sm:mx-0">
                             <h3 className="text-[#00141e] font-bold text-lg mb-4">Match Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                                 <div className="flex items-center gap-2">
@@ -617,7 +627,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 5. Team Form */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 mx-2 sm:mx-0">
+                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
                             <h3 className="text-[#00141e] font-bold text-lg mb-4">Form</h3>
 
                             <div className="space-y-4">
@@ -698,7 +708,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 6. Head-to-Head (3 matches) */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden mx-2 sm:mx-0">
+                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden sm:mx-0">
                             <div className="p-4 border-b border-gray-100 bg-gray-50/50">
                                 <h3 className="text-[#00141e] font-bold text-lg">Head-to-head matches</h3>
                             </div>
@@ -763,7 +773,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 7. League Standings (2 teams only) */}
                         {standingsData?.response && standingsData.response.length > 0 && (
-                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden mx-2 sm:mx-0">
+                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden sm:mx-0">
                                 <div className="p-4 border-b border-gray-200 bg-gray-50/50">
                                     <h3 className="text-[#00141e] font-bold text-lg">{match.league.name} Standings</h3>
                                 </div>

@@ -35,7 +35,7 @@ export const getLeagues = async (): Promise<League[]> => {
 
 export const getLeaguesByCountry = async (country: string): Promise<League[]> => {
   const leagues = await getLeagues();
-  return leagues.filter(league => 
+  return leagues.filter(league =>
     league.country.toLowerCase() === country.toLowerCase()
   );
 };
@@ -43,4 +43,14 @@ export const getLeaguesByCountry = async (country: string): Promise<League[]> =>
 export const getLeagueById = async (id: number): Promise<League | undefined> => {
   const leagues = await getLeagues();
   return leagues.find(league => league.id === id);
+};
+
+export const searchLeagues = async (query: string): Promise<League[]> => {
+  const leagues = await getLeagues();
+  if (!query) return [];
+  const lowerQuery = query.toLowerCase();
+  return leagues.filter(league =>
+    league.name.toLowerCase().includes(lowerQuery) ||
+    league.country.toLowerCase().includes(lowerQuery)
+  );
 };

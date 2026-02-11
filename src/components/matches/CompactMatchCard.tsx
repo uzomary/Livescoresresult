@@ -96,9 +96,14 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.homeTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate">
+            <span className="text-gray-900 text-xs font-semibold truncate flex-1">
               {match.homeTeam.name.split('(')[0].trim()}
             </span>
+            {showScore && (
+              <span className="font-bold text-xs text-gray-900">
+                {scores.home}
+              </span>
+            )}
           </div>
 
           {/* Away Team */}
@@ -108,9 +113,14 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.awayTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate">
+            <span className="text-gray-900 text-xs font-semibold truncate flex-1">
               {match.awayTeam.name.split('(')[0].trim()}
             </span>
+            {showScore && (
+              <span className="font-bold text-xs text-gray-900">
+                {scores.away}
+              </span>
+            )}
           </div>
         </div>
 

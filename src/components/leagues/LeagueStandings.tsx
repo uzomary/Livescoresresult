@@ -65,10 +65,10 @@ const StandingsError = () => (
   </Alert>
 );
 
-export const LeagueStandings = ({ 
-  leagueId, 
-  season = CURRENT_SEASON, 
-  showTabs = true, 
+export const LeagueStandings = ({
+  leagueId,
+  season = CURRENT_SEASON,
+  showTabs = true,
   limit,
   showViewAll = false,
   onViewAll
@@ -133,10 +133,10 @@ export const LeagueStandings = ({
                             <span className={cn(
                               'flex items-center gap-0.5 text-[9px] leading-none',
                               team.description.toLowerCase().includes('champions league') ? 'text-blue-500' :
-                              team.description.toLowerCase().includes('europa') ? 'text-purple-500' :
-                              team.description.toLowerCase().includes('conference') ? 'text-green-600' :
-                              team.description.toLowerCase().includes('relegation') ? 'text-red-500' :
-                              'text-muted-foreground'
+                                team.description.toLowerCase().includes('europa') ? 'text-purple-500' :
+                                  team.description.toLowerCase().includes('conference') ? 'text-green-600' :
+                                    team.description.toLowerCase().includes('relegation') ? 'text-red-500' :
+                                      'text-muted-foreground'
                             )}>
                               {team.description.includes('Promotion') ? (
                                 <ArrowUpToLine className="h-2 w-2 text-green-500 flex-shrink-0" />
@@ -188,7 +188,7 @@ export const LeagueStandings = ({
             </TableHeader>
             <TableBody>
               {displayStandings.map((team) => (
-                <TableRow 
+                <TableRow
                   key={`desktop-${team.team.id}-${team.rank}`}
                   className="hover:bg-muted/30 transition-colors"
                 >
@@ -196,14 +196,14 @@ export const LeagueStandings = ({
                     {team.rank}
                   </TableCell>
                   <TableCell className="px-1.5 py-1.5 sm:px-2 sm:py-2">
-                    <Link 
+                    <Link
                       to={`/teams/${team.team.id}`}
                       className="flex items-center gap-1.5 group min-w-0"
                     >
-                      <TeamLogo 
-                        teamName={team.team.name} 
-                        logoUrl={team.team.logo} 
-                        className="w-5 h-5 flex-shrink-0" 
+                      <TeamLogo
+                        teamName={team.team.name}
+                        logoUrl={team.team.logo}
+                        className="w-5 h-5 flex-shrink-0"
                       />
                       <div className="flex flex-col">
                         <span className="font-medium text-sm sm:text-base group-hover:underline truncate">
@@ -213,10 +213,10 @@ export const LeagueStandings = ({
                           <span className={cn(
                             'text-xs truncate mt-0.5',
                             team.description.toLowerCase().includes('champions league') ? 'text-blue-500' :
-                            team.description.toLowerCase().includes('europa') ? 'text-purple-500' :
-                            team.description.toLowerCase().includes('conference') ? 'text-green-600' :
-                            team.description.toLowerCase().includes('relegation') ? 'text-red-500' :
-                            'text-muted-foreground'
+                              team.description.toLowerCase().includes('europa') ? 'text-purple-500' :
+                                team.description.toLowerCase().includes('conference') ? 'text-green-600' :
+                                  team.description.toLowerCase().includes('relegation') ? 'text-red-500' :
+                                    'text-muted-foreground'
                           )}>
                             {team.description.includes('Promotion') ? (
                               <span className="flex items-center gap-1">
@@ -280,13 +280,13 @@ export const LeagueStandings = ({
         {desktopView}
         {showViewAll && limit && standingsData.length > limit && onViewAll && (
           <div className="flex justify-center mt-2">
-            <button 
+            <button
               onClick={onViewAll}
               className="text-xs font-medium text-primary hover:underline flex items-center gap-1 px-2 py-1"
             >
               View All Standings
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6"/>
+                <path d="m9 18 6-6-6-6" />
               </svg>
             </button>
           </div>
@@ -311,7 +311,7 @@ export const LeagueStandings = ({
   }
 
   const groups = Object.entries(standings);
-  
+
   // If there's only one group and showTabs is false, just show the table
   if (groups.length === 1 || !showTabs) {
     return renderStandingsTable(groups[0][1]);
@@ -324,8 +324,8 @@ export const LeagueStandings = ({
         <div className="overflow-x-auto pb-2 -mx-2 px-2">
           <TabsList className="w-max min-w-full bg-transparent p-0 gap-1">
             {groups.map(([groupName]) => (
-              <TabsTrigger 
-                key={groupName} 
+              <TabsTrigger
+                key={groupName}
                 value={groupName}
                 className="px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap rounded-md transition-colors data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm"
               >
@@ -335,7 +335,7 @@ export const LeagueStandings = ({
           </TabsList>
         </div>
       </div>
-      
+
       <div className="mt-4">
         {groups.map(([groupName, groupStandings]) => (
           <TabsContent key={groupName} value={groupName} className="mt-0">

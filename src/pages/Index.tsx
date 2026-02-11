@@ -53,9 +53,9 @@ const Index = () => {
         ['1H', '2H', 'HT', 'LIVE'].includes(fixture.fixture?.status?.short)
       );
 
-      // If there are live matches, refetch every 60 seconds (reduced from 30)
+      // If there are live matches, refetch every 30 seconds
       // If no live matches, refetch every 5 minutes
-      return hasLiveMatches ? 60000 : 300000;
+      return hasLiveMatches ? 30000 : 300000;
     },
     refetchIntervalInBackground: false, // Stop refetching when tab is inactive
     refetchOnWindowFocus: false, // Don't refetch when switching back to tab

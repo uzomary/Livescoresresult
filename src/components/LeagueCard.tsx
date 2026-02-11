@@ -12,15 +12,15 @@ interface LeagueCardProps {
   showStandingsLink?: boolean;
 }
 
-export function LeagueCard({ 
-  leagueId, 
-  name, 
-  onClick, 
+export function LeagueCard({
+  leagueId,
+  name,
+  onClick,
   className = '',
   showStandingsLink = true
 }: LeagueCardProps) {
   const navigate = useNavigate();
-  
+
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -46,13 +46,13 @@ export function LeagueCard({
   }
 
   return (
-    <div 
+    <div
       className={`flex flex-col items-center p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer ${className}`}
       onClick={handleClick}
     >
       {league?.logo ? (
-        <img 
-          src={league.logo} 
+        <img
+          src={league.logo}
           alt={`${name} logo`}
           className="w-16 h-16 object-contain mb-2"
           onError={(e) => {

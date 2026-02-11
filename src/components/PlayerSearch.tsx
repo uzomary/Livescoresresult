@@ -38,7 +38,7 @@ export const PlayerSearch = ({ onSelectPlayer }: PlayerSearchProps) => {
           `https://www.thesportsdb.com/api/v1/json/123/searchplayers.php?p=${encodeURIComponent(searchQuery)}`
         );
         const data = await response.json();
-        
+
         if (data.player) {
           setPlayers(Array.isArray(data.player) ? data.player : [data.player]);
         } else {
@@ -72,7 +72,7 @@ export const PlayerSearch = ({ onSelectPlayer }: PlayerSearchProps) => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="w-full"
       />
-      
+
       {searchQuery && (
         <Card className="absolute z-10 w-full mt-1 max-h-80 overflow-y-auto">
           {isLoading ? (

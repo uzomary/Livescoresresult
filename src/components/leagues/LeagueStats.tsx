@@ -35,11 +35,11 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
     queryKey: ['playerStats', leagueId, season],
     queryFn: async () => {
       if (!teams) return [];
-      
+
       // Fetch players for all teams and process their stats
       const allPlayers = await Promise.all(
-        teams.map(team => 
-          fetchPlayersByTeam(team.team.id, season).then(players => 
+        teams.map(team =>
+          fetchPlayersByTeam(team.team.id, season).then(players =>
             players.map(player => ({
               id: player.player.id,
               name: player.player.name,
@@ -54,7 +54,7 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
           )
         )
       );
-      
+
       return allPlayers.flat();
     },
     enabled: !!teams && teams.length > 0,
@@ -107,9 +107,9 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
     .sort((a, b) => b.redCards - a.redCards)
     .slice(0, 5);
 
-  const StatCard = ({ title, players, statKey, icon }: { 
-    title: string; 
-    players: PlayerStats[]; 
+  const StatCard = ({ title, players, statKey, icon }: {
+    title: string;
+    players: PlayerStats[];
     statKey: keyof Pick<PlayerStats, 'goals' | 'assists' | 'yellowCards' | 'redCards'>;
     icon: React.ReactNode;
   }) => (
@@ -123,8 +123,8 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
           <div key={player.id} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground w-4">{index + 1}.</span>
-              <img 
-                src={player.photo || '/player-placeholder.png'} 
+              <img
+                src={player.photo || '/player-placeholder.png'}
                 alt={player.name}
                 className="w-6 h-6 rounded-full object-cover"
                 onError={(e) => {
@@ -135,8 +135,8 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{player.name}</span>
                 <div className="flex items-center gap-1">
-                  <img 
-                    src={player.teamLogo} 
+                  <img
+                    src={player.teamLogo}
                     alt={player.team}
                     className="w-3 h-3"
                   />
@@ -154,29 +154,29 @@ export function LeagueStats({ leagueId, season }: LeagueStatsProps) {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <StatCard 
-          title="Top Scorers" 
-          players={topScorers} 
+        <StatCard
+          title="Top Scorers"
+          players={topScorers}
           statKey="goals"
           icon={<span>⚽</span>}
         />
-        <StatCard 
-          title="Top Assists" 
-          players={topAssists} 
+        <StatCard
+          title="Top Assists"
+          players={topAssists}
           statKey="assists"
           icon={<span>🅰️</span>}
         />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <StatCard 
-          title="Most Yellow Cards" 
-          players={mostYellowCards} 
+        <StatCard
+          title="Most Yellow Cards"
+          players={mostYellowCards}
           statKey="yellowCards"
           icon={<span>🟨</span>}
         />
-        <StatCard 
-          title="Most Red Cards" 
-          players={mostRedCards} 
+        <StatCard
+          title="Most Red Cards"
+          players={mostRedCards}
           statKey="redCards"
           icon={<span>🟥</span>}
         />

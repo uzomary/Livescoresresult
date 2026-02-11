@@ -149,7 +149,7 @@ function setCachedData(key: string, data: any, duration: number) {
 // Permanent cache helper functions for odds (never expire)
 function getPermanentOddsCache(date: string) {
   try {
-    const cached = localStorage.getItem(`livescore_odds_permanent_${date}`);
+    const cached = localStorage.getItem(`livescore_odds_permanent_v2_${date}`);
     if (!cached) return null;
 
     const { data } = JSON.parse(cached);
@@ -166,7 +166,7 @@ function setPermanentOddsCache(date: string, data: any) {
       timestamp: Date.now(),
       // No duration - permanent cache
     };
-    localStorage.setItem(`livescore_odds_permanent_${date}`, JSON.stringify(cacheItem));
+    localStorage.setItem(`livescore_odds_permanent_v2_${date}`, JSON.stringify(cacheItem));
   } catch (error) {
     console.warn('Failed to store permanent odds cache:', error);
   }
@@ -889,66 +889,94 @@ export const footballApi = {
     const currentDay = String(currentDate.getDate()).padStart(2, '0');
     const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-    // Check permanent odds cache first
-    const cachedOdds = getPermanentOddsCache(formattedDate);
-
-    // Fetch fixtures and odds in parallel (skip odds if cached)
-    const [fixturesData, oddsData] = await Promise.all([
-      makeApiRequestWithCache('/fixtures', {
-        date: formattedDate,
-        timezone: 'Africa/Lagos'
-      }),
-      cachedOdds ? Promise.resolve({ response: cachedOdds }) : this.getOddsByDate(formattedDate)
-    ]);
+    // 1. Fetch fixtures first
+    const fixturesData = await makeApiRequestWithCache('/fixtures', {
+      date: formattedDate,
+      timezone: 'Africa/Lagos'
+    });
 
     if (!fixturesData.response || !Array.isArray(fixturesData.response)) {
       throw new Error('Invalid fixtures data format received from API');
     }
 
-    // Filter valid fixtures
+    // 2. Filter valid fixtures
     const validFixtures = fixturesData.response.filter((fixture: any) =>
       fixture?.fixture?.id &&
       fixture?.teams?.home?.id &&
       fixture?.teams?.away?.id
     );
 
-    // Create a map of fixture ID to odds
-    const oddsMap = new Map();
-    if (oddsData?.response && Array.isArray(oddsData.response)) {
-      // Store in permanent cache if this was a fresh fetch
-      if (!cachedOdds) {
-        setPermanentOddsCache(formattedDate, oddsData.response);
+    // 3. Identify Priority Leagues to fetch odds for
+    const priorityLeagueKeywords = [
+      'Premier League', 'La Liga', 'Bundesliga', 'Serie A', 'Ligue 1',
+      'Champions League', 'Europa League', 'Conference League',
+      'Eredivisie', 'Primeira Liga', 'Championship', 'Major League Soccer',
+      'Brasileirão', 'Professional Football League' // Nigeria
+    ];
+
+    const leaguesToFetch = new Map<number, number>(); // Map<leagueId, season>
+
+    validFixtures.forEach((fixture: any) => {
+      const leagueName = fixture.league.name;
+      const leagueCountry = fixture.league.country;
+      const leagueId = fixture.league.id;
+      const season = fixture.league.season;
+
+      // Check if league matches priority keywords
+      const isPriority = priorityLeagueKeywords.some(keyword =>
+        leagueName.includes(keyword) ||
+        (leagueCountry === 'England' && leagueName === 'League Cup') ||
+        (leagueCountry === 'Spain' && leagueName === 'Copa del Rey') ||
+        (leagueCountry === 'Italy' && leagueName === 'Coppa Italia') ||
+        (leagueCountry === 'Germany' && leagueName === 'DFB Pokal') ||
+        (leagueCountry === 'France' && leagueName === 'Coupe de France')
+      );
+
+      if (isPriority) {
+        leaguesToFetch.set(leagueId, season);
       }
+    });
 
-      oddsData.response.forEach((oddsItem: any) => {
-        const fixtureId = oddsItem.fixture?.id;
-        if (fixtureId && oddsItem.bookmakers && oddsItem.bookmakers.length > 0) {
-          // Find the "Match Winner" bet (1X2)
-          const bookmaker = oddsItem.bookmakers[0];
-          const matchWinnerBet = bookmaker.bets?.find((bet: any) => bet.name === 'Match Winner');
+    // 4. Fetch Odds for Priority Leagues in Parallel
+    const oddsPromises = Array.from(leaguesToFetch.entries()).map(([leagueId, season]) =>
+      this.getOddsByLeague(leagueId, season, formattedDate)
+    );
 
-          if (matchWinnerBet && matchWinnerBet.values) {
-            const homeOdd = matchWinnerBet.values.find((v: any) => v.value === 'Home')?.odd;
-            const drawOdd = matchWinnerBet.values.find((v: any) => v.value === 'Draw')?.odd;
-            const awayOdd = matchWinnerBet.values.find((v: any) => v.value === 'Away')?.odd;
+    const oddsResults = await Promise.all(oddsPromises);
 
-            if (homeOdd && drawOdd && awayOdd) {
-              oddsMap.set(fixtureId, {
-                home: homeOdd,
-                draw: drawOdd,
-                away: awayOdd
-              });
+    // 5. Flatten results into a single odds map
+    const oddsMap = new Map();
+
+    oddsResults.forEach((oddsResponse, index) => {
+      const leagueId = Array.from(leaguesToFetch.keys())[index];
+
+      if (oddsResponse?.response && Array.isArray(oddsResponse.response)) {
+        oddsResponse.response.forEach((oddsItem: any) => {
+          const fixtureId = oddsItem.fixture?.id;
+          if (fixtureId && oddsItem.bookmakers && oddsItem.bookmakers.length > 0) {
+            // Find the "Match Winner" bet (1X2)
+            const bookmaker = oddsItem.bookmakers[0];
+            const matchWinnerBet = bookmaker.bets?.find((bet: any) => bet.name === 'Match Winner'); // Ensure we look for 'Match Winner' specifically
+
+            if (matchWinnerBet && matchWinnerBet.values) {
+              const homeOdd = matchWinnerBet.values.find((v: any) => v.value === 'Home')?.odd;
+              const drawOdd = matchWinnerBet.values.find((v: any) => v.value === 'Draw')?.odd;
+              const awayOdd = matchWinnerBet.values.find((v: any) => v.value === 'Away')?.odd;
+
+              if (homeOdd && drawOdd && awayOdd) {
+                oddsMap.set(fixtureId, {
+                  home: homeOdd,
+                  draw: drawOdd,
+                  away: awayOdd
+                });
+              }
             }
           }
-        }
-      });
+        });
+      }
+    });
 
-
-    } else {
-      console.warn(`⚠️ No odds data available for date ${formattedDate}`);
-    }
-
-    // Merge odds with fixtures
+    // 6. Merge odds with fixtures
     const fixturesWithOdds = validFixtures.map((fixture: any) => {
       const fixtureId = fixture.fixture.id;
       const odds = oddsMap.get(fixtureId);
@@ -1011,53 +1039,29 @@ export const footballApi = {
     }
   },
 
-  async getOddsByDate(date: string): Promise<{ response: any[] }> {
+
+  async getOddsByLeague(leagueId: number, season: number, date: string): Promise<{ response: any[] }> {
     try {
-      // Fetch first page
       const data = await makeApiRequestWithCache('/odds', {
+        league: leagueId.toString(),
+        season: season.toString(),
         date: date,
-        timezone: 'Africa/Lagos',
-        page: '1'
+        timezone: 'Africa/Lagos'
       }, CACHE_DURATION.ODDS);
 
       if (!data?.response || !Array.isArray(data.response)) {
         return { response: [] };
       }
-
-      let allOdds = [...data.response];
-      const totalPages = data.paging?.total || 1;
-
-      if (totalPages > 1) {
-        console.log(`Odds pagination: Found ${totalPages} pages. Fetching remaining pages...`);
-
-        // Create an array of promises for the remaining pages
-        const pagePromises = [];
-        for (let i = 2; i <= totalPages; i++) {
-          pagePromises.push(
-            makeApiRequestWithCache('/odds', {
-              date: date,
-              timezone: 'Africa/Lagos',
-              page: i.toString()
-            }, CACHE_DURATION.ODDS)
-          );
-        }
-
-        // Fetch all remaining pages in parallel
-        const pagesResults = await Promise.all(pagePromises);
-
-        // Combine results
-        pagesResults.forEach(pageData => {
-          if (pageData?.response && Array.isArray(pageData.response)) {
-            allOdds = allOdds.concat(pageData.response);
-          }
-        });
-      }
-
-      return { response: allOdds };
+      return data;
     } catch (error) {
-      console.error('Failed to fetch odds by date:', error);
+      console.error(`Failed to fetch odds for league ${leagueId}:`, error);
       return { response: [] };
     }
+  },
+
+  async getOddsByDate(date: string): Promise<{ response: any[] }> {
+    // Deprecated: Too heavy on API. Use getOddsByLeague instead.
+    return { response: [] };
   },
 
   async getFixtureOdds(fixtureId: string): Promise<{ response: any[] }> {

@@ -47,7 +47,7 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
           `https://www.thesportsdb.com/api/v1/json/123/lookupplayer.php?id=${playerId}`
         );
         const data = await response.json();
-        
+
         if (data.players && data.players.length > 0) {
           setPlayer(data.players[0]);
         } else {
@@ -118,14 +118,14 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <Button 
-        onClick={onBack} 
-        variant="ghost" 
+      <Button
+        onClick={onBack}
+        variant="ghost"
         className="mb-6 px-0 hover:bg-transparent hover:underline"
       >
         ← Back to search
       </Button>
-      
+
       <Card className="overflow-hidden">
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 text-white">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -140,7 +140,7 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
                 }}
               />
             </div>
-            
+
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl md:text-3xl font-bold mb-2">{player.strPlayer}</h1>
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-4">
@@ -160,7 +160,7 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
                   </div>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
                 <div>
                   <p className="text-gray-300">Height</p>
@@ -184,12 +184,12 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex gap-3 mt-6 justify-center md:justify-start">
                 {player.strFacebook && (
-                  <a 
-                    href={`https://facebook.com/${player.strFacebook}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://facebook.com/${player.strFacebook}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-blue-400 transition-colors"
                   >
@@ -200,9 +200,9 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
                   </a>
                 )}
                 {player.strTwitter && (
-                  <a 
-                    href={`https://twitter.com/${player.strTwitter}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://twitter.com/${player.strTwitter}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-blue-400 transition-colors"
                   >
@@ -213,9 +213,9 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
                   </a>
                 )}
                 {player.strInstagram && (
-                  <a 
-                    href={`https://instagram.com/${player.strInstagram}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://instagram.com/${player.strInstagram}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-pink-500 transition-colors"
                   >
@@ -229,7 +229,7 @@ export const PlayerProfile = ({ playerId, onBack }: PlayerProfileProps) => {
             </div>
           </div>
         </div>
-        
+
         {player.strDescriptionEN && (
           <div className="p-6">
             <h2 className="text-xl font-bold mb-4">Biography</h2>

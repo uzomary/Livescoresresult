@@ -1,12 +1,12 @@
 // Update useLeague.ts
 import { useQuery } from '@tanstack/react-query';
-import { getLeagueById, searchLeagues } from '@/services/theSportsDbApi';
+import { getLeagueById, searchLeagues } from '@/services/leagueService';
 import { footballApi, TeamStanding } from '@/services/footballApi';
 
 export function useLeague(leagueId?: string) {
   return useQuery({
     queryKey: ['league', leagueId],
-    queryFn: () => leagueId ? getLeagueById(leagueId) : null,
+    queryFn: () => leagueId ? getLeagueById(parseInt(leagueId)) : null,
     enabled: !!leagueId,
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
@@ -17,15 +17,15 @@ export function useLeagueStandings(leagueId?: string, season?: string) {
     queryKey: ['league-standings', leagueId, season],
     queryFn: async () => {
       if (!leagueId) return null;
-      
+
       try {
         const result = await footballApi.getLeagueStandings(parseInt(leagueId), season ? parseInt(season) : undefined);
-        
+
         // The API returns { response: TeamStanding[] }, we need to extract the standings array
         if (result && result.response && Array.isArray(result.response) && result.response.length > 0) {
           return result.response;
         }
-        
+
         return [];
       } catch (error) {
         console.error('Error fetching league standings:', error);
