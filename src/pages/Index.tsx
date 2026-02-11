@@ -51,7 +51,7 @@ const Index = () => {
     queryKey: ['fixtures', formattedDate],
     queryFn: () => footballApi.getFixturesByDate(formattedDate),
     enabled: isFootball,
-    // Intelligent refetch based on match status
+    // Intelligent refetch based on match status - REAL-TIME for live matches
     refetchInterval: (query) => {
       if (!isFootball) return false;
       if (!query.state.data?.response) return false; // No data, don't refetch
@@ -60,13 +60,24 @@ const Index = () => {
         ['1H', '2H', 'HT', 'LIVE'].includes(fixture.fixture?.status?.short)
       );
 
-      // If there are live matches, refetch every 30 seconds
+      // If there are live matches, refetch every 15 seconds for real-time updates
       // If no live matches, refetch every 5 minutes
-      return hasLiveMatches ? 30000 : 300000;
+      return hasLiveMatches ? 15000 : 300000;
     },
     refetchIntervalInBackground: false, // Stop refetching when tab is inactive
-    refetchOnWindowFocus: false, // Don't refetch when switching back to tab
-    staleTime: 45 * 60 * 1000, // 45 minutes - increased from 30
+    refetchOnWindowFocus: true, // Refetch when switching back to tab for immediate updates
+    staleTime: (query) => {
+      // Dynamic staleTime based on live matches
+      if (!query.state.data?.response) return 5 * 60 * 1000;
+
+      const hasLiveMatches = query.state.data.response.some((fixture: any) =>
+        ['1H', '2H', 'HT', 'LIVE'].includes(fixture.fixture?.status?.short)
+      );
+
+      // Live matches: 0ms staleTime (always fresh, no cache)
+      // Non-live matches: 30 minutes cache
+      return hasLiveMatches ? 0 : 30 * 60 * 1000;
+    },
     retry: (failureCount, error: any) => {
       // Don't retry rate limit errors
       if (error?.message?.includes('429') || error?.message?.includes('rate limit')) {
@@ -86,11 +97,18 @@ const Index = () => {
       const data = query.state.data;
       if (!data || !Array.isArray(data)) return false;
       const hasLive = data.some((m: Match) => ['LIVE', '1H', '2H', 'HT'].includes(m.status));
-      return hasLive ? 30000 : 300000;
+      // Real-time updates: 15 seconds for live, 5 minutes for non-live
+      return hasLive ? 15000 : 300000;
     },
     refetchIntervalInBackground: false,
-    refetchOnWindowFocus: false,
-    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: true, // Refetch when switching back to tab
+    staleTime: (query) => {
+      const data = query.state.data;
+      if (!data || !Array.isArray(data)) return 5 * 60 * 1000;
+      const hasLive = data.some((m: Match) => ['LIVE', '1H', '2H', 'HT'].includes(m.status));
+      // Live matches: 0ms staleTime (no cache), Non-live: 10 minutes
+      return hasLive ? 0 : 10 * 60 * 1000;
+    },
     retry: (failureCount, error: any) => {
       if (error?.message?.includes('429')) return false;
       return failureCount < 2;

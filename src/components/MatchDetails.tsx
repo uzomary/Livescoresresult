@@ -111,17 +111,17 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         enabled: !!matchId,
         staleTime: (query) => {
             const status = query.state.data?.response?.[0]?.fixture?.status?.short;
-            // Live matches: 2 min cache, Finished: 30 min cache
-            return ['1H', '2H', 'HT', 'LIVE', 'ET', 'P'].includes(status) ? 2 * 60 * 1000 : 30 * 60 * 1000;
+            // REAL-TIME: Live matches have 0ms staleTime (no cache), Finished: 30 min cache
+            return ['1H', '2H', 'HT', 'LIVE', 'ET', 'P'].includes(status) ? 0 : 30 * 60 * 1000;
         },
         refetchInterval: (query) => {
             const status = query.state.data?.response?.[0]?.fixture?.status?.short;
-            // Reduced from 30s to 60s for live matches, disabled for finished
-            if (['1H', '2H', 'LIVE', 'ET', 'P'].includes(status)) return 60000; // 1 min
-            if (status === 'HT') return 120000; // 2 min (nothing changes at halftime)
+            // REAL-TIME: 15 seconds for live matches for smooth updates
+            if (['1H', '2H', 'LIVE', 'ET', 'P'].includes(status)) return 15000; // 15 seconds
+            if (status === 'HT') return 60000; // 1 min at halftime
             return false; // No auto-refresh for finished/scheduled
         },
-        refetchOnWindowFocus: false, // Don't refetch when switching tabs
+        refetchOnWindowFocus: true, // Refetch when switching tabs for immediate updates
     });
 
     const { data: eventsData } = useQuery({
@@ -130,10 +130,15 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         enabled: !!fixtureData && !!matchId,
         staleTime: (query) => {
             const status = fixtureData?.response?.[0]?.fixture?.status?.short;
-            // Finished matches: cache for 1 hour, Live: 5 min
-            return ['FT', 'AET', 'PEN'].includes(status || '') ? 60 * 60 * 1000 : 5 * 60 * 1000;
+            // REAL-TIME: Finished matches cache for 1 hour, Live: 0ms (no cache)
+            return ['FT', 'AET', 'PEN'].includes(status || '') ? 60 * 60 * 1000 : 0;
         },
-        refetchOnWindowFocus: false,
+        refetchInterval: (query) => {
+            const status = fixtureData?.response?.[0]?.fixture?.status?.short;
+            // REAL-TIME: 30 seconds for live match events
+            return ['1H', '2H', 'HT', 'LIVE', 'ET', 'P'].includes(status || '') ? 30000 : false;
+        },
+        refetchOnWindowFocus: true,
     });
 
     const { data: statsData } = useQuery({
@@ -142,10 +147,15 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         enabled: !!fixtureData && !!matchId,
         staleTime: (query) => {
             const status = fixtureData?.response?.[0]?.fixture?.status?.short;
-            // Finished matches: cache for 1 hour, Live: 5 min
-            return ['FT', 'AET', 'PEN'].includes(status || '') ? 60 * 60 * 1000 : 5 * 60 * 1000;
+            // REAL-TIME: Finished matches cache for 1 hour, Live: 0ms (no cache)
+            return ['FT', 'AET', 'PEN'].includes(status || '') ? 60 * 60 * 1000 : 0;
         },
-        refetchOnWindowFocus: false,
+        refetchInterval: (query) => {
+            const status = fixtureData?.response?.[0]?.fixture?.status?.short;
+            // REAL-TIME: 30 seconds for live match statistics
+            return ['1H', '2H', 'HT', 'LIVE', 'ET', 'P'].includes(status || '') ? 30000 : false;
+        },
+        refetchOnWindowFocus: true,
     });
 
     const { data: lineupsData } = useQuery({
@@ -159,6 +169,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         },
         refetchOnWindowFocus: false,
         refetchOnMount: false, // Lineups don't change
+        refetchInterval: false, // Never auto-refetch lineups
     });
 
     // Extract team and league IDs from fixture for queries
