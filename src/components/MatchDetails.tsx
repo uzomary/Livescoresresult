@@ -384,7 +384,12 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                             : 'text-gray-500'
                             }`}>
                             {['LIVE', '1H', '2H'].includes(match.status || '') ? (
-                                <span className="animate-pulse">{match.minute}'</span>
+                                <span className="animate-pulse">
+                                    {match.minute}'
+                                    {match.addedTime && match.addedTime > 0 && (
+                                        <span className="text-[#ff0046]">+{match.addedTime}</span>
+                                    )}
+                                </span>
                             ) : (
                                 getStatusText(match.status || 'SCHEDULED')
                             )}

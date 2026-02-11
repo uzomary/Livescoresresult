@@ -37,6 +37,7 @@ export interface Match {
   time: string;
   league: LeagueInfo;
   minute?: number;
+  addedTime?: number; // Injury/added time in minutes
   date?: string;
   venue?: Venue;
   referee?: string | null;
@@ -100,6 +101,34 @@ export const transformFixture = (apiFixture: ApiFixture): Match => {
     ? 'https://images.fotmob.com/image_resources/logo/leaguelogo/dark/78.png'
     : apiFixture.league.logo;
 
+  // Calculate added time from elapsed minutes
+  const elapsed = apiFixture.fixture.status.elapsed;
+  let minute: number | undefined = elapsed || undefined;
+  let addedTime: number | undefined = undefined;
+
+  if (elapsed) {
+    // First half: 45+ minutes
+    if (elapsed > 45 && elapsed <= 60 && ['1H'].includes(apiFixture.fixture.status.short)) {
+      minute = 45;
+      addedTime = elapsed - 45;
+    }
+    // Second half: 90+ minutes
+    else if (elapsed > 90 && elapsed <= 120 && ['2H'].includes(apiFixture.fixture.status.short)) {
+      minute = 90;
+      addedTime = elapsed - 90;
+    }
+    // Extra time first half: 105+ minutes
+    else if (elapsed > 105 && elapsed <= 120 && ['ET'].includes(apiFixture.fixture.status.short)) {
+      minute = 105;
+      addedTime = elapsed - 105;
+    }
+    // Extra time second half: 120+ minutes
+    else if (elapsed > 120 && ['ET', 'P'].includes(apiFixture.fixture.status.short)) {
+      minute = 120;
+      addedTime = elapsed - 120;
+    }
+  }
+
   return {
     id: apiFixture.fixture.id.toString(),
     homeTeam: {
@@ -125,7 +154,8 @@ export const transformFixture = (apiFixture: ApiFixture): Match => {
       type: 'type' in apiFixture.league ? String(apiFixture.league.type) : 'League',
       season: apiFixture.league.season
     } as LeagueInfo,
-    minute: apiFixture.fixture.status.elapsed || undefined,
+    minute,
+    addedTime,
     date: apiFixture.fixture.date,
     referee: apiFixture.fixture.referee,
     round: apiFixture.league.round || undefined,

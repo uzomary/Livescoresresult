@@ -64,6 +64,18 @@ const VolleyballIcon = () => (
     </svg>
 );
 
+const ExternalLinkIcon = () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+);
+
+const TrophyIcon = () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+        <path d="M6 3h12v2h2c1.1 0 2 .9 2 2v3c0 1.66-1.34 3-3 3h-.18C18.4 14.63 17.05 16 15 16h-1v3h3v2H7v-2h3v-3H9c-2.05 0-3.4-1.37-3.82-3H5c-1.66 0-3-1.34-3-3V7c0-1.1.9-2 2-2h2V3zm0 4H4v3c0 .55.45 1 1 1h1V7zm12 0v4h1c.55 0 1-.45 1-1V7h-2z" />
+    </svg>
+);
+
 const sportTabs: SportTab[] = [
     { id: 'football', label: 'FOOTBALL', icon: <FootballIcon /> },
     { id: 'basketball', label: 'BASKETBALL', icon: <BasketballIcon /> },
@@ -79,20 +91,37 @@ export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
         <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 mb-4">
             <div className="flex items-center gap-1 min-w-max border-b border-gray-200">
                 {sportTabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => onSportChange(tab.id)}
-                        className={cn(
-                            "flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
-                            activeSport === tab.id
-                                ? "text-[#ff0046] border-[#ff0046]"
-                                : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+                    <>
+                        <button
+                            key={tab.id}
+                            onClick={() => onSportChange(tab.id)}
+                            className={cn(
+                                "flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
+                                activeSport === tab.id
+                                    ? "text-[#ff0046] border-[#ff0046]"
+                                    : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+                            )}
+                        >
+                            {tab.icon}
+                            {tab.label}
+                        </button>
+
+                        {/* Pools Results Link - After Football */}
+                        {tab.id === 'football' && (
+                            <a
+                                href="https://poolsupdate.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+                            >
+                                <TrophyIcon />
+                                POOLS RESULTS
+                            </a>
                         )}
-                    >
-                        {tab.icon}
-                        {tab.label}
-                    </button>
+                    </>
                 ))}
+
+
             </div>
         </div>
     );
