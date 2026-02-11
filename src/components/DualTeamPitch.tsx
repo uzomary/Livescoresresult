@@ -69,9 +69,9 @@ const DualTeamPitch = ({ homeTeam, awayTeam }: DualTeamPitchProps) => {
 
         // Y positions - each team gets its own half
         const homeYStart = 5;
-        const homeYEnd = 47;
+        const homeYEnd = 45;
         const awayYStart = 95;
-        const awayYEnd = 53;
+        const awayYEnd = 55;
 
         let y: number;
         if (maxRow <= 1) {

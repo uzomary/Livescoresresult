@@ -24,15 +24,15 @@ const getStatusDisplay = (match: Match) => {
 
 
 
-  if (status === 'HT') {
+  if (status === 'HT' || status === 'BT') {
     return {
       text: 'HT',
       isLive: true,
-      showLiveBadge: true
+      showLiveBadge: false
     };
   }
 
-  if (status === 'ET' || status === 'P' || status === 'BT') {
+  if (status === 'ET' || status === 'P') {
     return {
       text: `${minute || 0}'`,
       isLive: true,
@@ -129,14 +129,9 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.homeTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate flex-1">
+            <span className="text-gray-900 text-xs font-semibold truncate">
               {match.homeTeam.name.split('(')[0].trim()}
             </span>
-            {showScore && (
-              <span className="font-bold text-xs text-gray-900">
-                {scores.home}
-              </span>
-            )}
           </div>
 
           {/* Away Team */}
@@ -146,28 +141,33 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.awayTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate flex-1">
+            <span className="text-gray-900 text-xs font-semibold truncate">
               {match.awayTeam.name.split('(')[0].trim()}
             </span>
-            {showScore && (
-              <span className="font-bold text-xs text-gray-900">
-                {scores.away}
-              </span>
-            )}
           </div>
         </div>
 
+        {/* Scores Column */}
+        {showScore && (
+          <div className="flex flex-col items-end justify-center gap-2 px-1 min-w-[24px]">
+            <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.home}</span>
+            <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.away}</span>
+          </div>
+        )}
+
         {/* Live Status / Time */}
-        <div className="flex flex-col items-end justify-center min-w-[60px] text-right">
+        <div className="flex flex-col items-end justify-center min-w-[50px] text-right">
           {statusDisplay.showLiveBadge ? (
             <>
-              <span className="text-red-500 font-bold animate-pulse text-xs mb-1">LIVE</span>
-              <div className="text-red-600 font-bold">
+              <span className="text-red-500 font-bold animate-pulse text-[10px] mb-0.5">LIVE</span>
+              <div className="text-red-600 font-bold text-xs">
                 {status === 'HT' ? 'HT' : <LiveTimer match={match} />}
               </div>
             </>
           ) : (
-            <span className="text-gray-500 font-medium text-xs">{statusDisplay.text}</span>
+            <span className={status === 'HT' ? "text-orange-500 font-bold text-xs" : "text-gray-500 font-medium text-xs"}>
+              {statusDisplay.text}
+            </span>
           )}
         </div>
 

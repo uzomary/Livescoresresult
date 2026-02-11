@@ -77,6 +77,7 @@ const mapStatus = (apiStatus: string): Match['status'] => {
     case 'BT':
       return apiStatus as Match['status'];
     case 'HT':
+    case 'BT':
       return 'HT';
     case 'FT':
       return 'FT';

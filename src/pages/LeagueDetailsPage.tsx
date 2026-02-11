@@ -46,24 +46,36 @@ const LeagueDetailsPage = () => {
       }
 
       try {
-        // Fetch all leagues for the country
-        const leagues = await getLeaguesByCountry(country);
-        
-        // Find the matching league
-        // We compare normalized names to ensure a match
+        // Fetch leagues for the country
+        let leagues = await getLeaguesByCountry(country);
+
+        // Normalization helper
         const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
         const targetName = normalize(leagueName);
 
-        const foundLeague = leagues.find(l => 
-          normalize(l.name) === targetName || 
+        // Find the matching league
+        let foundLeague = leagues.find(l =>
+          normalize(l.name) === targetName ||
           l.name.toLowerCase().includes(leagueName.toLowerCase().replace(/-/g, ' '))
         );
+
+        // Fallback: If not found in country, search ALL leagues
+        // (Useful for international leagues like AFCON or Champions League that might be under 'World')
+        if (!foundLeague) {
+          console.log(`League not found in ${country}, searching all leagues...`);
+          const { getLeagues } = await import('@/services/leagueService');
+          const allLeagues = await getLeagues();
+          foundLeague = allLeagues.find(l =>
+            normalize(l.name) === targetName ||
+            l.name.toLowerCase().includes(leagueName.toLowerCase().replace(/-/g, ' '))
+          );
+        }
 
         if (foundLeague) {
           setLeague(foundLeague);
           setSelectedSeason(foundLeague.season);
         } else {
-          console.error(`League not found: ${leagueName} in ${country}`);
+          console.error(`League not found: ${leagueName} (searched country: ${country} and global)`);
           setError('League not found');
         }
 
