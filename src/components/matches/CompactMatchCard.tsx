@@ -65,6 +65,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
   const statusDisplay = getStatusDisplay(match);
   const scores = getScores(match);
   const showScore = scores.home !== null && scores.away !== null;
+  const isClickable = !!onClick;
 
   const handleClick = () => {
     onClick?.(match.id);
@@ -72,8 +73,8 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
 
   return (
     <div
-      className="bg-white hover:bg-gray-50 cursor-pointer transition-all border-b border-gray-100 last:border-b-0"
-      onClick={handleClick}
+      className={`bg-white transition-all border-b border-gray-100 last:border-b-0 ${isClickable ? 'hover:bg-gray-50 cursor-pointer' : ''}`}
+      onClick={isClickable ? handleClick : undefined}
     >
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Star Icon for Favorites */}
@@ -136,26 +137,27 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
           )}
         </div>
 
-        {/* Odds Section - Vertical Display (Visible on valid data) */}
-        {match.odds ? (
-          <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2">
-            <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-              <span className="text-xs font-bold text-gray-700">{match.odds.home}</span>
+        {/* Odds Section - Only shown for football (clickable) cards */}
+        {isClickable && (
+          match.odds ? (
+            <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2">
+              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700">{match.odds.home}</span>
+              </div>
+              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700">{match.odds.draw}</span>
+              </div>
+              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700">{match.odds.away}</span>
+              </div>
             </div>
-            <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-              <span className="text-xs font-bold text-gray-700">{match.odds.draw}</span>
+          ) : (
+            <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2 opacity-30">
+              <div className="min-w-[40px] text-center text-xs">-</div>
+              <div className="min-w-[40px] text-center text-xs">-</div>
+              <div className="min-w-[40px] text-center text-xs">-</div>
             </div>
-            <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-              <span className="text-xs font-bold text-gray-700">{match.odds.away}</span>
-            </div>
-          </div>
-        ) : (
-          /* Placeholder for alignment if needed, or hidden */
-          <div className="hidden md:flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2 opacity-30">
-            <div className="min-w-[40px] text-center text-xs">-</div>
-            <div className="min-w-[40px] text-center text-xs">-</div>
-            <div className="min-w-[40px] text-center text-xs">-</div>
-          </div>
+          )
         )}
       </div>
     </div>

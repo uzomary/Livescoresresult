@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { footballApi } from "@/services/footballApi";
+import { multiSportApi, SportType } from "@/services/multiSportApi";
 import { transformFixtures, Match } from "@/utils/fixtureTransform";
 import { Calendar, Trophy, Heart, Filter, ChevronRight, ChevronDown, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -23,12 +24,15 @@ import { useSearch } from "@/layouts/MainLayout";
 import MetaTags from "@/components/MetaTags";
 import { createMatchUrl } from "@/utils/routing";
 import { TopNavigation } from "@/components/TopNavigation";
+import { SportTabs, SportId } from "@/components/SportTabs";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<"home" | "match" | "player" | "standings">("home");
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [activeFilterTab, setActiveFilterTab] = useState<string>("all");
+  const [activeSport, setActiveSport] = useState<SportId>('football');
+  const isFootball = activeSport === 'football';
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedLeagueForStandings, setSelectedLeagueForStandings] = useState<string | null>(null);
   const [collapsedLeagues, setCollapsedLeagues] = useState<Set<string>>(new Set());
@@ -42,11 +46,14 @@ const Index = () => {
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
-  const { data: fixturesData, isLoading, error } = useQuery({
+  // Football fixtures query (only runs when football is selected)
+  const { data: fixturesData, isLoading: isLoadingFootball, error: errorFootball } = useQuery({
     queryKey: ['fixtures', formattedDate],
     queryFn: () => footballApi.getFixturesByDate(formattedDate),
+    enabled: isFootball,
     // Intelligent refetch based on match status
     refetchInterval: (query) => {
+      if (!isFootball) return false;
       if (!query.state.data?.response) return false; // No data, don't refetch
 
       const hasLiveMatches = query.state.data.response.some((fixture: any) =>
@@ -69,7 +76,33 @@ const Index = () => {
     },
   });
 
-  const matches: Match[] = fixturesData ? transformFixtures(fixturesData.response) : [];
+  // Multi-sport query (only runs when a non-football sport is selected)
+  const { data: multiSportData, isLoading: isLoadingMultiSport, error: errorMultiSport } = useQuery({
+    queryKey: ['multiSport', activeSport, formattedDate],
+    queryFn: () => multiSportApi.getGamesByDate(activeSport as SportType, formattedDate),
+    enabled: !isFootball,
+    refetchInterval: (query) => {
+      if (isFootball) return false;
+      const data = query.state.data;
+      if (!data || !Array.isArray(data)) return false;
+      const hasLive = data.some((m: Match) => ['LIVE', '1H', '2H', 'HT'].includes(m.status));
+      return hasLive ? 30000 : 300000;
+    },
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
+    staleTime: 10 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.message?.includes('429')) return false;
+      return failureCount < 2;
+    },
+  });
+
+  // Unified loading/error/matches based on active sport
+  const isLoading = isFootball ? isLoadingFootball : isLoadingMultiSport;
+  const error = isFootball ? errorFootball : errorMultiSport;
+  const matches: Match[] = isFootball
+    ? (fixturesData ? transformFixtures(fixturesData.response) : [])
+    : (multiSportData || []);
 
   // Filter matches based on active filter tab and search query
   const filterAndSearchMatches = useCallback((matches: Match[]) => {
@@ -483,6 +516,15 @@ const Index = () => {
           />
 
           <div className="space-y-6">
+            {/* Sport Tabs */}
+            <SportTabs
+              activeSport={activeSport}
+              onSportChange={(sport) => {
+                setActiveSport(sport);
+                setActiveFilterTab('all');
+              }}
+            />
+
             {/* Date Navigation */}
             <DateNavigation
               selectedDate={selectedDate}
@@ -574,8 +616,8 @@ const Index = () => {
                     <div key={leagueName} className="mb-4">
                       {/* League Header */}
                       <div
-                        className="flex items-center gap-3 mb-2 px-4 py-2 bg-[#f2f2f2] cursor-pointer rounded-t-lg border-b border-gray-200"
-                        onClick={() => handleLeagueHeaderClick(leagueName, league)}
+                        className={`flex items-center gap-3 mb-2 px-4 py-2 bg-[#f2f2f2] rounded-t-lg border-b border-gray-200 ${isFootball ? 'cursor-pointer' : 'cursor-default'}`}
+                        onClick={() => isFootball && handleLeagueHeaderClick(leagueName, league)}
                       >
                         {/* Star Icon */}
                         <button
@@ -637,29 +679,31 @@ const Index = () => {
                             </svg>
                           </button>
 
-                          {/* Standings/Menu Icon (Red numeric list lookalike) */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLeagueHeaderClick(leagueName, league);
-                            }}
-                            className="flex items-center justify-center w-6 h-6 hover:bg-gray-200 rounded transition-colors"
-                          >
-                            <div className="flex flex-col gap-[2px] items-start">
-                              <div className="flex gap-1 items-center">
-                                <span className="text-[8px] font-bold text-red-500 leading-none">1</span>
-                                <div className="w-3 h-[2px] bg-red-500"></div>
+                          {/* Standings/Menu Icon (Red numeric list lookalike) - Football only */}
+                          {isFootball && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLeagueHeaderClick(leagueName, league);
+                              }}
+                              className="flex items-center justify-center w-6 h-6 hover:bg-gray-200 rounded transition-colors"
+                            >
+                              <div className="flex flex-col gap-[2px] items-start">
+                                <div className="flex gap-1 items-center">
+                                  <span className="text-[8px] font-bold text-red-500 leading-none">1</span>
+                                  <div className="w-3 h-[2px] bg-red-500"></div>
+                                </div>
+                                <div className="flex gap-1 items-center">
+                                  <span className="text-[8px] font-bold text-red-500 leading-none">2</span>
+                                  <div className="w-3 h-[2px] bg-red-500"></div>
+                                </div>
+                                <div className="flex gap-1 items-center">
+                                  <span className="text-[8px] font-bold text-red-500 leading-none">3</span>
+                                  <div className="w-3 h-[2px] bg-red-500"></div>
+                                </div>
                               </div>
-                              <div className="flex gap-1 items-center">
-                                <span className="text-[8px] font-bold text-red-500 leading-none">2</span>
-                                <div className="w-3 h-[2px] bg-red-500"></div>
-                              </div>
-                              <div className="flex gap-1 items-center">
-                                <span className="text-[8px] font-bold text-red-500 leading-none">3</span>
-                                <div className="w-3 h-[2px] bg-red-500"></div>
-                              </div>
-                            </div>
-                          </button>
+                            </button>
+                          )}
 
                           {/* Collapse Icon */}
                           <ChevronDown
@@ -683,7 +727,7 @@ const Index = () => {
                             >
                               <CompactMatchCard
                                 match={match}
-                                onClick={handleMatchClick}
+                                onClick={isFootball ? handleMatchClick : undefined}
                               />
                             </div>
                           ))}
