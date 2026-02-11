@@ -20,11 +20,12 @@ import { format } from "date-fns";
 import { PlayerSearch } from "@/components/PlayerSearch";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { LeagueStandings } from "@/components/LeagueStandings";
-import { useSearch } from "@/layouts/MainLayout";
+import { useSearch, useLayout } from "@/layouts/MainLayout";
 import MetaTags from "@/components/MetaTags";
 import { createMatchUrl } from "@/utils/routing";
 import { TopNavigation } from "@/components/TopNavigation";
 import { SportTabs, SportId } from "@/components/SportTabs";
+import { favoritesService } from "@/services/favoritesService";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<"home" | "match" | "player" | "standings">("home");
@@ -41,8 +42,19 @@ const Index = () => {
     return stored ? new Set(JSON.parse(stored)) : new Set();
   });
   const { searchQuery } = useSearch();
+  const { setTopContent } = useLayout();
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(favoritesService.getFavorites());
   const matchCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const navigate = useNavigate();
+
+  // Listen for favorites updates
+  useEffect(() => {
+    const handleFavoritesUpdate = () => {
+      setFavoriteIds(favoritesService.getFavorites());
+    };
+    window.addEventListener('favorites-updated', handleFavoritesUpdate);
+    return () => window.removeEventListener('favorites-updated', handleFavoritesUpdate);
+  }, []);
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
@@ -116,17 +128,30 @@ const Index = () => {
   });
 
   // Unified loading/error/matches based on active sport
-  const isLoading = isFootball ? isLoadingFootball : isLoadingMultiSport;
+  const isLoading = activeSport === 'favorites' ? (isLoadingFootball || isLoadingMultiSport) : (isFootball ? isLoadingFootball : isLoadingMultiSport);
   const error = isFootball ? errorFootball : errorMultiSport;
-  const matches: Match[] = isFootball
-    ? (fixturesData ? transformFixtures(fixturesData.response) : [])
-    : (multiSportData || []);
+
+  const matches: Match[] = useMemo(() => {
+    if (activeSport === 'favorites') {
+      const footballMatches = fixturesData ? transformFixtures(fixturesData.response) : [];
+      const otherMatches = multiSportData || [];
+      const allFetched = [...footballMatches, ...otherMatches];
+      return allFetched.filter(m => favoriteIds.includes(m.id));
+    }
+
+    return isFootball
+      ? (fixturesData ? transformFixtures(fixturesData.response) : [])
+      : (multiSportData || []);
+  }, [activeSport, isFootball, fixturesData, multiSportData, favoriteIds]);
 
   // Filter matches based on active filter tab and search query
   const filterAndSearchMatches = useCallback((matches: Match[]) => {
     const searchLower = searchQuery.trim().toLowerCase();
 
     return matches.filter(match => {
+      // If we are in favorites tab, we already filtered for favorites in the matches useMemo
+      // but we still want to apply the sub-filters (live, finished, etc.)
+
       // Apply filter tab logic
       if (activeFilterTab === 'live') {
         const isLive = ['LIVE', '1H', '2H', 'HT'].includes(match.status);
@@ -144,8 +169,8 @@ const Index = () => {
       if (searchLower) {
         const homeTeamMatch = match.homeTeam.name.toLowerCase().includes(searchLower);
         const awayTeamMatch = match.awayTeam.name.toLowerCase().includes(searchLower);
-        const leagueNameMatch = match.league.name.toLowerCase().includes(searchLower);
-        const countryMatch = match.league.country?.toLowerCase().includes(searchLower) || false;
+        const leagueNameMatch = (typeof match.league === 'string' ? match.league : match.league.name).toLowerCase().includes(searchLower);
+        const countryMatch = (typeof match.league === 'object' && match.league.country?.toLowerCase().includes(searchLower)) || false;
 
         return homeTeamMatch || awayTeamMatch || leagueNameMatch || countryMatch;
       }
@@ -481,6 +506,21 @@ const Index = () => {
     setSelectedDate(date);
   }, []);
 
+  // Update layout top content
+  useEffect(() => {
+    setTopContent(
+      <SportTabs
+        activeSport={activeSport}
+        onSportChange={(sport) => {
+          setActiveSport(sport);
+          setActiveFilterTab('all');
+        }}
+      />
+    );
+    // Cleanup on unmount
+    return () => setTopContent(null);
+  }, [activeSport, setTopContent]);
+
   const filterOptions = [
     { key: "all", label: "All", count: matches.filter(m => m.status === 'FT' || m.status === 'SCHEDULED' || m.status === 'LIVE').length },
     { key: "live", label: "Live", count: liveMatchesCount },
@@ -534,15 +574,6 @@ const Index = () => {
           />
 
           <div className="space-y-6">
-            {/* Sport Tabs */}
-            <SportTabs
-              activeSport={activeSport}
-              onSportChange={(sport) => {
-                setActiveSport(sport);
-                setActiveFilterTab('all');
-              }}
-            />
-
             {/* Date Navigation */}
             <DateNavigation
               selectedDate={selectedDate}

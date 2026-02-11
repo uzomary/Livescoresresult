@@ -2,6 +2,9 @@ import { TeamLogo } from './TeamLogo';
 import { Match } from '@/utils/fixtureTransform';
 import { Star, ChevronRight } from 'lucide-react';
 import { LiveTimer } from '@/components/common/LiveTimer';
+import { favoritesService } from '@/services/favoritesService';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CompactMatchCardProps {
   match: Match;
@@ -73,6 +76,19 @@ const getCountryCode = (teamName: string): string => {
 };
 
 export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
+  const { toast } = useToast();
+  const [isMatchFavorite, setIsMatchFavorite] = useState(favoritesService.isFavorite(match.id));
+
+  useEffect(() => {
+    const handleFavoritesUpdate = (e: any) => {
+      if (e.detail.matchId === match.id) {
+        setIsMatchFavorite(e.detail.isFavorite);
+      }
+    };
+    window.addEventListener('favorites-updated', handleFavoritesUpdate);
+    return () => window.removeEventListener('favorites-updated', handleFavoritesUpdate);
+  }, [match.id]);
+
   const statusDisplay = getStatusDisplay(match);
   const scores = getScores(match);
   const showScore = scores.home !== null && scores.away !== null;
@@ -90,13 +106,18 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Star Icon for Favorites */}
         <button
-          className="flex-shrink-0 text-gray-300 hover:text-yellow-400 transition-colors"
+          className={isMatchFavorite ? "flex-shrink-0 text-yellow-400" : "flex-shrink-0 text-gray-300 hover:text-yellow-400 transition-colors"}
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: Add to favorites
+            const newStatus = favoritesService.toggleFavorite(match.id);
+            setIsMatchFavorite(newStatus);
+            toast({
+              title: newStatus ? 'Added to Favorites' : 'Removed from Favorites',
+              description: `${match.homeTeam.name} vs ${match.awayTeam.name}`
+            });
           }}
         >
-          <Star className="w-5 h-5" />
+          <Star className={isMatchFavorite ? "w-5 h-5 fill-current" : "w-5 h-5"} />
         </button>
 
         {/* Teams Section */}

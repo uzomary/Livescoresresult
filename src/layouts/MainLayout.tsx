@@ -12,6 +12,26 @@ import { TopNavigation } from "@/components/TopNavigation";
 
 export type SearchType = 'match' | 'player';
 
+interface LayoutContextType {
+  topContent: ReactNode;
+  setTopContent: (content: ReactNode) => void;
+}
+
+const defaultLayoutContext: LayoutContextType = {
+  topContent: null,
+  setTopContent: () => { }
+};
+
+export const LayoutContext = createContext<LayoutContextType>(defaultLayoutContext);
+
+export const useLayout = (): LayoutContextType => {
+  const context = useContext(LayoutContext);
+  if (context === undefined) {
+    throw new Error('useLayout must be used within a LayoutProvider');
+  }
+  return context;
+};
+
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -47,8 +67,14 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<SearchType>('match');
   const [selectedLeague, setSelectedLeague] = useState<string>('premier-league');
+  const [topContent, setTopContent] = useState<ReactNode>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Reset top content on route change
+  useEffect(() => {
+    setTopContent(null);
+  }, [location.pathname]);
 
   // Check if current page is match details
   const isMatchDetails = location.pathname.startsWith('/match/');
@@ -107,78 +133,87 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
   }, [location.pathname]);
 
   return (
-    <SearchContext.Provider value={{
-      searchQuery,
-      setSearchQuery,
-      searchType,
-      setSearchType,
-      clearSearch
-    }}>
-      <div className="min-h-screen bg-background flex flex-col">
-        {/* Top Navigation - Desktop (Full Width at Top) */}
-        <div className="hidden lg:block">
-          <TopNavigation onMenuClick={toggleMobileMenu} />
-        </div>
-
-        {/* Mobile Header */}
-        <div className="lg:hidden">
-          <Header onMenuClick={toggleMobileMenu} />
-        </div>
-
-        {/* Main Content Area with Sidebar */}
-        <div className="flex flex-1">
-          {/* Sidebar (Desktop) - Below Header */}
-          <div className="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-gray-200">
-            <Sidebar
-              selectedLeague={selectedLeague}
-              onLeagueSelect={handleLeagueSelect}
-            />
+    <LayoutContext.Provider value={{ topContent, setTopContent }}>
+      <SearchContext.Provider value={{
+        searchQuery,
+        setSearchQuery,
+        searchType,
+        setSearchType,
+        clearSearch
+      }}>
+        <div className="min-h-screen bg-background flex flex-col">
+          {/* Top Navigation - Desktop (Full Width at Top) */}
+          <div className="hidden lg:block">
+            <TopNavigation onMenuClick={toggleMobileMenu} />
           </div>
 
-          {/* Mobile Sidebar Drawer */}
-          {isMobileMenuOpen && (
-            <div className="fixed inset-0 z-50 lg:hidden font-sans">
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-              <div className="absolute top-0 right-0 w-[280px] h-full bg-white shadow-2xl animate-in slide-in-from-right duration-300">
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                  <span className="font-bold text-lg text-[#001e28]">Menu</span>
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-gray-500"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                  </button>
-                </div>
-                <div className="h-full overflow-y-auto pb-20">
-                  <Sidebar
-                    selectedLeague={selectedLeague}
-                    onLeagueSelect={handleLeagueSelect}
-                  />
-                </div>
-              </div>
+          {/* Mobile Header */}
+          <div className="lg:hidden">
+            <Header onMenuClick={toggleMobileMenu} />
+          </div>
+
+          {/* Full-width Top Content Slot (e.g. SportTabs) */}
+          {topContent && (
+            <div className="w-full bg-white">
+              {topContent}
             </div>
           )}
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <main className="flex-1 flex">
-              {/* Content Area */}
-              <div className={`flex-1 overflow-y-auto ${isMatchDetails ? 'p-0' : 'px-6 py-6'}`}>
-                {children}
-              </div>
+          {/* Main Content Area with Sidebar */}
+          <div className="flex flex-1">
+            {/* Sidebar (Desktop) - Below Header */}
+            <div className="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-gray-200">
+              <Sidebar
+                selectedLeague={selectedLeague}
+                onLeagueSelect={handleLeagueSelect}
+              />
+            </div>
 
-              {/* News Section */}
-              {!['/terms', '/privacy', '/advertise', '/contact'].includes(location.pathname) && (
-                <div className="hidden xl:block">
-                  <NewsSection />
+            {/* Mobile Sidebar Drawer */}
+            {isMobileMenuOpen && (
+              <div className="fixed inset-0 z-50 lg:hidden font-sans">
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                <div className="absolute top-0 right-0 w-[280px] h-full bg-white shadow-2xl animate-in slide-in-from-right duration-300">
+                  <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                    <span className="font-bold text-lg text-[#001e28]">Menu</span>
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-gray-500"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                    </button>
+                  </div>
+                  <div className="h-full overflow-y-auto pb-20">
+                    <Sidebar
+                      selectedLeague={selectedLeague}
+                      onLeagueSelect={handleLeagueSelect}
+                    />
+                  </div>
                 </div>
-              )}
-            </main>
+              </div>
+            )}
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <main className="flex-1 flex">
+                {/* Content Area */}
+                <div className={`flex-1 overflow-y-auto ${isMatchDetails ? 'p-0' : 'px-6 py-6'}`}>
+                  {children}
+                </div>
+
+                {/* News Section */}
+                {!['/terms', '/privacy', '/advertise', '/contact'].includes(location.pathname) && (
+                  <div className="hidden xl:block">
+                    <NewsSection />
+                  </div>
+                )}
+              </main>
+            </div>
           </div>
+
+          <Footer />
+
+
         </div>
-
-        <Footer />
-
-
-      </div>
-    </SearchContext.Provider >
+      </SearchContext.Provider >
+    </LayoutContext.Provider>
   );
 };
 

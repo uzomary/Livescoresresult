@@ -166,6 +166,32 @@ class BlogService {
         return true;
     }
 
+    async uploadImage(file: File): Promise<{ url: string | null; error: string | null }> {
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `post-images/${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('blog_images')
+                .upload(filePath, file);
+
+            if (error) {
+                console.error('Error uploading image:', error);
+                return { url: null, error: error.message };
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('blog_images')
+                .getPublicUrl(filePath);
+
+            return { url: publicUrl, error: null };
+        } catch (error: any) {
+            console.error('Unexpected error during image upload:', error);
+            return { url: null, error: error.message || 'An unexpected error occurred' };
+        }
+    }
+
     private mapToBlogPost(dbPost: any): BlogPost {
         return {
             id: dbPost.id,

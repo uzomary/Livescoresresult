@@ -5,6 +5,8 @@ import { TeamLogo } from './TeamLogo';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Match } from '@/utils/fixtureTransform';
+import { favoritesService } from '@/services/favoritesService';
+import { useState, useEffect } from 'react';
 
 interface MatchCardProps {
   match: Match;
@@ -96,6 +98,17 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
   };
 
   const { toast } = useToast();
+  const [isMatchFavorite, setIsMatchFavorite] = useState(favoritesService.isFavorite(match.id));
+
+  useEffect(() => {
+    const handleFavoritesUpdate = (e: any) => {
+      if (e.detail.matchId === match.id) {
+        setIsMatchFavorite(e.detail.isFavorite);
+      }
+    };
+    window.addEventListener('favorites-updated', handleFavoritesUpdate);
+    return () => window.removeEventListener('favorites-updated', handleFavoritesUpdate);
+  }, [match.id]);
 
   const handleGroupClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -110,13 +123,13 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
   const handleFavoriteToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    const newStatus = favoritesService.toggleFavorite(match.id);
+    setIsMatchFavorite(newStatus);
     toast({
-      title: 'Feature not available',
-      description: 'This feature is currently not available.'
+      title: newStatus ? 'Added to Favorites' : 'Removed from Favorites',
+      description: `${match.homeTeam.name} vs ${match.awayTeam.name}`
     });
   };
-
-  const isMatchFavorite = false; // Favorite functionality disabled
 
   // Get the scores with extra time and penalty information
   const getScores = () => {

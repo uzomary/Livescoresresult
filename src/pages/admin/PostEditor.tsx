@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Upload, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 export const PostEditor = () => {
@@ -16,6 +16,7 @@ export const PostEditor = () => {
 
     const [isLoading, setIsLoading] = useState(isEditing);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const [formData, setFormData] = useState<Partial<BlogPost>>({
         title: "",
@@ -49,6 +50,30 @@ export const PostEditor = () => {
 
     const handleSwitchChange = (checked: boolean) => {
         setFormData(prev => ({ ...prev, published: checked }));
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const { url, error } = await blogService.uploadImage(file);
+            if (url) {
+                setFormData(prev => ({ ...prev, image: url }));
+            } else {
+                alert(`Upload failed: ${error || 'Please check your Supabase Storage configuration.'}`);
+            }
+        } catch (error) {
+            console.error("Image upload failed", error);
+            alert("An error occurred during image upload.");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const removeImage = () => {
+        setFormData(prev => ({ ...prev, image: "" }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -101,22 +126,55 @@ export const PostEditor = () => {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="image">Featured Image URL</Label>
-                        <Input
-                            id="image"
-                            name="image"
-                            value={formData.image}
-                            onChange={handleChange}
-                            placeholder="https://example.com/image.jpg"
-                        />
+                        <Label htmlFor="image">Featured Image</Label>
+                        <div className="flex gap-2">
+                            <Input
+                                id="image"
+                                name="image"
+                                value={formData.image}
+                                onChange={handleChange}
+                                placeholder="https://example.com/image.jpg"
+                                className="flex-1"
+                            />
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    id="imageUpload"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    disabled={isUploading}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="whitespace-nowrap"
+                                    onClick={() => document.getElementById('imageUpload')?.click()}
+                                    disabled={isUploading}
+                                >
+                                    {isUploading ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <Upload className="w-4 h-4 mr-2" />
+                                    )}
+                                    Upload
+                                </Button>
+                            </div>
+                        </div>
                         {formData.image && (
-                            <div className="mt-2 relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100 border">
+                            <div className="mt-2 relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100 border group">
                                 <img
                                     src={formData.image}
                                     alt="Preview"
                                     className="h-full w-full object-cover"
-                                    onError={(e) => (e.currentTarget.style.display = 'none')}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={removeImage}
+                                    className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         )}
                     </div>

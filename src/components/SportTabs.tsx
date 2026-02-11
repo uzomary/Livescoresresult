@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-export type SportId = 'football' | 'basketball' | 'hockey' | 'handball' | 'rugby' | 'baseball' | 'volleyball';
+export type SportId = 'favorites' | 'football' | 'basketball' | 'hockey' | 'handball' | 'rugby' | 'baseball' | 'volleyball';
 
 interface SportTab {
     id: SportId;
@@ -76,7 +76,14 @@ const TrophyIcon = () => (
     </svg>
 );
 
+const HeartIcon = () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+);
+
 const sportTabs: SportTab[] = [
+    { id: 'favorites', label: 'FAVORITES', icon: <HeartIcon /> },
     { id: 'football', label: 'FOOTBALL', icon: <FootballIcon /> },
     { id: 'basketball', label: 'BASKETBALL', icon: <BasketballIcon /> },
     { id: 'hockey', label: 'HOCKEY', icon: <HockeyIcon /> },
@@ -88,8 +95,8 @@ const sportTabs: SportTab[] = [
 
 export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
     return (
-        <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 mb-4">
-            <div className="flex items-center gap-1 min-w-max border-b border-gray-200">
+        <div className="overflow-x-auto scrollbar-hide px-6 pt-4">
+            <div className="flex items-center justify-between w-full border-b border-gray-100">
                 {sportTabs.map((tab) => (
                     <>
                         <button

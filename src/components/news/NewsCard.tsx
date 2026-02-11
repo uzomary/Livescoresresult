@@ -42,7 +42,7 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
 
   return (
     <Card
-      className="bg-white border-gray-100 hover:border-red-200 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
+      className="relative bg-white border-gray-100 hover:border-red-200 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
       onClick={handleClick}
     >
       <div className="p-3">
