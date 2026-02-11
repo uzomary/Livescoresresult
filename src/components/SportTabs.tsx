@@ -109,7 +109,7 @@ export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
                         {/* Pools Results Link - After Football */}
                         {tab.id === 'football' && (
                             <a
-                                href="https://poolsupdate.com/"
+                                href="https://poolsupdate.com/pools_results.php"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
