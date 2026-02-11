@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -23,7 +23,7 @@ import VarIcon from '@/components/icons/VarIcon';
 
 // Services & Utils
 import { footballApi } from "@/services/footballApi";
-import { transformFixture } from "@/utils/fixtureTransform";
+import { transformFixture, Match } from "@/utils/fixtureTransform";
 import {
     transformEvents,
     transformStatistics,
@@ -33,6 +33,8 @@ import {
     TeamLineup
 } from "@/utils/matchDetailsTransform";
 import OddsTabNew from "@/components/match/OddsTabNew";
+
+import { LiveTimer } from "@/components/common/LiveTimer";
 
 interface MatchDetailsProps {
     matchId?: string;
@@ -223,10 +225,22 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
     // Data Preparation - After all hooks
     const fixture = fixtureData?.response?.[0];
-    const match = fixture ? transformFixture(fixture) : null;
+    let match = fixture ? transformFixture(fixture) : null;
     const events: MatchEvent[] = eventsData?.response ? transformEvents(eventsData.response, fixture?.teams?.home?.id || 0) : [];
     const statistics: MatchStatistic[] = statsData?.response ? transformStatistics(statsData.response) : [];
     const lineups: TeamLineup[] = lineupsData?.response ? transformLineups(lineupsData.response) : [];
+
+    // Extract added time from the most recent event (events have time.extra field)
+    if (match && eventsData?.response && eventsData.response.length > 0) {
+        const mostRecentEvent = eventsData.response[eventsData.response.length - 1];
+        if (mostRecentEvent?.time?.extra && mostRecentEvent.time.extra > 0) {
+            match = {
+                ...match,
+                addedTime: mostRecentEvent.time.extra
+            };
+            console.log(`✅ Added time from events: ${mostRecentEvent.time.extra} mins`);
+        }
+    }
 
     // Extract odds from oddsData
     const odds = oddsData?.response?.[0]?.bookmakers?.[0]?.bets?.find((bet: any) => bet.name === 'Match Winner')?.values;
@@ -385,9 +399,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                             }`}>
                             {['LIVE', '1H', '2H'].includes(match.status || '') ? (
                                 <span className="animate-pulse">
-                                    {match.minute}'
+                                    <LiveTimer match={match} showSeconds={true} />
                                     {match.addedTime && match.addedTime > 0 && (
-                                        <span className="text-[#ff0046]">+{match.addedTime}</span>
+                                        <span className="text-[#ff0046] ml-1">+{match.addedTime}</span>
                                     )}
                                 </span>
                             ) : (

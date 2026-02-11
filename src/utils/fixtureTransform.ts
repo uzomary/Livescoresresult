@@ -33,10 +33,11 @@ export interface Match {
     logo: string;
     score?: number;
   };
-  status: "LIVE" | "HT" | "FT" | "SCHEDULED" | "1H" | "2H" | "FINISHED" | "AET" | "PEN" | "PENALTY";
+  status: "LIVE" | "HT" | "FT" | "SCHEDULED" | "1H" | "2H" | "FINISHED" | "AET" | "PEN" | "PENALTY" | "ET" | "P" | "BT" | "SUSP" | "INT" | "PST" | "CANC" | "ABD" | "AWD" | "WO";
   time: string;
   league: LeagueInfo;
   minute?: number;
+  startTime?: number; // Timestamp of current period start (for seconds calculation)
   addedTime?: number; // Injury/added time in minutes
   date?: string;
   venue?: Venue;
@@ -67,19 +68,28 @@ export interface Match {
   };
 }
 
-const mapStatus = (apiStatus: string): "LIVE" | "HT" | "FT" | "SCHEDULED" => {
+const mapStatus = (apiStatus: string): Match['status'] => {
   switch (apiStatus) {
     case '1H':
     case '2H':
-      return 'LIVE';
+    case 'ET':
+    case 'P':
+    case 'BT':
+      return apiStatus as Match['status'];
     case 'HT':
       return 'HT';
     case 'FT':
       return 'FT';
+    case 'AET':
+    case 'PEN':
+      return 'FINISHED';
     case 'NS':
     case 'TBD':
-    default:
       return 'SCHEDULED';
+    default:
+      // Return the raw status if it helps, or fallback. 
+      // For now, let's trust the API status if it matches our extended types, otherwise SCHEDULED
+      return apiStatus as Match['status'] || 'SCHEDULED';
   }
 };
 
@@ -100,34 +110,6 @@ export const transformFixture = (apiFixture: ApiFixture): Match => {
   const leagueLogo = isFifaClubWorldCup
     ? 'https://images.fotmob.com/image_resources/logo/leaguelogo/dark/78.png'
     : apiFixture.league.logo;
-
-  // Calculate added time from elapsed minutes
-  const elapsed = apiFixture.fixture.status.elapsed;
-  let minute: number | undefined = elapsed || undefined;
-  let addedTime: number | undefined = undefined;
-
-  if (elapsed) {
-    // First half: 45+ minutes
-    if (elapsed > 45 && elapsed <= 60 && ['1H'].includes(apiFixture.fixture.status.short)) {
-      minute = 45;
-      addedTime = elapsed - 45;
-    }
-    // Second half: 90+ minutes
-    else if (elapsed > 90 && elapsed <= 120 && ['2H'].includes(apiFixture.fixture.status.short)) {
-      minute = 90;
-      addedTime = elapsed - 90;
-    }
-    // Extra time first half: 105+ minutes
-    else if (elapsed > 105 && elapsed <= 120 && ['ET'].includes(apiFixture.fixture.status.short)) {
-      minute = 105;
-      addedTime = elapsed - 105;
-    }
-    // Extra time second half: 120+ minutes
-    else if (elapsed > 120 && ['ET', 'P'].includes(apiFixture.fixture.status.short)) {
-      minute = 120;
-      addedTime = elapsed - 120;
-    }
-  }
 
   return {
     id: apiFixture.fixture.id.toString(),
@@ -154,8 +136,11 @@ export const transformFixture = (apiFixture: ApiFixture): Match => {
       type: 'type' in apiFixture.league ? String(apiFixture.league.type) : 'League',
       season: apiFixture.league.season
     } as LeagueInfo,
-    minute,
-    addedTime,
+    minute: apiFixture.fixture.status.elapsed || undefined,
+    startTime: apiFixture.fixture.status.short === '1H' ? apiFixture.fixture.periods.first || undefined :
+      apiFixture.fixture.status.short === '2H' ? apiFixture.fixture.periods.second || undefined :
+        undefined,
+    addedTime: undefined, // Will be populated from events data
     date: apiFixture.fixture.date,
     referee: apiFixture.fixture.referee,
     round: apiFixture.league.round || undefined,

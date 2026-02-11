@@ -1,6 +1,7 @@
 import { TeamLogo } from './TeamLogo';
 import { Match } from '@/utils/fixtureTransform';
 import { Star, ChevronRight } from 'lucide-react';
+import { LiveTimer } from '@/components/common/LiveTimer';
 
 interface CompactMatchCardProps {
   match: Match;
@@ -18,9 +19,19 @@ const getStatusDisplay = (match: Match) => {
     };
   }
 
+
+
   if (status === 'HT') {
     return {
       text: 'HT',
+      isLive: true,
+      showLiveBadge: true
+    };
+  }
+
+  if (status === 'ET' || status === 'P' || status === 'BT') {
+    return {
+      text: `${minute || 0}'`,
       isLive: true,
       showLiveBadge: true
     };
@@ -130,7 +141,9 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
           {statusDisplay.showLiveBadge ? (
             <>
               <span className="text-red-500 font-bold animate-pulse text-xs mb-1">LIVE</span>
-              <span className="text-red-600 font-bold">{statusDisplay.text}</span>
+              <div className="text-red-600 font-bold">
+                {status === 'HT' ? 'HT' : <LiveTimer match={match} />}
+              </div>
             </>
           ) : (
             <span className="text-gray-500 font-medium text-xs">{statusDisplay.text}</span>
