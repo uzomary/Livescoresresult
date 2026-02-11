@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import FootballPitch from "@/components/FootballPitch";
 import DualTeamPitch from "@/components/DualTeamPitch";
+import MatchLineup from "@/components/matches/MatchLineup";
 import MetaTags from "@/components/MetaTags";
 import { Button } from "@/components/ui/button";
 
@@ -924,46 +925,14 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                     />
                                 </div>
 
-                                {/* Substitutes - Side by Side */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    {/* Home Substitutes */}
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <img src={match.homeTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                            <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex-1 rounded">
-                                                SUBSTITUTES
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-1">
-                                            {lineups[0].substitutes.map(sub => (
-                                                <div key={sub.id} className="flex items-center p-2 hover:bg-gray-50 rounded transition-colors group">
-                                                    <span className="w-6 text-xs text-gray-500 font-bold group-hover:text-[#00141e]">{sub.number}</span>
-                                                    <span className="text-sm font-medium text-gray-700 group-hover:text-[#00141e]">{sub.name}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Away Substitutes */}
-                                    {lineups[1] && (
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <img src={match.awayTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                                <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex-1 rounded">
-                                                    SUBSTITUTES
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 gap-1">
-                                                {lineups[1].substitutes.map(sub => (
-                                                    <div key={sub.id} className="flex items-center p-2 hover:bg-gray-50 rounded transition-colors group">
-                                                        <span className="w-6 text-xs text-gray-500 font-bold group-hover:text-[#00141e]">{sub.number}</span>
-                                                        <span className="text-sm font-medium text-gray-700 group-hover:text-[#00141e]">{sub.name}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                {lineups[1] && (
+                                    <MatchLineup
+                                        homeLineup={lineups[0]}
+                                        awayLineup={lineups[1]}
+                                        events={events}
+                                        venue={match.venue}
+                                    />
+                                )}
                             </div>
                         ) : (
                             <div className="text-center py-12 text-gray-500 font-bold">Lineups not available</div>

@@ -5,6 +5,7 @@ export interface MatchEvent {
   minute: number;
   type: 'goal' | 'yellow' | 'red' | 'substitution' | 'var' | 'penalty_miss';
   player: string;
+  playerId?: number;
   team: 'home' | 'away';
   detail: string;
   assist?: string;
@@ -91,6 +92,7 @@ export const transformEvents = (events: ApiEvent[], homeTeamId: number): MatchEv
         minute: event.time.elapsed,
         type: eventType,
         player: event.player.name || 'Unknown Player',
+        playerId: event.player.id || undefined,
         team: event.team.id === homeTeamId ? 'home' as const : 'away' as const,
         detail: event.detail,
         assist: event.assist?.name || undefined,

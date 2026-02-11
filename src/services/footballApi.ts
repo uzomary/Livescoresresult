@@ -12,11 +12,11 @@ const headers = {
 
 // Cache configuration
 export const CACHE_DURATION = {
-  FIXTURES: 10 * 60 * 1000, // 10 minutes for fixtures
-  LIVE_FIXTURES: 2 * 60 * 1000, // 2 minutes for live matches
-  LEAGUES: 24 * 60 * 60 * 1000, // 24 hours for leagues
-  STANDINGS: 30 * 60 * 1000, // 30 minutes for standings
-  ODDS: 60 * 60 * 1000 // 1 hour
+  FIXTURES: 2 * 60 * 1000, // Reduced to 2 minutes for general fixtures
+  LIVE_FIXTURES: 15 * 1000, // Reduced to 15 seconds for live matches
+  LEAGUES: 24 * 60 * 60 * 1000,
+  STANDINGS: 30 * 60 * 1000,
+  ODDS: 60 * 60 * 1000
 };
 
 // Rate limiting state
@@ -603,10 +603,11 @@ export const footballApi = {
     // Fetching fixtures for today
 
     // Use makeApiRequest which adds the /v3 prefix and handles errors
+    // For today's fixtures, use very short cache duration
     const data = await makeApiRequestWithCache('/fixtures', {
       date: today,
       timezone: 'Africa/Lagos'
-    });
+    }, CACHE_DURATION.LIVE_FIXTURES);
 
     // Successfully fetched fixtures
     return data;
@@ -890,10 +891,14 @@ export const footballApi = {
     const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
     // 1. Fetch fixtures first
+    // Use short cache if requesting today's data
+    const isToday = formattedDate === new Date().toISOString().split('T')[0];
+    const cacheDuration = isToday ? CACHE_DURATION.LIVE_FIXTURES : CACHE_DURATION.FIXTURES;
+
     const fixturesData = await makeApiRequestWithCache('/fixtures', {
       date: formattedDate,
       timezone: 'Africa/Lagos'
-    });
+    }, cacheDuration);
 
     if (!fixturesData.response || !Array.isArray(fixturesData.response)) {
       throw new Error('Invalid fixtures data format received from API');
