@@ -25,9 +25,9 @@ const CountryDetailsPage = () => {
         return (
             <div className="space-y-4">
                 <Skeleton className="h-12 w-1/3" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-2">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <Skeleton key={i} className="h-24 w-full" />
+                        <Skeleton key={i} className="h-20 w-full" />
                     ))}
                 </div>
             </div>
@@ -54,7 +54,7 @@ const CountryDetailsPage = () => {
                 <h1 className="text-2xl font-bold text-[#00141e]">{formattedName}</h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-2">
                 {leagues && leagues.length > 0 ? (
                     leagues.map((league) => (
                         <Link
@@ -62,13 +62,13 @@ const CountryDetailsPage = () => {
                             to={`/leagues/${countryName}/${league.name.toLowerCase().replace(/\s+/g, '-')}`}
                             className="block group"
                         >
-                            <Card className="h-full hover:shadow-md transition-shadow border-gray-200">
+                            <Card className="hover:shadow-md transition-shadow border-gray-200">
                                 <CardContent className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <img
                                             src={league.logo}
                                             alt={league.name}
-                                            className="w-12 h-12 object-contain"
+                                            className="w-10 h-10 object-contain"
                                             loading="lazy"
                                         />
                                         <div>
@@ -84,7 +84,7 @@ const CountryDetailsPage = () => {
                         </Link>
                     ))
                 ) : (
-                    <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-gray-100">
+                    <div className="py-12 text-center text-gray-500 bg-white rounded-lg border border-gray-100">
                         <p>No active leagues found for {formattedName}.</p>
                     </div>
                 )}
