@@ -61,9 +61,12 @@ const MatchDetailsWrapper = () => {
 
   return <MatchDetails matchId={matchId} onBack={() => navigate(-1)} />;
 };
+import InstallPrompt from "@/components/InstallPrompt";
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <InstallPrompt />
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <AuthProvider>
           <BrowserRouter>
