@@ -245,24 +245,40 @@ const Index = () => {
       'Conference League': 3,
       'Conference League (Europe)': 3,
 
-      // Top 5 European Leagues - Multiple naming variations
+      // Top 5 European Leagues & Cups
       'Premier League (England)': 10,
       'Premier League': 10,
+      'FA Cup (England)': 10.1,
+      'FA Cup': 10.1,
+      'Carabao Cup (England)': 10.2,
+      'Carabao Cup': 10.2,
+
       'LaLiga (Spain)': 11,
       'LaLiga': 11,
       'La Liga (Spain)': 11,
       'La Liga': 11,
       'Primera División (Spain)': 11,
       'Spanish La Liga': 11,
+      'Copa del Rey (Spain)': 11.1,
+      'Copa del Rey': 11.1,
+
       'Serie A (Italy)': 12,
       'Serie A': 12,
       'Italian Serie A': 12,
+      'Coppa Italia (Italy)': 12.1,
+      'Coppa Italia': 12.1,
+
       'Bundesliga (Germany)': 13,
       'Bundesliga': 13,
       'German Bundesliga': 13,
+      'DFB Pokal (Germany)': 13.1,
+      'DFB Pokal': 13.1,
+
       'Ligue 1 (France)': 14,
       'Ligue 1': 14,
       'French Ligue 1': 14,
+      'Coupe de France (France)': 14.1,
+      'Coupe de France': 14.1,
 
       // All other leagues get default priority (100) and sort alphabetically
     };

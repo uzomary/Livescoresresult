@@ -164,15 +164,20 @@ const Fixtures = () => {
 
   // Define priority leagues (FIFA Club World Cup and top 5 European leagues)
   const priorityLeagues = [
-    'FIFA Club World Cup',
-    'Premier League',
-    'La Liga',
-    'Bundesliga',
-    'Serie A',
-    'Ligue 1',
     'UEFA Champions League',
     'UEFA Europa League',
-    'UEFA Europa Conference League'
+    'UEFA Europa Conference League',
+    'Premier League',
+    'FA Cup',
+    'Carabao Cup',
+    'La Liga',
+    'Copa del Rey',
+    'Serie A',
+    'Coppa Italia',
+    'Bundesliga',
+    'DFB Pokal',
+    'Ligue 1',
+    'Coupe de France'
   ];
 
   // Sort grouped matches with priority leagues first, then by country and league name
