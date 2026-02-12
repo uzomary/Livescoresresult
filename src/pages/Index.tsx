@@ -264,26 +264,11 @@ const Index = () => {
       'Ligue 1': 14,
       'French Ligue 1': 14,
 
-      // Next Tier European Leagues
-      'Eredivisie (Netherlands)': 20,
-      'Eredivisie': 20,
-      'Dutch Eredivisie': 20,
-      'Primeira Liga (Portugal)': 21,
-      'Primeira Liga': 21,
-      'Portuguese Liga': 21,
-      'Scottish Premiership (Scotland)': 22,
-      'Scottish Premiership': 22,
-      'Premiership (Scotland)': 22,
-      'Belgian Pro League (Belgium)': 23,
-      'Belgian Pro League': 23,
-      'Austrian Bundesliga (Austria)': 24,
-      'Austrian Bundesliga': 24,
-
-      // Other leagues get lower priority (100+)
+      // All other leagues get default priority (100) and sort alphabetically
     };
 
     // Sort groups by pinned status first, then by priority
-    const sortedGroups = Object.entries(groups).sort(([leagueA], [leagueB]) => {
+    const sortedGroups = Object.entries(groups).sort(([leagueA, matchesA], [leagueB, matchesB]) => {
       const isPinnedA = pinnedLeagues.has(leagueA);
       const isPinnedB = pinnedLeagues.has(leagueB);
 
@@ -294,7 +279,23 @@ const Index = () => {
       // If both pinned or both not pinned, sort by priority
       const priorityA = leaguePriority[leagueA] || 100;
       const priorityB = leaguePriority[leagueB] || 100;
-      return priorityA - priorityB;
+      if (priorityA !== priorityB) return priorityA - priorityB;
+
+      // Same priority — sort alphabetically by country first
+      // Safely access country, handling potential string/undefined cases
+      const getCountry = (matches: Match[]) => {
+        const league = matches[0]?.league;
+        return (typeof league === 'object' ? league?.country : '') || '';
+      };
+
+      const countryA = getCountry(matchesA);
+      const countryB = getCountry(matchesB);
+
+      const countryCompare = countryA.localeCompare(countryB);
+      if (countryCompare !== 0) return countryCompare;
+
+      // Same country — sort alphabetically by league name
+      return leagueA.localeCompare(leagueB);
     });
 
     // Convert back to object maintaining sorted order
