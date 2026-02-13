@@ -938,6 +938,7 @@ export const footballApi = {
 
       const isPriority = priorityLeagueKeywords.some(keyword =>
         leagueName.includes(keyword) ||
+        (leagueCountry === 'England' && leagueName === 'FA Cup') ||
         (leagueCountry === 'England' && leagueName === 'League Cup') ||
         (leagueCountry === 'Spain' && leagueName === 'Copa del Rey') ||
         (leagueCountry === 'Italy' && leagueName === 'Coppa Italia') ||
