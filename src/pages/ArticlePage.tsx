@@ -28,7 +28,7 @@ export const ArticlePage = () => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-pulse">Loading article...</div>
+                <div className="animate-pulse text-foreground">Loading article...</div>
             </div>
         );
     }
@@ -36,8 +36,8 @@ export const ArticlePage = () => {
     if (!post) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
-                <h1 className="text-2xl font-bold text-gray-900">Article not found</h1>
-                <p className="text-gray-500">The article you are looking for does not exist or has been removed.</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">Article not found</h1>
+                <p className="text-gray-500 dark:text-muted-foreground">The article you are looking for does not exist or has been removed.</p>
                 <Button onClick={() => navigate("/news")}>Back to News</Button>
             </div>
         );
@@ -48,7 +48,7 @@ export const ArticlePage = () => {
     // const htmlContent = marked.parse(post.content);
 
     return (
-        <div className="min-h-screen bg-white pb-20">
+        <div className="min-h-screen bg-white dark:bg-background pb-20">
             <MetaTags
                 title={post.title}
                 description={post.excerpt}
@@ -71,16 +71,16 @@ export const ArticlePage = () => {
                 <Button
                     variant="secondary"
                     size="sm"
-                    className="mb-6 shadow-sm bg-white hover:bg-gray-100 text-gray-900 border-none"
+                    className="mb-6 shadow-sm bg-white dark:bg-card hover:bg-gray-100 dark:hover:bg-accent text-gray-900 dark:text-foreground border-none"
                     onClick={() => navigate("/news")}
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to News
                 </Button>
 
-                <article className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 mb-8">
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
-                        <span className="flex items-center text-[#ff0046] font-bold bg-red-50 px-3 py-1 rounded-full">
+                <article className="bg-white dark:bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border p-6 md:p-10 mb-8">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-muted-foreground mb-6">
+                        <span className="flex items-center text-[#ff0046] font-bold bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded-full">
                             <Tag className="w-3 h-3 mr-1" />
                             {post.category}
                         </span>
@@ -94,11 +94,11 @@ export const ArticlePage = () => {
                         </span>
                     </div>
 
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-6 leading-tight">
                         {post.title}
                     </h1>
 
-                    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-[#ff0046] prose-img:rounded-lg">
+                    <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-foreground prose-p:text-gray-600 dark:prose-p:text-muted-foreground prose-a:text-[#ff0046] prose-img:rounded-lg">
                         <Markdown>{post.content}</Markdown>
                     </div>
                 </article>

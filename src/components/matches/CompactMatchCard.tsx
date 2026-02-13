@@ -100,7 +100,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
 
   return (
     <div
-      className={`bg-white transition-all border-b border-gray-100 last:border-b-0 ${isClickable ? 'hover:bg-gray-50 cursor-pointer' : ''}`}
+      className={`bg-white dark:bg-card transition-all border-b border-gray-100 dark:border-border last:border-b-0 ${isClickable ? 'hover:bg-gray-50 dark:hover:bg-accent/50 cursor-pointer' : ''}`}
       onClick={isClickable ? handleClick : undefined}
     >
       <div className="flex items-center gap-3 px-4 py-3">
@@ -129,7 +129,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.homeTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate">
+            <span className="text-gray-900 dark:text-foreground text-xs font-semibold truncate">
               {match.homeTeam.name.split('(')[0].trim()}
             </span>
           </div>
@@ -141,7 +141,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               logoUrl={match.awayTeam.logo}
               className="w-4 h-4 object-contain flex-shrink-0"
             />
-            <span className="text-gray-900 text-xs font-semibold truncate">
+            <span className="text-gray-900 dark:text-foreground text-xs font-semibold truncate">
               {match.awayTeam.name.split('(')[0].trim()}
             </span>
           </div>
@@ -150,8 +150,8 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
         {/* Scores Column */}
         {showScore && (
           <div className="flex flex-col items-end justify-center gap-2 -mx-4 sm:px-1 min-w-[24px]">
-            <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.home}</span>
-            <span className="font-bold text-xs text-gray-900 leading-none h-4 flex items-center">{scores.away}</span>
+            <span className="font-bold text-xs text-gray-900 dark:text-foreground leading-none h-4 flex items-center">{scores.home}</span>
+            <span className="font-bold text-xs text-gray-900 dark:text-foreground leading-none h-4 flex items-center">{scores.away}</span>
           </div>
         )}
 
@@ -174,22 +174,22 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
         {/* Odds Section - Only shown for football (clickable) cards */}
         {isClickable && (
           match.odds ? (
-            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2">
-              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-                <span className="text-xs font-bold text-gray-700">{match.odds.home}</span>
+            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 dark:border-border ml-2">
+              <div className="flex items-center justify-center bg-gray-50 dark:bg-accent/50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700 dark:text-foreground">{match.odds.home}</span>
               </div>
-              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-                <span className="text-xs font-bold text-gray-700">{match.odds.draw}</span>
+              <div className="flex items-center justify-center bg-gray-50 dark:bg-accent/50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700 dark:text-foreground">{match.odds.draw}</span>
               </div>
-              <div className="flex items-center justify-center bg-gray-50 rounded px-1.5 py-0.5 min-w-[40px]">
-                <span className="text-xs font-bold text-gray-700">{match.odds.away}</span>
+              <div className="flex items-center justify-center bg-gray-50 dark:bg-accent/50 rounded px-1.5 py-0.5 min-w-[40px]">
+                <span className="text-xs font-bold text-gray-700 dark:text-foreground">{match.odds.away}</span>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 ml-2 opacity-30">
-              <div className="min-w-[40px] text-center text-xs">-</div>
-              <div className="min-w-[40px] text-center text-xs">-</div>
-              <div className="min-w-[40px] text-center text-xs">-</div>
+            <div className="flex flex-col items-center gap-1 pl-2 border-l border-gray-100 dark:border-border ml-2 opacity-30">
+              <div className="min-w-[40px] text-center text-xs text-foreground">-</div>
+              <div className="min-w-[40px] text-center text-xs text-foreground">-</div>
+              <div className="min-w-[40px] text-center text-xs text-foreground">-</div>
             </div>
           )
         )}

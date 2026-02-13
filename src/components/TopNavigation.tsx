@@ -5,6 +5,7 @@ import { assets } from "@/assets/images";
 import { useState, useRef } from 'react';
 import { useSearch } from '@/layouts/MainLayout';
 import { SearchResults } from './SearchResults';
+import { ModeToggle } from './ModeToggle';
 
 interface TopNavigationProps {
     onMenuClick?: () => void;
@@ -86,6 +87,8 @@ export const TopNavigation = ({ onMenuClick }: TopNavigationProps) => {
                             </div>
                         )}
                     </div>
+
+                    <ModeToggle />
 
                     {/* Login */}
                     <button className="flex items-center gap-2 px-4 py-2 bg-[#002d3c] hover:bg-[#003c50] text-gray-200 rounded-md transition-colors text-xs font-bold tracking-wide">

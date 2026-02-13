@@ -22,14 +22,14 @@ const NewsPage = () => {
     return (
         <div className="min-h-screen pb-20">
             {/* Page Header */}
-            <div className="mb-8 border-b border-gray-200 pb-6">
+            <div className="mb-8 border-b border-gray-200 dark:border-border pb-6">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-[#00141e] rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#00141e] dark:bg-accent rounded-lg flex items-center justify-center">
                         <Newspaper className="h-6 w-6 text-white" />
                     </div>
-                    <h1 className="text-3xl font-black text-[#00141e]">Football News</h1>
+                    <h1 className="text-3xl font-black text-[#00141e] dark:text-foreground">Football News</h1>
                 </div>
-                <p className="text-gray-500 text-lg ml-14">
+                <p className="text-gray-500 dark:text-muted-foreground text-lg ml-14">
                     Latest updates, match reports, and analysis from our team.
                 </p>
             </div>
@@ -37,8 +37,8 @@ const NewsPage = () => {
             {/* Loading State */}
             {isLoading && (
                 <div className="flex flex-col items-center justify-center py-20">
-                    <Loader2 className="h-10 w-10 text-[#00141e] animate-spin mb-4" />
-                    <p className="text-gray-500 font-medium">Loading latest headlines...</p>
+                    <Loader2 className="h-10 w-10 text-[#00141e] dark:text-foreground animate-spin mb-4" />
+                    <p className="text-gray-500 dark:text-muted-foreground font-medium">Loading latest headlines...</p>
                 </div>
             )}
 
@@ -49,10 +49,10 @@ const NewsPage = () => {
                         <Link
                             key={post.id}
                             to={`/news/${post.slug}`}
-                            className="group flex flex-col bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all h-full"
+                            className="group flex flex-col bg-white dark:bg-card rounded-xl overflow-hidden border border-gray-100 dark:border-border shadow-sm hover:shadow-md transition-all h-full"
                         >
                             {/* Image */}
-                            <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
+                            <div className="aspect-video w-full overflow-hidden bg-gray-100 dark:bg-muted relative">
                                 {post.image ? (
                                     <img
                                         src={post.image}
@@ -61,7 +61,7 @@ const NewsPage = () => {
                                         onError={(e) => (e.currentTarget.style.display = 'none')}
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-muted-foreground">
                                         <Newspaper className="w-12 h-12" />
                                     </div>
                                 )}
@@ -72,7 +72,7 @@ const NewsPage = () => {
 
                             {/* Content */}
                             <div className="p-5 flex flex-col flex-grow">
-                                <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+                                <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-muted-foreground mb-3">
                                     <span className="flex items-center">
                                         <Calendar className="w-3 h-3 mr-1" />
                                         {format(new Date(post.createdAt), 'MMM d, yyyy')}
@@ -84,11 +84,11 @@ const NewsPage = () => {
                                     </span>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-[#00141e] mb-3 group-hover:text-[#ff0046] transition-colors line-clamp-2">
+                                <h3 className="text-xl font-bold text-[#00141e] dark:text-foreground mb-3 group-hover:text-[#ff0046] transition-colors line-clamp-2">
                                     {post.title}
                                 </h3>
 
-                                <p className="text-gray-500 text-sm line-clamp-3 mb-4 flex-grow">
+                                <p className="text-gray-500 dark:text-muted-foreground text-sm line-clamp-3 mb-4 flex-grow">
                                     {post.excerpt}
                                 </p>
 
@@ -103,10 +103,10 @@ const NewsPage = () => {
 
             {/* Empty State */}
             {!isLoading && posts.length === 0 && (
-                <div className="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <Newspaper className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">No News Yet</h3>
-                    <p className="text-gray-500">Check back later for the latest updates.</p>
+                <div className="text-center py-20 bg-gray-50 dark:bg-card rounded-xl border border-dashed border-gray-200 dark:border-border">
+                    <Newspaper className="h-12 w-12 text-gray-300 dark:text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-foreground mb-2">No News Yet</h3>
+                    <p className="text-gray-500 dark:text-muted-foreground">Check back later for the latest updates.</p>
                 </div>
             )}
         </div>

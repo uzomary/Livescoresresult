@@ -6,6 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSearch, SearchType } from "@/layouts/MainLayout";
 import { SearchResults } from "./SearchResults";
+import { ModeToggle } from "./ModeToggle";
 import { assets } from "@/assets/images";
 import { cn } from "@/lib/utils";
 
@@ -64,25 +65,25 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         </Link>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/10 w-10 h-10"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-          >
-            <Search className="w-5 h-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/10 w-10 h-10"
-            onClick={onMenuClick}
-          >
-            <Menu className="w-6 h-6" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white hover:bg-white/10 w-10 h-10"
+          onClick={() => setIsSearchOpen(!isSearchOpen)}
+        >
+          <Search className="w-5 h-5" />
+        </Button>
+        <ModeToggle />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white hover:bg-white/10 w-10 h-10"
+          onClick={onMenuClick}
+        >
+          <Menu className="w-6 h-6" />
+        </Button>
       </div>
+
 
       {/* Tabs Row */}
       <div className="flex w-full border-t border-white/10">
@@ -109,26 +110,28 @@ const Header = ({ onMenuClick }: HeaderProps) => {
       </div>
 
       {/* Mobile Search Overlay */}
-      {isSearchOpen && (
-        <div className="absolute top-full left-0 w-full bg-[#001e28] p-4 border-t border-white/10 shadow-xl" ref={searchContainerRef}>
-          <div className="relative">
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search..."
-              className="w-full bg-[#00141e] text-white border border-white/10 rounded px-4 py-2 focus:outline-none focus:border-white/30"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <div className="absolute top-full left-0 w-full mt-2 bg-[#001e28] border border-white/10 rounded shadow-lg max-h-60 overflow-y-auto z-50">
-                <SearchResults />
-              </div>
-            )}
+      {
+        isSearchOpen && (
+          <div className="absolute top-full left-0 w-full bg-[#001e28] p-4 border-t border-white/10 shadow-xl" ref={searchContainerRef}>
+            <div className="relative">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-[#00141e] text-white border border-white/10 rounded px-4 py-2 focus:outline-none focus:border-white/30"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <div className="absolute top-full left-0 w-full mt-2 bg-[#001e28] border border-white/10 rounded shadow-lg max-h-60 overflow-y-auto z-50">
+                  <SearchResults />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </header>
+        )
+      }
+    </header >
   );
 };
 

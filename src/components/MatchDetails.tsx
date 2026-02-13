@@ -75,12 +75,12 @@ const CircularProgress = ({ value, color, label, subLabel }: { value: number, co
                         className="transition-all duration-1000 ease-out"
                     />
                 </svg>
-                <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-[#00141e]">
+                <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-[#00141e] dark:text-foreground">
                     {value.toFixed(0)}%
                 </div>
             </div>
             <div className="text-center">
-                <div className="text-sm font-bold text-[#00141e]">{label}</div>
+                <div className="text-sm font-bold text-[#00141e] dark:text-foreground">{label}</div>
                 <div className="text-xs text-gray-500">{subLabel}</div>
             </div>
         </div>
@@ -251,10 +251,10 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
     if (fixtureLoading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-white dark:bg-background flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <RefreshCw className="w-8 h-8 text-[#ff0046] animate-spin" />
-                    <span className="text-[#00141e] font-medium">Loading match details...</span>
+                    <span className="text-[#00141e] dark:text-foreground font-medium">Loading match details...</span>
                 </div>
             </div>
         );
@@ -266,19 +266,19 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         const isApiError = errorMessage.includes('API') || errorMessage.includes('authentication') || errorMessage.includes('forbidden');
 
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center text-[#00141e]">
+            <div className="min-h-screen bg-white dark:bg-background flex items-center justify-center text-[#00141e] dark:text-foreground">
                 <div className="text-center max-w-md px-2 sm:px-4">
                     <h2 className="text-xl font-bold mb-4">
                         {isRateLimit ? 'Service Temporarily Unavailable' :
                             isApiError ? 'API Service Error' :
                                 'Match Not Found'}
                     </h2>
-                    <p className="text-gray-500 mb-6">
+                    <p className="text-gray-500 dark:text-muted-foreground mb-6">
                         {isRateLimit ? 'We\'ve reached our API rate limit. Please try again in a few minutes.' :
                             isApiError ? 'There was an issue connecting to the football data service. Please try again later.' :
                                 'The requested match could not be found. It may have been removed or the ID is incorrect.'}
                     </p>
-                    <Button onClick={onBack} className="bg-[#ff0046] hover:bg-[#d9003d]">Return Home</Button>
+                    <Button onClick={onBack} className="bg-[#ff0046] hover:bg-[#d9003d] text-white">Return Home</Button>
                 </div>
             </div>
         );
@@ -286,12 +286,12 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
     const getEventIcon = (type: MatchEvent['type']) => {
         switch (type) {
-            case 'goal': return <FootballIcon className="w-4 h-4 text-[#00141e]" />;
+            case 'goal': return <FootballIcon className="w-4 h-4 text-[#00141e] dark:text-foreground" />;
             case 'penalty_miss': return <PenaltyMissIcon className="w-4 h-4 text-red-500" />;
             case 'yellow': return <YellowCardIcon className="w-3 h-4 text-yellow-400" />;
             case 'red': return <RedCardIcon className="w-3 h-4 text-red-600" />;
             case 'substitution': return <SubstitutionIcon className="w-4 h-4 text-[#ff0046]" />;
-            case 'var': return <VarIcon className="w-4 h-4 text-[#00141e]" />;
+            case 'var': return <VarIcon className="w-4 h-4 text-[#00141e] dark:text-foreground" />;
             default: return null;
         }
     };
@@ -305,23 +305,23 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             if (playerIn) {
                 return (
                     <>
-                        <span className="text-sm font-bold text-[#00141e] leading-none">{playerIn}</span>
-                        <span className="text-[10px] text-gray-500 uppercase">{playerOut}</span>
+                        <span className="text-sm font-bold text-[#00141e] dark:text-foreground leading-none">{playerIn}</span>
+                        <span className="text-[10px] text-gray-500 dark:text-muted-foreground uppercase">{playerOut}</span>
                     </>
                 );
             }
             // Fallback for missing assist data
             return (
                 <>
-                    <span className="text-sm font-bold text-[#00141e] leading-none">{playerOut}</span>
-                    <span className="text-[10px] text-gray-500 uppercase">{event.detail || event.type}</span>
+                    <span className="text-sm font-bold text-[#00141e] dark:text-foreground leading-none">{playerOut}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-muted-foreground uppercase">{event.detail || event.type}</span>
                 </>
             );
         }
         return (
             <>
-                <span className="text-sm font-bold text-[#00141e] leading-none">{event.player}</span>
-                <span className="text-[10px] text-gray-500 uppercase">
+                <span className="text-sm font-bold text-[#00141e] dark:text-foreground leading-none">{event.player}</span>
+                <span className="text-[10px] text-gray-500 dark:text-muted-foreground uppercase">
                     {event.type === 'goal' && event.comments ? event.comments : (event.detail || event.type)}
                 </span>
             </>
@@ -340,7 +340,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const secondHalfEvents = events.filter(e => e.minute > 45);
 
     return (
-        <div className="min-h-screen bg-white text-[#00141e] font-sans selection:bg-[#ff0046] selection:text-white pb-20">
+        <div className="min-h-screen bg-white dark:bg-background text-[#00141e] dark:text-foreground font-sans selection:bg-[#ff0046] selection:text-white pb-20">
             <MetaTags
                 title={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
                 description={`Live score, lineups and stats for ${match.homeTeam.name} vs ${match.awayTeam.name}`}
@@ -349,7 +349,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
             {/* Breadcrumb Header */}
             <div className="max-w-4xl mx-auto px-4 sm:px-4 py-4">
                 <div className="flex items-center justify-between sm:mx-0">
-                    <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide cursor-pointer hover:text-[#00141e] transition-colors" onClick={onBack}>
+                    <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-gray-500 dark:text-muted-foreground uppercase tracking-wide cursor-pointer hover:text-[#00141e] dark:hover:text-foreground transition-colors" onClick={onBack}>
                         <ArrowLeft className="w-4 h-4" />
                         <span className="hover:underline">{match.league.country || 'International'}</span>
                         <ChevronRight className="w-3 h-3" />
@@ -364,7 +364,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                     <div className="flex items-center gap-2">
                         <Star
-                            className={`w-5 h-5 cursor-pointer transition-colors ${isFavorite ? 'fill-[#ff0046] text-[#ff0046]' : 'text-gray-400 hover:text-[#00141e]'}`}
+                            className={`w-5 h-5 cursor-pointer transition-colors ${isFavorite ? 'fill-[#ff0046] text-[#ff0046]' : 'text-gray-400 dark:text-muted-foreground hover:text-[#00141e] dark:hover:text-foreground'}`}
                             onClick={() => setIsFavorite(!isFavorite)}
                         />
                     </div>
@@ -376,11 +376,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 <div className="flex items-center justify-between relative py-6">
                     {/* Home Team */}
                     <div className="flex flex-col items-center gap-4 flex-1">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-xl p-2 flex items-center justify-center shadow-lg shadow-gray-200 relative group cursor-pointer border border-gray-100">
-                            <Star className="w-4 h-4 absolute top-1 left-1 text-gray-300 group-hover:text-[#ff0046] transition-colors" />
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 dark:bg-card rounded-xl p-2 flex items-center justify-center shadow-lg shadow-gray-200 dark:shadow-none relative group cursor-pointer border border-gray-100 dark:border-border">
+                            <Star className="w-4 h-4 absolute top-1 left-1 text-gray-300 dark:text-muted-foreground group-hover:text-[#ff0046] transition-colors" />
                             <img src={match.homeTeam.logo} alt={match.homeTeam.name} className="w-full h-full object-contain" />
                         </div>
-                        <h2 className="text-[#00141e] font-bold text-base md:text-lg text-center leading-tight uppercase tracking-wide">{match.homeTeam.name}</h2>
+                        <h2 className="text-[#00141e] dark:text-foreground font-bold text-base md:text-lg text-center leading-tight uppercase tracking-wide">{match.homeTeam.name}</h2>
                     </div>
 
                     {/* Score Board */}
@@ -390,13 +390,13 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
                         <div className={`text-5xl md:text-6xl font-bold tracking-tighter mb-1 ${['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY', 'AET'].includes(match.status || '')
                             ? 'text-[#ff0046]'
-                            : 'text-[#00141e]'
+                            : 'text-[#00141e] dark:text-foreground'
                             }`}>
                             {match.status !== 'SCHEDULED' ? `${match.homeTeam.score} - ${match.awayTeam.score}` : '- vs -'}
                         </div>
                         <div className={`text-xs font-bold uppercase tracking-wider mt-1 ${['LIVE', '1H', '2H'].includes(match.status || '')
                             ? 'text-[#ff0046]'
-                            : 'text-gray-500'
+                            : 'text-gray-500 dark:text-muted-foreground'
                             }`}>
                             {['LIVE', '1H', '2H'].includes(match.status || '') ? (
                                 <span className="animate-pulse">
@@ -413,17 +413,17 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                     {/* Away Team */}
                     <div className="flex flex-col items-center gap-4 flex-1">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-xl p-2 flex items-center justify-center shadow-lg shadow-gray-200 relative group cursor-pointer border border-gray-100">
-                            <Star className="w-4 h-4 absolute top-1 right-1 text-gray-300 group-hover:text-[#ff0046] transition-colors" />
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 dark:bg-card rounded-xl p-2 flex items-center justify-center shadow-lg shadow-gray-200 dark:shadow-none relative group cursor-pointer border border-gray-100 dark:border-border">
+                            <Star className="w-4 h-4 absolute top-1 right-1 text-gray-300 dark:text-muted-foreground group-hover:text-[#ff0046] transition-colors" />
                             <img src={match.awayTeam.logo} alt={match.awayTeam.name} className="w-full h-full object-contain" />
                         </div>
-                        <h2 className="text-[#00141e] font-bold text-base md:text-lg text-center leading-tight uppercase tracking-wide">{match.awayTeam.name}</h2>
+                        <h2 className="text-[#00141e] dark:text-foreground font-bold text-base md:text-lg text-center leading-tight uppercase tracking-wide">{match.awayTeam.name}</h2>
                     </div>
                 </div>
             </div>
 
             {/* Main Navigation */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-4 border-b border-gray-200 mb-6">
+            <div className="max-w-4xl mx-auto px-4 sm:px-4 border-b border-gray-200 dark:border-border mb-6">
                 <div className="flex items-center gap-6 overflow-x-auto no-scrollbar sm:mx-0">
                     {['MATCH', 'REPORT', 'ODDS', 'H2H', 'STANDINGS'].map((tab) => (
                         <button
@@ -431,7 +431,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                             onClick={() => setActiveMainTab(tab)}
                             className={`pb-3 text-sm font-bold tracking-wider transition-colors border-b-2 ${activeMainTab === tab
                                 ? 'text-[#ff0046] border-[#ff0046]'
-                                : 'text-gray-500 border-transparent hover:text-[#00141e]'
+                                : 'text-gray-500 dark:text-muted-foreground border-transparent hover:text-[#00141e] dark:hover:text-foreground'
                                 }`}
                         >
                             {tab}
@@ -449,8 +449,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                 key={tab}
                                 onClick={() => setActiveSubTab(tab)}
                                 className={`px-3 sm:px-4 py-1.5 rounded text-xs font-bold tracking-wider transition-colors ${activeSubTab === tab
-                                    ? 'bg-[#00141e] text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-[#00141e] dark:bg-primary text-white dark:text-primary-foreground'
+                                    : 'bg-gray-100 dark:bg-accent/50 text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-accent'
                                     }`}
                             >
                                 {tab}
@@ -469,17 +469,17 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 1st Half */}
                         {firstHalfEvents.length > 0 && (
-                            <div className="bg-white rounded-lg overflow-hidden sm:mx-0 border border-gray-100 shadow-sm">
-                                <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center">
-                                    <span>1ST HALF</span>
-                                    <span className="text-white">{match.score?.halftime?.home ?? 0} - {match.score?.halftime?.away ?? 0}</span>
+                            <div className="bg-white dark:bg-card rounded-lg overflow-hidden sm:mx-0 border border-gray-100 dark:border-border shadow-sm">
+                                <div className="bg-[#00141e] dark:bg-card px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center border-b border-gray-100 dark:border-border">
+                                    <span className="text-white dark:text-foreground">1ST HALF</span>
+                                    <span className="text-white dark:text-foreground">{match.score?.halftime?.home ?? 0} - {match.score?.halftime?.away ?? 0}</span>
                                 </div>
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-gray-700">
                                     {firstHalfEvents.map((event, idx) => (
-                                        <div key={idx} className="px-3 sm:px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors gap-1 sm:gap-0">
+                                        <div key={idx} className="px-3 sm:px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors gap-1 sm:gap-0">
                                             {/* Home Event */}
                                             <div className={`flex-1 flex items-center gap-2 sm:gap-3 ${event.team === 'home' ? 'opacity-100' : 'opacity-0'}`}>
-                                                <span className="text-xs font-bold text-gray-400 w-6">{event.minute}'</span>
+                                                <span className="text-xs font-bold text-gray-400 dark:text-muted-foreground w-6">{event.minute}'</span>
                                                 <div className="flex items-center justify-center w-5 h-5">{getEventIcon(event.type)}</div>
                                                 <div className="flex flex-col">
                                                     {renderEventContent(event)}
@@ -491,7 +491,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                                             {/* Away Event */}
                                             <div className={`flex-1 flex items-center gap-2 sm:gap-3 justify-start flex-row-reverse text-right ${event.team === 'away' ? 'opacity-100' : 'opacity-0'}`}>
-                                                <span className="text-xs font-bold text-gray-400 w-6">{event.minute}'</span>
+                                                <span className="text-xs font-bold text-gray-400 dark:text-muted-foreground w-6">{event.minute}'</span>
                                                 <div className="flex items-center justify-center w-5 h-5">{getEventIcon(event.type)}</div>
                                                 <div className="flex flex-col items-end">
                                                     {renderEventContent(event)}
@@ -505,17 +505,17 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 2nd Half */}
                         {secondHalfEvents.length > 0 && (
-                            <div className="bg-white rounded-lg overflow-hidden mt-2 sm:mx-0 border border-gray-100 shadow-sm">
-                                <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center">
-                                    <span>2ND HALF</span>
-                                    <span className="text-white">{match.homeTeam.score} - {match.awayTeam.score}</span>
+                            <div className="bg-white dark:bg-card rounded-lg overflow-hidden mt-2 sm:mx-0 border border-gray-100 dark:border-border shadow-sm">
+                                <div className="bg-[#00141e] dark:bg-card px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center border-b border-gray-100 dark:border-border">
+                                    <span className="text-white dark:text-foreground">2ND HALF</span>
+                                    <span className="text-white dark:text-foreground">{match.homeTeam.score} - {match.awayTeam.score}</span>
                                 </div>
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-border">
                                     {secondHalfEvents.map((event, idx) => (
-                                        <div key={idx} className="px-3 sm:px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors gap-1 sm:gap-0">
+                                        <div key={idx} className="px-3 sm:px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors gap-1 sm:gap-0">
                                             {/* Home Event */}
                                             <div className={`flex-1 flex items-center gap-2 sm:gap-3 ${event.team === 'home' ? 'opacity-100' : 'opacity-0'}`}>
-                                                <span className="text-xs font-bold text-gray-400 w-6">{event.minute}'</span>
+                                                <span className="text-xs font-bold text-gray-400 dark:text-muted-foreground w-6">{event.minute}'</span>
                                                 <div className="flex items-center justify-center w-5 h-5">{getEventIcon(event.type)}</div>
                                                 <div className="flex flex-col">
                                                     {renderEventContent(event)}
@@ -527,7 +527,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                                             {/* Away Event */}
                                             <div className={`flex-1 flex items-center gap-2 sm:gap-3 justify-start flex-row-reverse text-right ${event.team === 'away' ? 'opacity-100' : 'opacity-0'}`}>
-                                                <span className="text-xs font-bold text-gray-400 w-6">{event.minute}'</span>
+                                                <span className="text-xs font-bold text-gray-400 dark:text-muted-foreground w-6">{event.minute}'</span>
                                                 <div className="flex items-center justify-center w-5 h-5">{getEventIcon(event.type)}</div>
                                                 <div className="flex flex-col items-end">
                                                     {renderEventContent(event)}
@@ -540,26 +540,26 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         )}
 
                         {/* 1. Odds */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
-                            <h3 className="text-[#00141e] font-bold text-lg mb-4">Betting Odds</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6 sm:mx-0">
+                            <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Betting Odds</h3>
                             {homeOdds && drawOdds && awayOdds ? (
                                 <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
                                     <div className="flex flex-col gap-2">
                                         <div className="text-gray-500 text-xs font-bold uppercase tracking-wider text-center">Home Win</div>
-                                        <div className="bg-gray-100 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 cursor-pointer shadow-sm">
-                                            <div className="text-[#00141e] font-bold text-xl">{homeOdds}</div>
+                                        <div className="bg-gray-100 dark:bg-accent/50 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 dark:hover:bg-accent cursor-pointer shadow-sm">
+                                            <div className="text-[#00141e] dark:text-foreground font-bold text-xl">{homeOdds}</div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <div className="text-gray-500 text-xs font-bold uppercase tracking-wider text-center">Draw</div>
-                                        <div className="bg-gray-100 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 cursor-pointer shadow-sm">
-                                            <div className="text-[#00141e] font-bold text-xl">{drawOdds}</div>
+                                        <div className="bg-gray-100 dark:bg-accent/50 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 dark:hover:bg-accent cursor-pointer shadow-sm">
+                                            <div className="text-[#00141e] dark:text-foreground font-bold text-xl">{drawOdds}</div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <div className="text-gray-500 text-xs font-bold uppercase tracking-wider text-center">Away Win</div>
-                                        <div className="bg-gray-100 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 cursor-pointer shadow-sm">
-                                            <div className="text-[#00141e] font-bold text-xl">{awayOdds}</div>
+                                        <div className="bg-gray-100 dark:bg-accent/50 rounded-lg p-3 text-center transition-colors hover:bg-gray-200 dark:hover:bg-accent cursor-pointer shadow-sm">
+                                            <div className="text-[#00141e] dark:text-foreground font-bold text-xl">{awayOdds}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -570,8 +570,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 2. Winning Probability */}
                         {homeOdds && drawOdds && awayOdds && (
-                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
-                                <h3 className="text-[#00141e] font-bold text-lg mb-4">Winning Probability</h3>
+                            <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6 sm:mx-0">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Winning Probability</h3>
                                 {(() => {
                                     const homeOdd = parseFloat(homeOdds);
                                     const drawOdd = parseFloat(drawOdds);
@@ -613,14 +613,14 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         )}
 
                         {/* 3. Injured/Suspended Players */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
-                            <h3 className="text-[#00141e] font-bold text-lg mb-4">Injuries & Suspensions</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6 sm:mx-0">
+                            <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Injuries & Suspensions</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Home Team */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
                                         <img src={match.homeTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                        <h4 className="text-sm font-bold text-[#00141e]">{match.homeTeam.name}</h4>
+                                        <h4 className="text-sm font-bold text-[#00141e] dark:text-foreground">{match.homeTeam.name}</h4>
                                     </div>
                                     <p className="text-gray-400 text-sm text-center py-4">No injuries or suspensions reported</p>
                                 </div>
@@ -629,7 +629,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
                                         <img src={match.awayTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                        <h4 className="text-sm font-bold text-[#00141e]">{match.awayTeam.name}</h4>
+                                        <h4 className="text-sm font-bold text-[#00141e] dark:text-foreground">{match.awayTeam.name}</h4>
                                     </div>
                                     <p className="text-gray-400 text-sm text-center py-4">No injuries or suspensions reported</p>
                                 </div>
@@ -637,20 +637,20 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 4. Match Information */}
-                        <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 sm:mx-0">
-                            <h3 className="text-[#00141e] font-bold text-lg mb-4">Match Information</h3>
+                        <div className="bg-gray-50 dark:bg-card border border-gray-100 dark:border-border rounded-lg p-6 sm:mx-0">
+                            <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Match Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-gray-500 font-bold uppercase w-20">REFEREE</span>
-                                    <span className="text-[#00141e] font-medium">{match.referee || 'Unknown'}</span>
+                                    <span className="text-gray-500 dark:text-muted-foreground font-bold uppercase w-20">REFEREE</span>
+                                    <span className="text-[#00141e] dark:text-foreground font-medium">{match.referee || 'Unknown'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-gray-500 font-bold uppercase w-20">VENUE</span>
-                                    <span className="text-[#00141e] font-medium">{match.venue?.name}, {match.venue?.city}</span>
+                                    <span className="text-gray-500 dark:text-muted-foreground font-bold uppercase w-20">VENUE</span>
+                                    <span className="text-[#00141e] dark:text-foreground font-medium">{match.venue?.name}, {match.venue?.city}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-gray-500 font-bold uppercase w-20">CAPACITY</span>
-                                    <span className="text-[#00141e] font-medium">
+                                    <span className="text-gray-500 dark:text-muted-foreground font-bold uppercase w-20">CAPACITY</span>
+                                    <span className="text-[#00141e] dark:text-foreground font-medium">
                                         {match.venue?.capacity ? match.venue.capacity.toLocaleString() : 'N/A'}
                                     </span>
                                 </div>
@@ -658,15 +658,15 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 5. Team Form */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 sm:mx-0">
-                            <h3 className="text-[#00141e] font-bold text-lg mb-4">Form</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6 sm:mx-0">
+                            <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Form</h3>
 
                             <div className="space-y-4">
                                 {/* Home Team Form */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3 flex-1">
                                         <img src={match.homeTeam.logo} className="w-6 h-6 object-contain" alt="" />
-                                        <span className="text-sm font-bold text-[#00141e] truncate">{match.homeTeam.name}</span>
+                                        <span className="text-sm font-bold text-[#00141e] dark:text-foreground truncate">{match.homeTeam.name}</span>
                                     </div>
 
                                     <div className="flex items-center gap-1.5">
@@ -703,7 +703,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3 flex-1">
                                         <img src={match.awayTeam.logo} className="w-6 h-6 object-contain" alt="" />
-                                        <span className="text-sm font-bold text-[#00141e] truncate">{match.awayTeam.name}</span>
+                                        <span className="text-sm font-bold text-[#00141e] dark:text-foreground truncate">{match.awayTeam.name}</span>
                                     </div>
 
                                     <div className="flex items-center gap-1.5">
@@ -739,9 +739,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* 6. Head-to-Head (3 matches) */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden sm:mx-0">
-                            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                                <h3 className="text-[#00141e] font-bold text-lg">Head-to-head matches</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden sm:mx-0">
+                            <div className="p-4 border-b border-gray-100 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">Head-to-head matches</h3>
                             </div>
 
                             {h2hData?.response && h2hData.response.length > 0 ? (
@@ -761,8 +761,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                             const awayWinner = awayScore > homeScore;
 
                                             return (
-                                                <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 transition-colors">
-                                                    <div className="w-12 text-sm text-gray-500 font-bold">
+                                                <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors">
+                                                    <div className="w-12 text-sm text-gray-500 dark:text-muted-foreground font-bold">
                                                         {dateStr}
                                                     </div>
 
@@ -770,11 +770,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                         <div className="flex items-center justify-between pr-4">
                                                             <div className="flex items-center gap-2">
                                                                 <img src={homeTeam.logo} alt={homeTeam.name} className="w-4 h-4 object-contain" />
-                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                     {homeTeam.name}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                            <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                                 {homeScore}
                                                             </span>
                                                         </div>
@@ -782,11 +782,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                         <div className="flex items-center justify-between pr-4">
                                                             <div className="flex items-center gap-2">
                                                                 <img src={awayTeam.logo} alt={awayTeam.name} className="w-4 h-4 object-contain" />
-                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                     {awayTeam.name}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                            <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                                 {awayScore}
                                                             </span>
                                                         </div>
@@ -804,15 +804,15 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
 
                         {/* 7. League Standings (2 teams only) */}
                         {standingsData?.response && standingsData.response.length > 0 && (
-                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden sm:mx-0">
-                                <div className="p-4 border-b border-gray-200 bg-gray-50/50">
-                                    <h3 className="text-[#00141e] font-bold text-lg">{match.league.name} Standings</h3>
+                            <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden sm:mx-0">
+                                <div className="p-4 border-b border-gray-200 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                    <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">{match.league.name} Standings</h3>
                                 </div>
 
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
-                                        <thead className="bg-gray-50/50 border-b border-gray-100">
-                                            <tr className="text-gray-500 text-xs font-bold uppercase tracking-wider">
+                                        <thead className="bg-gray-50/50 dark:bg-accent/20 border-b border-gray-100 dark:border-border">
+                                            <tr className="text-gray-500 dark:text-muted-foreground text-xs font-bold uppercase tracking-wider">
                                                 <th className="text-center p-3 w-10">#</th>
                                                 <th className="text-left p-3">Team</th>
                                                 <th className="text-center p-3 w-12">MP</th>
@@ -820,20 +820,20 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                 <th className="text-center p-3 w-12">PTS</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100">
+                                        <tbody className="divide-y divide-gray-100 dark:divide-border">
                                             {standingsData.response
                                                 .filter((team: any) => team.team.id === match.homeTeam.id || team.team.id === match.awayTeam.id)
                                                 .map((team: any) => {
                                                     const isHomeTeam = team.team.id === match.homeTeam.id;
                                                     const isAwayTeam = team.team.id === match.awayTeam.id;
 
-                                                    let rankColorClass = 'bg-gray-100 text-gray-600';
+                                                    let rankColorClass = 'bg-gray-100 dark:bg-accent text-gray-600 dark:text-muted-foreground';
                                                     if (team.rank <= 4) rankColorClass = 'bg-[#004682] text-white';
                                                     else if (team.rank === 5) rankColorClass = 'bg-[#bd0000] text-white';
                                                     else if (team.rank === 6) rankColorClass = 'bg-[#dfa400] text-white';
 
                                                     return (
-                                                        <tr key={team.team.id} className="bg-blue-50/50 hover:bg-blue-100/50 transition-colors">
+                                                        <tr key={team.team.id} className="bg-blue-50/50 dark:bg-blue-900/20 hover:bg-blue-100/50 dark:hover:bg-blue-900/40 transition-colors">
                                                             <td className="p-3">
                                                                 <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold mx-auto ${rankColorClass}`}>
                                                                     {team.rank}.
@@ -842,16 +842,16 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                             <td className="p-3">
                                                                 <div className="flex items-center gap-3">
                                                                     <img src={team.team.logo} className="w-6 h-6 object-contain" alt="" />
-                                                                    <span className="text-base truncate max-w-[140px] sm:max-w-xs text-[#00141e] font-bold">
+                                                                    <span className="text-base truncate max-w-[140px] sm:max-w-xs text-[#00141e] dark:text-foreground font-bold">
                                                                         {team.team.name}
                                                                     </span>
                                                                 </div>
                                                             </td>
-                                                            <td className="p-3 text-center text-sm text-[#00141e]">{team.all.played}</td>
-                                                            <td className="p-3 text-center text-sm text-[#00141e]">
+                                                            <td className="p-3 text-center text-sm text-[#00141e] dark:text-foreground">{team.all.played}</td>
+                                                            <td className="p-3 text-center text-sm text-[#00141e] dark:text-foreground">
                                                                 {team.all.goals.for}:{team.all.goals.against}
                                                             </td>
-                                                            <td className="p-3 text-center text-base font-bold text-[#00141e]">{team.points}</td>
+                                                            <td className="p-3 text-center text-base font-bold text-[#00141e] dark:text-foreground">{team.points}</td>
                                                         </tr>
                                                     );
                                                 })}
@@ -866,7 +866,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {/* Stats Tab */}
                 {(activeMainTab === 'MATCH' && activeSubTab === 'STATS') && (
                     <div className="space-y-6">
-                        <div className="bg-[#00141e] px-2 sm:px-4 py-2 text-xs font-bold text-white uppercase tracking-wider mb-2 rounded">FULL STATISTICS</div>
+                        <div className="bg-[#00141e] dark:bg-card border border-transparent dark:border-border px-2 sm:px-4 py-2 text-xs font-bold text-white dark:text-foreground uppercase tracking-wider mb-2 rounded">FULL STATISTICS</div>
                         <div className="space-y-6">
                             {statistics.map((stat, idx) => {
                                 const total = (typeof stat.home === 'number' ? stat.home : parseInt(stat.home)) + (typeof stat.away === 'number' ? stat.away : parseInt(stat.away));
@@ -875,13 +875,13 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                 return (
                                     <div key={idx} className="group">
                                         <div className="grid grid-cols-3 items-center text-xs font-bold mb-1 px-1">
-                                            <span className="text-[#00141e] text-left">{stat.home}</span>
-                                            <span className="text-gray-500 uppercase text-center">{stat.label}</span>
-                                            <span className="text-[#00141e] text-right">{stat.away}</span>
+                                            <span className="text-[#00141e] dark:text-foreground text-left">{stat.home}</span>
+                                            <span className="text-gray-500 dark:text-muted-foreground uppercase text-center">{stat.label}</span>
+                                            <span className="text-[#00141e] dark:text-foreground text-right">{stat.away}</span>
                                         </div>
-                                        <div className="flex h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="flex h-1.5 w-full bg-gray-100 dark:bg-secondary rounded-full overflow-hidden">
                                             <div className="h-full bg-[#ff0046]" style={{ width: `${homePercent}%` }} />
-                                            <div className="h-full bg-[#00141e]" style={{ width: `${100 - homePercent}%` }} />
+                                            <div className="h-full bg-[#00141e] dark:bg-primary" style={{ width: `${100 - homePercent}%` }} />
                                         </div>
                                     </div>
                                 )
@@ -896,7 +896,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         {lineups.length > 0 ? (
                             <div className="space-y-6">
                                 {/* Combined Pitch */}
-                                <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                                <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-border">
                                     <DualTeamPitch
                                         homeTeam={{
                                             name: match.homeTeam.name,
@@ -935,7 +935,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                 )}
                             </div>
                         ) : (
-                            <div className="text-center py-12 text-gray-500 font-bold">Lineups not available</div>
+                            <div className="text-center py-12 text-gray-500 dark:text-muted-foreground font-bold">Lineups not available</div>
                         )}
                     </div>
                 )}
@@ -943,9 +943,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {/* Player Stats Tab */}
                 {(activeMainTab === 'MATCH' && activeSubTab === 'PLAYER STATS') && (
                     <div className="space-y-6">
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-8 text-center">
-                            <p className="text-[#00141e] font-bold">Player statistics will be available here</p>
-                            <p className="text-gray-500 text-sm mt-2">Individual player performance data</p>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-8 text-center">
+                            <p className="text-[#00141e] dark:text-foreground font-bold">Player statistics will be available here</p>
+                            <p className="text-gray-500 dark:text-muted-foreground text-sm mt-2">Individual player performance data</p>
                         </div>
                     </div>
                 )}
@@ -953,9 +953,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {/* Commentary Tab */}
                 {(activeMainTab === 'MATCH' && activeSubTab === 'COMMENTARY') && (
                     <div className="space-y-6">
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-8 text-center">
-                            <p className="text-[#00141e] font-bold">Match commentary will be available here</p>
-                            <p className="text-gray-500 text-sm mt-2">Live text commentary and updates</p>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-8 text-center">
+                            <p className="text-[#00141e] dark:text-foreground font-bold">Match commentary will be available here</p>
+                            <p className="text-gray-500 dark:text-muted-foreground text-sm mt-2">Live text commentary and updates</p>
                         </div>
                     </div>
                 )}
@@ -963,49 +963,49 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {/* Report Tab */}
                 {activeMainTab === 'REPORT' && (
                     <div className="space-y-6">
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6">
-                            <h3 className="text-[#00141e] font-bold text-lg mb-4">Match Report</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6">
+                            <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Match Report</h3>
 
                             {match.status === 'FT' || match.status === 'FINISHED' ? (
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-3 gap-4 text-center mb-6">
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">{match.homeTeam.name}</div>
-                                            <div className="text-4xl font-bold text-white">{match.homeTeam.score}</div>
+                                            <div className="text-4xl font-bold text-[#00141e] dark:text-foreground">{match.homeTeam.score}</div>
                                         </div>
                                         <div className="flex items-center justify-center">
                                             <span className="text-gray-500 text-2xl">-</span>
                                         </div>
                                         <div>
                                             <div className="text-gray-400 text-sm mb-1">{match.awayTeam.name}</div>
-                                            <div className="text-4xl font-bold text-white">{match.awayTeam.score}</div>
+                                            <div className="text-4xl font-bold text-[#00141e] dark:text-foreground">{match.awayTeam.score}</div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-3">
-                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100">
-                                            <span className="text-gray-500">Venue</span>
-                                            <span className="text-[#00141e] font-medium">{match.venue?.name}, {match.venue?.city}</span>
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-accent/50 rounded border border-gray-100 dark:border-border">
+                                            <span className="text-gray-500 dark:text-muted-foreground">Venue</span>
+                                            <span className="text-[#00141e] dark:text-foreground font-medium">{match.venue?.name}, {match.venue?.city}</span>
                                         </div>
-                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100">
-                                            <span className="text-gray-500">Referee</span>
-                                            <span className="text-[#00141e] font-medium">{match.referee || 'N/A'}</span>
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-accent/50 rounded border border-gray-100 dark:border-border">
+                                            <span className="text-gray-500 dark:text-muted-foreground">Referee</span>
+                                            <span className="text-[#00141e] dark:text-foreground font-medium">{match.referee || 'N/A'}</span>
                                         </div>
-                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100">
-                                            <span className="text-gray-500">Match Date</span>
-                                            <span className="text-[#00141e] font-medium">{new Date(match.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-accent/50 rounded border border-gray-100 dark:border-border">
+                                            <span className="text-gray-500 dark:text-muted-foreground">Match Date</span>
+                                            <span className="text-[#00141e] dark:text-foreground font-medium">{new Date(match.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                         </div>
                                     </div>
 
                                     {events.length > 0 && (
                                         <div className="mt-6">
-                                            <h4 className="text-white font-bold mb-3">Key Events</h4>
+                                            <h4 className="text-[#00141e] dark:text-foreground font-bold mb-3">Key Events</h4>
                                             <div className="space-y-2">
                                                 {events.filter(e => e.type === 'goal').map((event, idx) => (
-                                                    <div key={idx} className="flex items-center gap-3 p-2 bg-[#00141e] rounded">
+                                                    <div key={idx} className="flex items-center gap-3 p-2 bg-[#00141e] dark:bg-primary rounded text-white dark:text-primary-foreground">
                                                         <span className="text-[#ff0046] font-bold text-sm">{event.minute}'</span>
-                                                        <span className="text-white">{event.player}</span>
-                                                        <span className="text-gray-400 text-sm">({event.team === 'home' ? match.homeTeam.name : match.awayTeam.name})</span>
+                                                        <span className="font-medium">{event.player}</span>
+                                                        <span className="text-gray-400 dark:text-primary-foreground/70 text-sm">({event.team === 'home' ? match.homeTeam.name : match.awayTeam.name})</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1025,21 +1025,21 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         {oddsData?.response && oddsData.response.length > 0 ? (
                             <OddsTabNew data={oddsData} />
                         ) : (
-                            <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6">
-                                <h3 className="text-[#00141e] font-bold text-lg mb-4">Betting Odds</h3>
+                            <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Betting Odds</h3>
                                 {match.odds ? (
                                     <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                                        <div className="bg-[#00141e] rounded-lg p-4 text-center">
-                                            <div className="text-gray-400 text-xs mb-2">Home Win</div>
-                                            <div className="text-white font-bold text-xl">{match.odds.home}</div>
+                                        <div className="bg-[#00141e] dark:bg-primary rounded-lg p-4 text-center">
+                                            <div className="text-gray-400 dark:text-primary-foreground/70 text-xs mb-2">Home Win</div>
+                                            <div className="text-white dark:text-primary-foreground font-bold text-xl">{match.odds.home}</div>
                                         </div>
-                                        <div className="bg-[#00141e] rounded-lg p-4 text-center">
-                                            <div className="text-gray-400 text-xs mb-2">Draw</div>
-                                            <div className="text-white font-bold text-xl">{match.odds.draw}</div>
+                                        <div className="bg-[#00141e] dark:bg-primary rounded-lg p-4 text-center">
+                                            <div className="text-gray-400 dark:text-primary-foreground/70 text-xs mb-2">Draw</div>
+                                            <div className="text-white dark:text-primary-foreground font-bold text-xl">{match.odds.draw}</div>
                                         </div>
-                                        <div className="bg-[#00141e] rounded-lg p-4 text-center">
-                                            <div className="text-gray-400 text-xs mb-2">Away Win</div>
-                                            <div className="text-white font-bold text-xl">{match.odds.away}</div>
+                                        <div className="bg-[#00141e] dark:bg-primary rounded-lg p-4 text-center">
+                                            <div className="text-gray-400 dark:text-primary-foreground/70 text-xs mb-2">Away Win</div>
+                                            <div className="text-white dark:text-primary-foreground font-bold text-xl">{match.odds.away}</div>
                                         </div>
                                     </div>
                                 ) : (
@@ -1054,13 +1054,13 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {activeMainTab === 'H2H' && (
                     <div className="space-y-6">
                         {/* Mutual H2H */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                                <h3 className="text-[#00141e] font-bold text-lg">Head-to-head matches</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">Head-to-head matches</h3>
                             </div>
 
                             {h2hData?.response && h2hData.response.length > 0 ? (
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-border">
                                     {[...h2hData.response]
                                         .sort((a: any, b: any) => new Date(b.fixture.date).getTime() - new Date(a.fixture.date).getTime())
                                         .slice(0, showAllH2H ? undefined : 5)
@@ -1076,9 +1076,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                             const awayWinner = awayScore > homeScore;
 
                                             return (
-                                                <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 transition-colors">
+                                                <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors">
                                                     {/* Date */}
-                                                    <div className="w-12 text-sm text-gray-500 font-bold">
+                                                    <div className="w-12 text-sm text-gray-500 dark:text-muted-foreground font-bold">
                                                         {dateStr}
                                                     </div>
 
@@ -1088,11 +1088,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                         <div className="flex items-center justify-between pr-4">
                                                             <div className="flex items-center gap-2">
                                                                 <img src={homeTeam.logo} alt={homeTeam.name} className="w-4 h-4 object-contain" />
-                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                     {homeTeam.name}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                            <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                                 {homeScore}
                                                             </span>
                                                         </div>
@@ -1101,11 +1101,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                         <div className="flex items-center justify-between pr-4">
                                                             <div className="flex items-center gap-2">
                                                                 <img src={awayTeam.logo} alt={awayTeam.name} className="w-4 h-4 object-contain" />
-                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                                <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                     {awayTeam.name}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                            <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                                 {awayScore}
                                                             </span>
                                                         </div>
@@ -1115,8 +1115,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                         })}
 
                                     {h2hData.response.length > 5 && (
-                                        <div className="p-3 text-center cursor-pointer hover:bg-gray-50 transition-colors border-t border-gray-100" onClick={() => setShowAllH2H(!showAllH2H)}>
-                                            <div className="flex items-center justify-center gap-1 text-xs text-gray-500 font-medium">
+                                        <div className="p-3 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors border-t border-gray-100 dark:border-border" onClick={() => setShowAllH2H(!showAllH2H)}>
+                                            <div className="flex items-center justify-center gap-1 text-xs text-gray-500 dark:text-muted-foreground font-medium">
                                                 {showAllH2H ? 'Show less matches' : 'Show more matches'}
                                                 <ChevronRight className={`w-3 h-3 transition-transform ${showAllH2H ? '-rotate-90' : 'rotate-90'}`} />
                                             </div>
@@ -1131,13 +1131,13 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* Home Team Form */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                                <h3 className="text-[#00141e] font-bold text-lg">Last matches: {match.homeTeam.name}</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">Last matches: {match.homeTeam.name}</h3>
                             </div>
 
                             {homeForm?.response && homeForm.response.length > 0 ? (
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-border">
                                     {homeForm.response.map((fixture: any) => {
                                         const date = new Date(fixture.fixture.date);
                                         const dateStr = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.`;
@@ -1166,9 +1166,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                         const awayWinner = awayScore > homeScore;
 
                                         return (
-                                            <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 transition-colors">
+                                            <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors">
                                                 {/* Date */}
-                                                <div className="w-12 text-xs text-gray-500 font-medium">
+                                                <div className="w-12 text-xs text-gray-500 dark:text-muted-foreground font-medium">
                                                     {dateStr}
                                                 </div>
 
@@ -1178,11 +1178,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                     <div className="flex items-center justify-between pr-4">
                                                         <div className="flex items-center gap-2">
                                                             <img src={fixture.teams.home.logo} alt={fixture.teams.home.name} className="w-4 h-4 object-contain" />
-                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                 {fixture.teams.home.name}
                                                             </span>
                                                         </div>
-                                                        <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                        <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                             {homeScore}
                                                         </span>
                                                     </div>
@@ -1191,11 +1191,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                     <div className="flex items-center justify-between pr-4">
                                                         <div className="flex items-center gap-2">
                                                             <img src={fixture.teams.away.logo} alt={fixture.teams.away.name} className="w-4 h-4 object-contain" />
-                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                 {fixture.teams.away.name}
                                                             </span>
                                                         </div>
-                                                        <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                        <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                             {awayScore}
                                                         </span>
                                                     </div>
@@ -1213,7 +1213,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                     <div className="p-3 text-center">
                                         <button
                                             onClick={() => setHomeFormLimit(prev => prev + 5)}
-                                            className="text-xs text-gray-500 hover:text-[#00141e] flex items-center justify-center gap-1 mx-auto transition-colors"
+                                            className="text-xs text-gray-500 dark:text-muted-foreground hover:text-[#00141e] dark:hover:text-foreground flex items-center justify-center gap-1 mx-auto transition-colors"
                                             disabled={homeForm.response.length < homeFormLimit}
                                         >
                                             {homeForm.response.length < homeFormLimit ? 'No more matches' : 'Show more matches'}
@@ -1229,13 +1229,13 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         </div>
 
                         {/* Away Team Form */}
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                                <h3 className="text-[#00141e] font-bold text-lg">Last matches: {match.awayTeam.name}</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">Last matches: {match.awayTeam.name}</h3>
                             </div>
 
                             {awayForm?.response && awayForm.response.length > 0 ? (
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-100 dark:divide-border">
                                     {awayForm.response.map((fixture: any) => {
                                         const date = new Date(fixture.fixture.date);
                                         const dateStr = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.`;
@@ -1263,9 +1263,9 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                         const awayWinner = awayScore > homeScore;
 
                                         return (
-                                            <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 transition-colors">
+                                            <div key={fixture.fixture.id} className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors">
                                                 {/* Date */}
-                                                <div className="w-12 text-xs text-gray-500 font-medium">
+                                                <div className="w-12 text-xs text-gray-500 dark:text-muted-foreground font-medium">
                                                     {dateStr}
                                                 </div>
 
@@ -1275,11 +1275,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                     <div className="flex items-center justify-between pr-4">
                                                         <div className="flex items-center gap-2">
                                                             <img src={fixture.teams.home.logo} alt={fixture.teams.home.name} className="w-4 h-4 object-contain" />
-                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                 {fixture.teams.home.name}
                                                             </span>
                                                         </div>
-                                                        <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                        <span className={`text-sm ${homeWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                             {homeScore}
                                                         </span>
                                                     </div>
@@ -1288,11 +1288,11 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                     <div className="flex items-center justify-between pr-4">
                                                         <div className="flex items-center gap-2">
                                                             <img src={fixture.teams.away.logo} alt={fixture.teams.away.name} className="w-4 h-4 object-contain" />
-                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e]' : 'text-gray-600'}`}>
+                                                            <span className={`text-sm truncate max-w-[140px] sm:max-w-xs ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-gray-600 dark:text-muted-foreground'}`}>
                                                                 {fixture.teams.away.name}
                                                             </span>
                                                         </div>
-                                                        <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e]' : 'text-[#00141e]'}`}>
+                                                        <span className={`text-sm ${awayWinner ? 'font-bold text-[#00141e] dark:text-foreground' : 'text-[#00141e] dark:text-foreground'}`}>
                                                             {awayScore}
                                                         </span>
                                                     </div>
@@ -1310,7 +1310,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                     <div className="p-3 text-center">
                                         <button
                                             onClick={() => setAwayFormLimit(prev => prev + 5)}
-                                            className="text-xs text-gray-500 hover:text-[#00141e] flex items-center justify-center gap-1 mx-auto transition-colors"
+                                            className="text-xs text-gray-500 dark:text-muted-foreground hover:text-[#00141e] dark:hover:text-foreground flex items-center justify-center gap-1 mx-auto transition-colors"
                                             disabled={awayForm.response.length < awayFormLimit}
                                         >
                                             {awayForm.response.length < awayFormLimit ? 'No more matches' : 'Show more matches'}
@@ -1330,16 +1330,16 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 {/* Standings Tab */}
                 {activeMainTab === 'STANDINGS' && (
                     <div className="space-y-6">
-                        <div className="bg-white border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 bg-gray-50/50">
-                                <h3 className="text-[#00141e] font-bold text-lg">{match.league.name} Standings</h3>
+                        <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg overflow-hidden">
+                            <div className="p-4 border-b border-gray-200 dark:border-border bg-gray-50/50 dark:bg-accent/20">
+                                <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg">{match.league.name} Standings</h3>
                             </div>
 
                             {standingsData?.response && standingsData.response.length > 0 ? (
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
-                                        <thead className="bg-gray-50/50 border-b border-gray-100">
-                                            <tr className="text-gray-500 text-xs font-bold uppercase tracking-wider">
+                                        <thead className="bg-gray-50/50 dark:bg-accent/20 border-b border-gray-100 dark:border-border">
+                                            <tr className="text-gray-500 dark:text-muted-foreground text-xs font-bold uppercase tracking-wider">
                                                 <th className="text-center p-3 w-10">#</th>
                                                 <th className="text-left p-3">Team</th>
                                                 <th className="text-center p-3 w-12">MP</th>
@@ -1347,19 +1347,19 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                 <th className="text-center p-3 w-12">PTS</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100">
+                                        <tbody className="divide-y divide-gray-100 dark:divide-border">
                                             {standingsData.response.map((team: any, idx: number) => {
                                                 const isHomeTeam = team.team.id === match.homeTeam.id;
                                                 const isAwayTeam = team.team.id === match.awayTeam.id;
-                                                const highlightClass = isHomeTeam || isAwayTeam ? 'bg-blue-50/50' : '';
+                                                const highlightClass = isHomeTeam || isAwayTeam ? 'bg-blue-50/50 dark:bg-blue-900/20' : '';
 
-                                                let rankColorClass = 'bg-gray-100 text-gray-600'; // Default
+                                                let rankColorClass = 'bg-gray-100 dark:bg-accent text-gray-600 dark:text-muted-foreground'; // Default
                                                 if (team.rank <= 4) rankColorClass = 'bg-[#004682] text-white'; // Champions League (Blue)
                                                 else if (team.rank === 5) rankColorClass = 'bg-[#bd0000] text-white'; // Europa League (Red)
                                                 else if (team.rank === 6) rankColorClass = 'bg-[#dfa400] text-white'; // Conference League (Yellow/Gold)
 
                                                 return (
-                                                    <tr key={team.team.id} className={`hover:bg-gray-50 transition-colors ${highlightClass}`}>
+                                                    <tr key={team.team.id} className={`hover:bg-gray-50 dark:hover:bg-accent/50 transition-colors ${highlightClass}`}>
                                                         <td className="p-3">
                                                             <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold mx-auto ${rankColorClass}`}>
                                                                 {team.rank}.
@@ -1368,16 +1368,16 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                                                         <td className="p-3">
                                                             <div className="flex items-center gap-3">
                                                                 <img src={team.team.logo} className="w-6 h-6 object-contain" alt="" />
-                                                                <span className={`text-base truncate max-w-[140px] sm:max-w-xs ${isHomeTeam || isAwayTeam ? 'text-[#00141e] font-bold' : 'text-[#00141e]'}`}>
+                                                                <span className={`text-base truncate max-w-[140px] sm:max-w-xs ${isHomeTeam || isAwayTeam ? 'text-[#00141e] dark:text-foreground font-bold' : 'text-[#00141e] dark:text-foreground'}`}>
                                                                     {team.team.name}
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className="p-3 text-center text-[#00141e] font-medium">{team.all.played}</td>
-                                                        <td className="p-3 text-center text-gray-600 font-medium">
+                                                        <td className="p-3 text-center text-[#00141e] dark:text-foreground font-medium">{team.all.played}</td>
+                                                        <td className="p-3 text-center text-gray-600 dark:text-muted-foreground font-medium">
                                                             {team.all.goals.for}:{team.all.goals.against}
                                                         </td>
-                                                        <td className="p-3 text-center text-[#00141e] font-bold">{team.points}</td>
+                                                        <td className="p-3 text-center text-[#00141e] dark:text-foreground font-bold">{team.points}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -1394,7 +1394,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                 )}
             </div>
 
-            <div className="text-center mt-12 text-xs text-gray-600 pb-8">
+            <div className="text-center mt-12 text-xs text-gray-600 dark:text-muted-foreground pb-8">
                 Livescoreresults. All rights reserved.
             </div>
         </div>

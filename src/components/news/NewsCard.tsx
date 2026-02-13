@@ -42,7 +42,7 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
 
   return (
     <Card
-      className="relative bg-white border-gray-100 hover:border-red-200 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
+      className="relative bg-white dark:bg-card border-gray-100 dark:border-border hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
       onClick={handleClick}
     >
       <div className="p-3">
@@ -55,7 +55,7 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
         )}
         {/* Featured Image */}
         {featuredImage && !imageError && (
-          <div className="relative mb-3 rounded-lg overflow-hidden bg-gray-100 aspect-video">
+          <div className="relative mb-3 rounded-lg overflow-hidden bg-gray-100 dark:bg-muted aspect-video">
             <img
               src={featuredImage}
               alt={post.title}
@@ -68,21 +68,21 @@ export const NewsCard = ({ post, onClick }: NewsCardProps) => {
 
         {/* No Image Placeholder */}
         {(!featuredImage || imageError) && (
-          <div className="mb-3 h-32 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100">
-            <ImageIcon className="h-8 w-8 text-gray-300" />
+          <div className="mb-3 h-32 bg-gray-50 dark:bg-muted rounded-lg flex items-center justify-center border border-gray-100 dark:border-border">
+            <ImageIcon className="h-8 w-8 text-gray-300 dark:text-muted-foreground" />
           </div>
         )}
 
         {/* Content */}
         <div className="space-y-2">
           {/* Title */}
-          <h4 className="text-[#00141e] font-bold text-sm leading-tight line-clamp-2 group-hover:text-[#ff0046] transition-colors">
+          <h4 className="text-[#00141e] dark:text-foreground font-bold text-sm leading-tight line-clamp-2 group-hover:text-[#ff0046] transition-colors">
             {title}
           </h4>
 
           {/* Meta Info */}
           <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-1 text-[10px] text-gray-500 font-medium">
+            <div className="flex items-center gap-1 text-[10px] text-gray-500 dark:text-muted-foreground font-medium">
               <Clock className="h-3 w-3" />
               <span>{timeAgo}</span>
             </div>

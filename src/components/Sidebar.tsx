@@ -133,8 +133,8 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
           className={cn(
             "w-full flex items-center gap-3 px-4 py-2 text-left transition-colors relative",
             isActive
-              ? "bg-[#e5e7eb] text-black"
-              : "text-gray-700 hover:bg-gray-100"
+              ? "bg-accent text-accent-foreground"
+              : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
           )}
         >
           {/* Icon/Flag */}
@@ -180,7 +180,7 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
             togglePin(league.id);
           }}
           className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-blue-600 hover:bg-gray-200 transition-opacity",
+            "absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-muted-foreground hover:text-blue-500 hover:bg-accent transition-opacity",
             isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
           title={isLeaguePinned ? "Unpin league" : "Pin league"}
@@ -192,12 +192,12 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
   };
 
   return (
-    <div className="bg-[#f8f9fa] h-full overflow-y-auto custom-scrollbar">
+    <div className="bg-background h-full overflow-y-auto custom-scrollbar border-r border-border">
       {/* Pinned Leagues Header */}
       {pinnedLeagues.length > 0 && (
         <>
           <div className="px-4 py-3 mb-1">
-            <div className="flex items-center gap-3 text-[#001e28]">
+            <div className="flex items-center gap-3 text-foreground">
               <Pin className="w-4 h-4 fill-current" />
               <span className="text-xs font-bold tracking-wider uppercase">PINNED LEAGUES</span>
             </div>
@@ -209,8 +209,8 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
       )}
 
       {/* All Competitions Header */}
-      <div className="px-4 py-3 mb-1 mt-2 border-t border-gray-200 pt-4">
-        <div className="flex items-center gap-3 text-[#001e28]">
+      <div className="px-4 py-3 mb-1 mt-2 border-t border-border pt-4">
+        <div className="flex items-center gap-3 text-foreground">
           <Trophy className="w-4 h-4" />
           <span className="text-xs font-bold tracking-wider uppercase">ALL COMPETITIONS</span>
         </div>
@@ -222,10 +222,10 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
       </div>
 
       {/* Countries Header */}
-      <div className="px-4 py-3 mb-1 mt-2 border-t border-gray-200 pt-4">
-        <div className="flex items-center justify-between text-[#001e28] mb-3">
+      <div className="px-4 py-3 mb-1 mt-2 border-t border-border pt-4">
+        <div className="flex items-center justify-between text-foreground mb-3">
           <span className="text-xs font-bold tracking-wider uppercase">COUNTRIES</span>
-          <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded-full text-gray-600">{filteredCountries.length}</span>
+          <span className="text-[10px] bg-accent px-1.5 py-0.5 rounded-full text-muted-foreground">{filteredCountries.length}</span>
         </div>
 
         {/* Search Box */}
@@ -235,7 +235,7 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
             placeholder="Search countries..."
             value={countrySearch}
             onChange={(e) => setCountrySearch(e.target.value)}
-            className="w-full text-xs p-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200"
+            className="w-full text-xs p-2 bg-background border border-input rounded-md focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -246,7 +246,7 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
           <div
             key={`${country.code}-${index}`}
             onClick={() => navigate(`/country/${country.name.toLowerCase().replace(/\s+/g, '-')}`)}
-            className="w-full flex items-center gap-3 px-4 py-2 text-left cursor-pointer transition-colors text-gray-700 hover:bg-gray-100"
+            className="w-full flex items-center gap-3 px-4 py-2 text-left cursor-pointer transition-colors text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
               {country.flag ? (
@@ -263,14 +263,14 @@ export const Sidebar = ({ selectedLeague, onLeagueSelect }: SidebarProps) => {
         {filteredCountries.length > 10 && !countrySearch && (
           <button
             onClick={() => setShowAllCountries(!showAllCountries)}
-            className="w-full text-center text-xs font-bold text-gray-500 hover:text-black py-3 transition-colors uppercase tracking-wide"
+            className="w-full text-center text-xs font-bold text-muted-foreground hover:text-foreground py-3 transition-colors uppercase tracking-wide"
           >
             {showAllCountries ? 'Show Less' : `Show All Matches`}
           </button>
         )}
 
         {filteredCountries.length === 0 && (
-          <div className="text-xs text-gray-400 italic text-center py-2">
+          <div className="text-xs text-muted-foreground italic text-center py-2">
             No countries found
           </div>
         )}

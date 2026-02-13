@@ -532,11 +532,12 @@ const Index = () => {
           setActiveSport(sport);
           setActiveFilterTab('all');
         }}
+        favoritesCount={favoriteIds.length}
       />
     );
     // Cleanup on unmount
     return () => setTopContent(null);
-  }, [activeSport, setTopContent]);
+  }, [activeSport, setTopContent, favoriteIds]);
 
   const filterOptions = [
     { key: "all", label: "All", count: matches.filter(m => m.status === 'FT' || m.status === 'SCHEDULED' || m.status === 'LIVE').length },
@@ -615,36 +616,36 @@ const Index = () => {
             {isLoading && (
               <div className="space-y-0">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white border-b border-gray-100 last:border-b-0">
+                  <div key={i} className="bg-white dark:bg-card border-b border-gray-100 dark:border-border last:border-b-0">
                     <div className="flex items-center gap-3 px-4 py-3">
                       {/* Star Icon Skeleton */}
-                      <div className="flex-shrink-0 w-5 h-5 bg-gray-200 rounded animate-pulse" />
+                      <div className="flex-shrink-0 w-5 h-5 bg-gray-200 dark:bg-muted rounded animate-pulse" />
 
                       {/* Teams Section Skeleton */}
                       <div className="flex-1 min-w-0 space-y-2">
                         {/* Home Team */}
                         <div className="flex items-center gap-1.5">
-                          <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
-                          <div className="h-3 bg-gray-200 rounded w-32 animate-pulse" />
+                          <div className="w-4 h-4 bg-gray-200 dark:bg-muted rounded animate-pulse" />
+                          <div className="h-3 bg-gray-200 dark:bg-muted rounded w-32 animate-pulse" />
                         </div>
                         {/* Away Team */}
                         <div className="flex items-center gap-1.5">
-                          <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
-                          <div className="h-3 bg-gray-200 rounded w-28 animate-pulse" />
+                          <div className="w-4 h-4 bg-gray-200 dark:bg-muted rounded animate-pulse" />
+                          <div className="h-3 bg-gray-200 dark:bg-muted rounded w-28 animate-pulse" />
                         </div>
                       </div>
 
                       {/* Score/Time Skeleton */}
                       <div className="flex flex-col items-end gap-2 flex-shrink-0 min-w-[60px]">
-                        <div className="h-6 w-8 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-6 w-8 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-6 w-8 bg-gray-200 dark:bg-muted rounded animate-pulse" />
+                        <div className="h-6 w-8 bg-gray-200 dark:bg-muted rounded animate-pulse" />
                       </div>
 
                       {/* Odds Skeleton */}
                       <div className="flex flex-col gap-1 flex-shrink-0 min-w-[50px]">
-                        <div className="h-4 w-10 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-4 w-10 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-4 w-10 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-4 w-10 bg-gray-200 dark:bg-muted rounded animate-pulse" />
+                        <div className="h-4 w-10 bg-gray-200 dark:bg-muted rounded animate-pulse" />
+                        <div className="h-4 w-10 bg-gray-200 dark:bg-muted rounded animate-pulse" />
                       </div>
                     </div>
                   </div>
@@ -682,12 +683,12 @@ const Index = () => {
                     <div key={leagueName} className="mb-4">
                       {/* League Header */}
                       <div
-                        className={`flex items-center gap-3 mb-2 px-4 py-2 bg-[#f2f2f2] rounded-t-lg border-b border-gray-200 ${isFootball ? 'cursor-pointer' : 'cursor-default'}`}
+                        className={`flex items-center gap-3 mb-2 px-4 py-2 bg-[#f2f2f2] dark:bg-card rounded-t-lg border-b border-gray-200 dark:border-border ${isFootball ? 'cursor-pointer' : 'cursor-default'}`}
                         onClick={() => isFootball && handleLeagueHeaderClick(leagueName, league)}
                       >
                         {/* Star Icon */}
                         <button
-                          className="flex-shrink-0 text-gray-400 hover:text-yellow-500 transition-colors"
+                          className="flex-shrink-0 text-gray-400 dark:text-muted-foreground hover:text-yellow-500 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             // TODO: Implement league favorite toggling
@@ -712,10 +713,10 @@ const Index = () => {
 
                         {/* League Info */}
                         <div className="flex flex-col flex-1 min-w-0">
-                          <h2 className="text-gray-700 font-bold text-sm leading-tight truncate">
+                          <h2 className="text-gray-700 dark:text-foreground font-bold text-sm leading-tight truncate">
                             {leagueName.split('(')[0].trim()}
                           </h2>
-                          <span className="text-gray-500 text-[10px] font-medium uppercase tracking-wider">
+                          <span className="text-gray-500 dark:text-muted-foreground text-[10px] font-medium uppercase tracking-wider">
                             {league?.country || 'International'}
                           </span>
                         </div>
@@ -752,7 +753,7 @@ const Index = () => {
                                 e.stopPropagation();
                                 handleLeagueHeaderClick(leagueName, league);
                               }}
-                              className="flex items-center justify-center w-6 h-6 hover:bg-gray-200 rounded transition-colors"
+                              className="flex items-center justify-center w-6 h-6 hover:bg-gray-200 dark:hover:bg-accent rounded transition-colors"
                             >
                               <div className="flex flex-col gap-[2px] items-start">
                                 <div className="flex gap-1 items-center">
@@ -773,7 +774,7 @@ const Index = () => {
 
                           {/* Collapse Icon */}
                           <ChevronDown
-                            className={`w-5 h-5 text-gray-500 transition-transform ${collapsedLeagues.has(leagueName) ? 'transform -rotate-180' : ''
+                            className={`w-5 h-5 text-gray-500 dark:text-muted-foreground transition-transform ${collapsedLeagues.has(leagueName) ? 'transform -rotate-180' : ''
                               }`}
                           />
                         </div>
@@ -804,10 +805,10 @@ const Index = () => {
                 })}
 
                 {Object.keys(groupedMatches).length === 0 && (
-                  <div className="bg-[#2a2a2a] rounded-lg p-8 text-center">
+                  <div className="bg-card rounded-lg p-8 text-center border border-border">
                     <Trophy className="h-16 w-16 mx-auto mb-4 text-gray-500 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2 text-white">No Matches Found</h3>
-                    <p className="text-gray-400 mb-4">
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">No Matches Found</h3>
+                    <p className="text-muted-foreground mb-4">
                       No matches found for {format(selectedDate, 'MMMM d, yyyy')}.
                     </p>
                   </div>

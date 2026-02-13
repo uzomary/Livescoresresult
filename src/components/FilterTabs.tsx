@@ -29,7 +29,7 @@ export const FilterTabs = ({ activeFilter = 'all', onFilterChange }: FilterTabsP
               "px-4 py-2 text-xs font-bold rounded-md transition-all whitespace-nowrap",
               activeFilter === tab.id
                 ? "bg-[#ff2957] text-white shadow-lg shadow-[#ff2957]/30"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                : "bg-gray-100 dark:bg-card text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-accent hover:text-gray-900 dark:hover:text-foreground"
             )}
           >
             {tab.label}

@@ -78,6 +78,8 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
 
   // Check if current page is match details
   const isMatchDetails = location.pathname.startsWith('/match/');
+  const isLeagueDetails = location.pathname.startsWith('/leagues/');
+  const isFullWidthPage = isMatchDetails || isLeagueDetails;
 
   const clearSearch = useCallback(() => {
     setSearchQuery('');
@@ -154,7 +156,7 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
 
           {/* Full-width Top Content Slot (e.g. SportTabs) */}
           {topContent && (
-            <div className="w-full bg-white">
+            <div className="w-full bg-background">
               {topContent}
             </div>
           )}
@@ -162,7 +164,7 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
           {/* Main Content Area with Sidebar */}
           <div className="flex flex-1">
             {/* Sidebar (Desktop) - Below Header */}
-            <div className="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-gray-200">
+            <div className="hidden lg:flex lg:flex-col lg:w-64 bg-background border-r border-border">
               <Sidebar
                 selectedLeague={selectedLeague}
                 onLeagueSelect={handleLeagueSelect}
@@ -173,11 +175,11 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
             {isMobileMenuOpen && (
               <div className="fixed inset-0 z-50 lg:hidden font-sans">
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-                <div className="absolute top-0 right-0 w-[280px] h-full bg-white shadow-2xl animate-in slide-in-from-right duration-300">
-                  <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                    <span className="font-bold text-lg text-[#001e28]">Menu</span>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-gray-500"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                <div className="absolute top-0 right-0 w-[280px] h-full bg-background shadow-2xl animate-in slide-in-from-right duration-300">
+                  <div className="p-4 border-b border-border flex items-center justify-between">
+                    <span className="font-bold text-lg text-foreground">Menu</span>
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-accent hover:text-accent-foreground rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-muted-foreground"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                     </button>
                   </div>
                   <div className="h-full overflow-y-auto pb-20">
@@ -194,7 +196,7 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
             <div className="flex-1 flex flex-col min-w-0">
               <main className="flex-1 flex">
                 {/* Content Area */}
-                <div className={`flex-1 overflow-y-auto ${isMatchDetails ? 'p-0' : 'px-6 py-6'}`}>
+                <div className={`flex-1 overflow-y-auto ${isFullWidthPage ? 'p-0' : 'px-6 py-6'}`}>
                   {children}
                 </div>
 

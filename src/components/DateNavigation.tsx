@@ -32,18 +32,18 @@ export const DateNavigation = ({ selectedDate, onDateSelect }: DateNavigationPro
       {/* Previous Day Button */}
       <button
         onClick={goToPreviousDay}
-        className="w-12 h-12 flex items-center justify-center bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm"
+        className="w-12 h-12 flex items-center justify-center bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-accent transition-colors shadow-sm"
       >
-        <ChevronLeft className="h-5 w-5 text-gray-600" />
+        <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-muted-foreground" />
       </button>
 
       {/* Date Display Card — Opens Calendar on Click */}
       <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
         <PopoverTrigger asChild>
-          <button className="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+          <button className="flex-1 bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border shadow-sm px-6 py-3 hover:bg-gray-50 dark:hover:bg-accent transition-colors cursor-pointer">
             <div className="flex items-center justify-center gap-3">
-              <CalendarIcon className="h-5 w-5 text-gray-600" />
-              <span className="text-gray-700 font-semibold text-base">
+              <CalendarIcon className="h-5 w-5 text-gray-600 dark:text-muted-foreground" />
+              <span className="text-gray-700 dark:text-foreground font-semibold text-base">
                 {format(selectedDate, 'dd/MM')} <span className="uppercase">{format(selectedDate, 'EEE')}</span>
               </span>
             </div>
@@ -63,9 +63,9 @@ export const DateNavigation = ({ selectedDate, onDateSelect }: DateNavigationPro
       {/* Next Day Button */}
       <button
         onClick={goToNextDay}
-        className="w-12 h-12 flex items-center justify-center bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm"
+        className="w-12 h-12 flex items-center justify-center bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-accent transition-colors shadow-sm"
       >
-        <ChevronRight className="h-5 w-5 text-gray-600" />
+        <ChevronRight className="h-5 w-5 text-gray-600 dark:text-muted-foreground" />
       </button>
     </div>
   );

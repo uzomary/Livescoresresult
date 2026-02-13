@@ -11,6 +11,7 @@ interface SportTab {
 interface SportTabsProps {
     activeSport: SportId;
     onSportChange: (sport: SportId) => void;
+    favoritesCount?: number;
 }
 
 // Simple SVG sport icons
@@ -93,7 +94,7 @@ const sportTabs: SportTab[] = [
     { id: 'volleyball', label: 'VOLLEYBALL', icon: <VolleyballIcon /> },
 ];
 
-export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
+export const SportTabs = ({ activeSport, onSportChange, favoritesCount = 0 }: SportTabsProps) => {
     return (
         <div className="overflow-x-auto scrollbar-hide px-6 pt-4">
             <div className="flex items-center justify-between w-full border-b border-gray-100">
@@ -103,7 +104,7 @@ export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
                             key={tab.id}
                             onClick={() => onSportChange(tab.id)}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
+                                "relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
                                 activeSport === tab.id
                                     ? "text-[#ff0046] border-[#ff0046]"
                                     : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
@@ -111,6 +112,11 @@ export const SportTabs = ({ activeSport, onSportChange }: SportTabsProps) => {
                         >
                             {tab.icon}
                             {tab.label}
+                            {tab.id === 'favorites' && favoritesCount > 0 && (
+                                <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-[#ff0046] text-white text-[10px] font-bold rounded-full px-1 leading-none">
+                                    {favoritesCount}
+                                </span>
+                            )}
                         </button>
 
                         {/* Pools Results Link - After Football */}
