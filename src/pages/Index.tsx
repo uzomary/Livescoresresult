@@ -99,6 +99,30 @@ const Index = () => {
     },
   });
 
+  // Background odds query — fires after fixtures are loaded, doesn't block match display
+  const { data: oddsData } = useQuery({
+    queryKey: ['odds', formattedDate],
+    queryFn: () => footballApi.getOddsForFixtures(fixturesData!.response, formattedDate),
+    enabled: isFootball && !!fixturesData?.response?.length,
+    staleTime: 60 * 60 * 1000, // 1 hour cache for odds
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // Merge odds into fixtures when available
+  const fixturesWithOdds = useMemo(() => {
+    if (!fixturesData) return null;
+    if (!oddsData || Object.keys(oddsData).length === 0) return fixturesData;
+
+    return {
+      ...fixturesData,
+      response: fixturesData.response.map((fixture: any) => ({
+        ...fixture,
+        odds: oddsData[fixture.fixture.id] || fixture.odds
+      }))
+    };
+  }, [fixturesData, oddsData]);
+
   // Multi-sport query (only runs when a non-football sport is selected)
   const { data: multiSportData, isLoading: isLoadingMultiSport, error: errorMultiSport } = useQuery({
     queryKey: ['multiSport', activeSport, formattedDate],
@@ -133,16 +157,16 @@ const Index = () => {
 
   const matches: Match[] = useMemo(() => {
     if (activeSport === 'favorites') {
-      const footballMatches = fixturesData ? transformFixtures(fixturesData.response) : [];
+      const footballMatches = fixturesWithOdds ? transformFixtures(fixturesWithOdds.response) : [];
       const otherMatches = multiSportData || [];
       const allFetched = [...footballMatches, ...otherMatches];
       return allFetched.filter(m => favoriteIds.includes(m.id));
     }
 
     return isFootball
-      ? (fixturesData ? transformFixtures(fixturesData.response) : [])
+      ? (fixturesWithOdds ? transformFixtures(fixturesWithOdds.response) : [])
       : (multiSportData || []);
-  }, [activeSport, isFootball, fixturesData, multiSportData, favoriteIds]);
+  }, [activeSport, isFootball, fixturesWithOdds, multiSportData, favoriteIds]);
 
   // Filter matches based on active filter tab and search query
   const filterAndSearchMatches = useCallback((matches: Match[]) => {

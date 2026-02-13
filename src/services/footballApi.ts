@@ -890,8 +890,7 @@ export const footballApi = {
     const currentDay = String(currentDate.getDate()).padStart(2, '0');
     const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-    // 1. Fetch fixtures first
-    // Use short cache if requesting today's data
+    // Fetch fixtures only — odds are loaded separately via getOddsForFixtures
     const isToday = formattedDate === new Date().toISOString().split('T')[0];
     const cacheDuration = isToday ? CACHE_DURATION.LIVE_FIXTURES : CACHE_DURATION.FIXTURES;
 
@@ -904,30 +903,39 @@ export const footballApi = {
       throw new Error('Invalid fixtures data format received from API');
     }
 
-    // 2. Filter valid fixtures
+    // Filter valid fixtures
     const validFixtures = fixturesData.response.filter((fixture: any) =>
       fixture?.fixture?.id &&
       fixture?.teams?.home?.id &&
       fixture?.teams?.away?.id
     );
 
-    // 3. Identify Priority Leagues to fetch odds for
+    return {
+      ...fixturesData,
+      response: validFixtures,
+      results: validFixtures.length
+    };
+  },
+
+  // Separate odds fetching — called in background after fixtures are displayed
+  async getOddsForFixtures(fixtures: ApiFixture[], date: string): Promise<Record<number, { home: string; draw: string; away: string }>> {
+    const formattedDate = date;
+
     const priorityLeagueKeywords = [
       'Premier League', 'La Liga', 'Bundesliga', 'Serie A', 'Ligue 1',
       'Champions League', 'Europa League', 'Conference League',
       'Eredivisie', 'Primeira Liga', 'Championship', 'Major League Soccer',
-      'Brasileirão', 'Professional Football League' // Nigeria
+      'Brasileirão', 'Professional Football League'
     ];
 
-    const leaguesToFetch = new Map<number, number>(); // Map<leagueId, season>
+    const leaguesToFetch = new Map<number, number>();
 
-    validFixtures.forEach((fixture: any) => {
+    fixtures.forEach((fixture: any) => {
       const leagueName = fixture.league.name;
       const leagueCountry = fixture.league.country;
       const leagueId = fixture.league.id;
       const season = fixture.league.season;
 
-      // Check if league matches priority keywords
       const isPriority = priorityLeagueKeywords.some(keyword =>
         leagueName.includes(keyword) ||
         (leagueCountry === 'England' && leagueName === 'League Cup') ||
@@ -942,26 +950,23 @@ export const footballApi = {
       }
     });
 
-    // 4. Fetch Odds for Priority Leagues in Parallel
+    if (leaguesToFetch.size === 0) return {};
+
     const oddsPromises = Array.from(leaguesToFetch.entries()).map(([leagueId, season]) =>
       this.getOddsByLeague(leagueId, season, formattedDate)
     );
 
     const oddsResults = await Promise.all(oddsPromises);
 
-    // 5. Flatten results into a single odds map
-    const oddsMap = new Map();
+    const oddsMap: Record<number, { home: string; draw: string; away: string }> = {};
 
-    oddsResults.forEach((oddsResponse, index) => {
-      const leagueId = Array.from(leaguesToFetch.keys())[index];
-
+    oddsResults.forEach((oddsResponse) => {
       if (oddsResponse?.response && Array.isArray(oddsResponse.response)) {
         oddsResponse.response.forEach((oddsItem: any) => {
           const fixtureId = oddsItem.fixture?.id;
           if (fixtureId && oddsItem.bookmakers && oddsItem.bookmakers.length > 0) {
-            // Find the "Match Winner" bet (1X2)
             const bookmaker = oddsItem.bookmakers[0];
-            const matchWinnerBet = bookmaker.bets?.find((bet: any) => bet.name === 'Match Winner'); // Ensure we look for 'Match Winner' specifically
+            const matchWinnerBet = bookmaker.bets?.find((bet: any) => bet.name === 'Match Winner');
 
             if (matchWinnerBet && matchWinnerBet.values) {
               const homeOdd = matchWinnerBet.values.find((v: any) => v.value === 'Home')?.odd;
@@ -969,11 +974,7 @@ export const footballApi = {
               const awayOdd = matchWinnerBet.values.find((v: any) => v.value === 'Away')?.odd;
 
               if (homeOdd && drawOdd && awayOdd) {
-                oddsMap.set(fixtureId, {
-                  home: homeOdd,
-                  draw: drawOdd,
-                  away: awayOdd
-                });
+                oddsMap[fixtureId] = { home: homeOdd, draw: drawOdd, away: awayOdd };
               }
             }
           }
@@ -981,22 +982,7 @@ export const footballApi = {
       }
     });
 
-    // 6. Merge odds with fixtures
-    const fixturesWithOdds = validFixtures.map((fixture: any) => {
-      const fixtureId = fixture.fixture.id;
-      const odds = oddsMap.get(fixtureId);
-
-      return {
-        ...fixture,
-        odds: odds || undefined
-      };
-    });
-
-    return {
-      ...fixturesData,
-      response: fixturesWithOdds,
-      results: fixturesWithOdds.length
-    };
+    return oddsMap;
   },
 
   async searchFixtures(query: string): Promise<{ response: ApiFixture[] }> {
