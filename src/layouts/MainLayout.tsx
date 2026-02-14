@@ -1,4 +1,4 @@
-import { ReactNode, useState, createContext, useContext, useCallback, useEffect } from 'react';
+import { ReactNode, useState, createContext, useContext, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 // Components
@@ -74,6 +74,15 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
   // Reset top content on route change
   useEffect(() => {
     setTopContent(null);
+  }, [location.pathname]);
+
+  // Scroll to top on route change
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo(0, 0);
+    }
   }, [location.pathname]);
 
   // Check if current page is match details
@@ -196,7 +205,7 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
             <div className="flex-1 flex flex-col min-w-0">
               <main className="flex-1 flex">
                 {/* Content Area */}
-                <div className={`flex-1 overflow-y-auto ${isFullWidthPage ? 'p-0' : 'px-6 py-6'}`}>
+                <div ref={mainContentRef} className={`flex-1 overflow-y-auto ${isFullWidthPage ? 'p-0' : 'px-6 py-6'}`}>
                   {children}
                 </div>
 

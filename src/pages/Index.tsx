@@ -21,6 +21,7 @@ import { PlayerSearch } from "@/components/PlayerSearch";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { LeagueStandings } from "@/components/LeagueStandings";
 import { useSearch, useLayout } from "@/layouts/MainLayout";
+import { useMatchNavigation } from "@/hooks/useMatchNavigation";
 import MetaTags from "@/components/MetaTags";
 import { createMatchUrl } from "@/utils/routing";
 import { TopNavigation } from "@/components/TopNavigation";
@@ -46,6 +47,7 @@ const Index = () => {
   const [favoriteIds, setFavoriteIds] = useState<string[]>(favoritesService.getFavorites());
   const matchCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const navigate = useNavigate();
+  const { navigateToMatch } = useMatchNavigation();
 
   // Listen for favorites updates
   useEffect(() => {
@@ -371,9 +373,7 @@ const Index = () => {
   const handleMatchClick = (matchId: string) => {
     const match = matches.find(m => m.id === matchId);
     if (match) {
-      navigate(createMatchUrl(match.homeTeam.name, match.awayTeam.name, matchId));
-    } else {
-      navigate(`/match/${matchId}`);
+      navigateToMatch(match);
     }
   };
 

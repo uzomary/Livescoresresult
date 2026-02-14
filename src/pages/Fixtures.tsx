@@ -16,12 +16,14 @@ import { addDays, subDays, format } from 'date-fns';
 import { transformFixtureData, Match } from '@/utils/fixtureTransform';
 import SlidingCalendar from '@/components/SlidingCalendar';
 import MatchFilter from '@/components/MatchFilter';
+import { useMatchNavigation } from '@/hooks/useMatchNavigation';
 
 const Fixtures = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [matchFilter, setMatchFilter] = useState<'all' | 'finished' | 'upcoming'>('all');
   const navigate = useNavigate();
+  const { navigateToMatch } = useMatchNavigation();
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
@@ -112,7 +114,7 @@ const Fixtures = () => {
   }, [fixturesData]);
 
   const handleMatchClick = (match: Match) => {
-    setSelectedMatch(match);
+    navigateToMatch(match);
   };
 
   const handleLeagueClick = (league: { name: string; country: string; id: number }) => {
