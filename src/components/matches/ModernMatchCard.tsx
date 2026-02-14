@@ -21,7 +21,7 @@ const getStatusDisplay = (match: Match) => {
   if (status === 'HT' || status === 'BT') {
     return {
       text: 'HT',
-      className: 'text-orange-500 font-medium',
+      className: 'text-red-500 font-medium',
       isLive: false
     };
   }

@@ -82,6 +82,14 @@ const MatchStatusDisplay = ({
     );
   }
 
+  if (status === 'HT' || status === 'BT') {
+    return (
+      <div className="w-12 text-center flex items-center justify-center h-full">
+        <span className={`${statusClasses} text-red-500 dark:text-red-500`}>HT</span>
+      </div>
+    );
+  }
+
   // Handle other statuses like 'HT', 'FT', etc.
   return (
     <div className="w-12 text-center text-muted-foreground flex items-center justify-center h-full">

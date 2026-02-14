@@ -165,7 +165,7 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
               </div>
             </>
           ) : (
-            <span className={status === 'HT' ? "text-orange-500 font-bold text-xs" : "text-gray-500 font-medium text-xs"}>
+            <span className={status === 'HT' || status === 'BT' || statusDisplay.text === 'HT' ? "text-red-500 font-bold text-xs" : "text-gray-500 font-medium text-xs"}>
               {statusDisplay.text}
             </span>
           )}
