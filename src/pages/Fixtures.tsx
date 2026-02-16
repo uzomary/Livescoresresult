@@ -124,7 +124,7 @@ const Fixtures = () => {
 
   // Filter matches based on selected filter
   const filteredMatches = transformedMatches.filter(match => {
-    if (matchFilter === 'all') return match.status === 'FT' || match.status === 'SCHEDULED';
+    if (matchFilter === 'all') return match.status === 'FT' || match.status === 'SCHEDULED' || ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(match.status);
     if (matchFilter === 'finished') return match.status === 'FT';
     if (matchFilter === 'upcoming') return match.status === 'SCHEDULED';
     return false;

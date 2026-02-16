@@ -10,9 +10,9 @@ interface ModernMatchCardProps {
 const getStatusDisplay = (match: Match) => {
   const { status, time, minute } = match;
 
-  if (status === 'LIVE' || status === '1H' || status === '2H') {
+  if (['LIVE', '1H', '2H', 'ET', 'P', 'PENALTY'].includes(status)) {
     return {
-      text: status === 'LIVE' ? 'LIVE' : `${minute || 0}'`,
+      text: (status === 'LIVE' || status === 'ET' || status === 'P' || status === 'PENALTY') ? 'LIVE' : `${minute || 0}'`,
       className: 'text-red-500 font-semibold',
       isLive: true
     };

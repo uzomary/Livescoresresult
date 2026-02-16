@@ -38,12 +38,12 @@ const MatchStatusDisplay = ({
     return minutesDiff > 0 && minutesDiff <= 10;
   };
 
-  if (status === 'LIVE') {
+  if (status === 'LIVE' || status === 'ET' || status === 'P' || status === 'BT') {
     return (
       <div className="flex flex-col items-center justify-center w-12 text-center">
-        <span className="text-primary font-bold text-xs sm:text-sm animate-pulse">LIVE</span>
+        <span className="text-primary font-bold text-xs sm:text-sm animate-pulse">{status === 'BT' ? 'HT' : 'LIVE'}</span>
         <span className={`${statusClasses} text-muted-foreground`}>
-          {elapsedMinute !== undefined ? `${elapsedMinute}'` : time}
+          {status === 'BT' ? 'HT' : (elapsedMinute !== undefined ? `${elapsedMinute}'` : time)}
         </span>
       </div>
     );
@@ -82,7 +82,7 @@ const MatchStatusDisplay = ({
     );
   }
 
-  if (status === 'HT' || status === 'BT') {
+  if (status === 'HT' || (status as string) === 'BT') {
     return (
       <div className="w-12 text-center flex items-center justify-center h-full">
         <span className={`${statusClasses} text-red-500 dark:text-red-500`}>HT</span>
@@ -198,7 +198,7 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
   };
 
   const { home: homeScore, away: awayScore, hasExtraTime, isPenalty } = getScores();
-  const showScore = (match.status === 'LIVE' || match.status === 'FINISHED' || match.status === 'FT' || match.status === 'AET' || match.status === 'HT' || match.status === '1H' || match.status === '2H') &&
+  const showScore = (match.status === 'LIVE' || match.status === 'FINISHED' || match.status === 'FT' || match.status === 'AET' || match.status === 'HT' || match.status === '1H' || match.status === '2H' || match.status === 'ET' || match.status === 'P' || match.status === 'BT') &&
     homeScore !== '-' && awayScore !== '-';
 
   // Check if this is a FIFA Club World Cup match and get group/round info

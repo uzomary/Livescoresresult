@@ -130,6 +130,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: eventsData } = useQuery({
         queryKey: ['events', matchId],
         queryFn: () => matchId ? footballApi.getFixtureEvents(matchId) : Promise.reject("No ID"),
+        // Events are needed for SUMMARY tab and added time calculation
         enabled: !!fixtureData && !!matchId,
         staleTime: (query) => {
             const status = fixtureData?.response?.[0]?.fixture?.status?.short;
@@ -147,7 +148,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: statsData } = useQuery({
         queryKey: ['statistics', matchId],
         queryFn: () => matchId ? footballApi.getFixtureStatistics(matchId) : Promise.reject("No ID"),
-        enabled: !!fixtureData && !!matchId,
+        // Only fetch when STATS sub-tab is active
+        enabled: !!fixtureData && !!matchId && activeSubTab === 'STATS',
         staleTime: (query) => {
             const status = fixtureData?.response?.[0]?.fixture?.status?.short;
             // REAL-TIME: Finished matches cache for 1 hour, Live: 0ms (no cache)
@@ -164,7 +166,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: lineupsData } = useQuery({
         queryKey: ['lineups', matchId],
         queryFn: () => matchId ? footballApi.getFixtureLineups(matchId) : Promise.reject("No ID"),
-        enabled: !!fixtureData && !!matchId,
+        // Only fetch when LINEUPS sub-tab is active
+        enabled: !!fixtureData && !!matchId && activeSubTab === 'LINEUPS',
         staleTime: (query) => {
             const status = fixtureData?.response?.[0]?.fixture?.status?.short;
             // Lineups never change after match starts - cache heavily
@@ -184,7 +187,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: h2hData } = useQuery({
         queryKey: ['h2h', homeTeamId, awayTeamId],
         queryFn: () => homeTeamId && awayTeamId ? footballApi.getHeadToHead(homeTeamId, awayTeamId) : Promise.reject("No teams"),
-        enabled: !!homeTeamId && !!awayTeamId,
+        // Fetch when H2H tab OR SUMMARY tab is active (SUMMARY shows some H2H)
+        enabled: !!homeTeamId && !!awayTeamId && (activeMainTab === 'H2H' || activeSubTab === 'SUMMARY'),
         staleTime: 24 * 60 * 60 * 1000, // 24 hours - H2H history never changes
         refetchOnWindowFocus: false,
         refetchOnMount: false,
@@ -193,7 +197,7 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: standingsData } = useQuery({
         queryKey: ['standings', leagueId, season],
         queryFn: () => leagueId && season ? footballApi.getLeagueStandings(leagueId, season) : Promise.reject("No league"),
-        enabled: !!leagueId && !!season,
+        enabled: !!leagueId && !!season && activeMainTab === 'STANDINGS',
         staleTime: 60 * 60 * 1000, // 1 hour - standings don't change frequently
         refetchOnWindowFocus: false,
     });
@@ -201,7 +205,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: oddsData } = useQuery({
         queryKey: ['odds', matchId],
         queryFn: () => matchId ? footballApi.getFixtureOdds(matchId) : Promise.reject("No ID"),
-        enabled: !!matchId,
+        // Odds are needed for ODDS tab and SUMMARY tab (Betting Odds section)
+        enabled: !!matchId && (activeMainTab === 'ODDS' || activeSubTab === 'SUMMARY'),
         staleTime: 30 * 60 * 1000, // 30 minutes - odds don't change that often
         refetchOnWindowFocus: false,
     });
@@ -209,7 +214,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: homeForm } = useQuery({
         queryKey: ['teamForm', homeTeamId, homeFormLimit],
         queryFn: () => homeTeamId ? footballApi.getTeamLastMatches(homeTeamId, homeFormLimit) : Promise.reject("No home team"),
-        enabled: !!homeTeamId,
+        // Form is shown in SUMMARY tab and H2H tab
+        enabled: !!homeTeamId && (activeMainTab === 'H2H' || activeSubTab === 'SUMMARY'),
         staleTime: 60 * 60 * 1000, // 1 hour - team form doesn't change frequently
         refetchOnWindowFocus: false,
         refetchOnMount: false,
@@ -218,7 +224,8 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
     const { data: awayForm } = useQuery({
         queryKey: ['teamForm', awayTeamId, awayFormLimit],
         queryFn: () => awayTeamId ? footballApi.getTeamLastMatches(awayTeamId, awayFormLimit) : Promise.reject("No away team"),
-        enabled: !!awayTeamId,
+        // Form is shown in SUMMARY tab and H2H tab
+        enabled: !!awayTeamId && (activeMainTab === 'H2H' || activeSubTab === 'SUMMARY'),
         staleTime: 60 * 60 * 1000, // 1 hour - team form doesn't change frequently
         refetchOnWindowFocus: false,
         refetchOnMount: false,

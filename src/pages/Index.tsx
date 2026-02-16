@@ -71,7 +71,7 @@ const Index = () => {
       if (!query.state.data?.response) return false; // No data, don't refetch
 
       const hasLiveMatches = query.state.data.response.some((fixture: any) =>
-        ['1H', '2H', 'HT', 'LIVE'].includes(fixture.fixture?.status?.short)
+        ['1H', '2H', 'HT', 'LIVE', 'ET', 'P', 'PENALTY'].includes(fixture.fixture?.status?.short)
       );
 
       // If there are live matches, refetch every 10 seconds for real-time updates
@@ -85,7 +85,7 @@ const Index = () => {
       if (!query.state.data?.response) return 5 * 60 * 1000;
 
       const hasLiveMatches = query.state.data.response.some((fixture: any) =>
-        ['1H', '2H', 'HT', 'LIVE'].includes(fixture.fixture?.status?.short)
+        ['1H', '2H', 'HT', 'LIVE', 'ET', 'P', 'PENALTY'].includes(fixture.fixture?.status?.short)
       );
 
       // Live matches: 0ms staleTime (always fresh, no cache)
@@ -143,7 +143,7 @@ const Index = () => {
     staleTime: (query) => {
       const data = query.state.data;
       if (!data || !Array.isArray(data)) return 5 * 60 * 1000;
-      const hasLive = data.some((m: Match) => ['LIVE', '1H', '2H', 'HT'].includes(m.status));
+      const hasLive = data.some((m: Match) => ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(m.status));
       // Live matches: 0ms staleTime (no cache), Non-live: 10 minutes
       return hasLive ? 0 : 10 * 60 * 1000;
     },
@@ -180,7 +180,7 @@ const Index = () => {
 
       // Apply filter tab logic
       if (activeFilterTab === 'live') {
-        const isLive = ['LIVE', '1H', '2H', 'HT'].includes(match.status);
+        const isLive = ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(match.status);
         if (!isLive) return false;
       } else if (activeFilterTab === 'finished') {
         const isFinished = ['FT', 'FINISHED', 'AET', 'PEN'].includes(match.status);
@@ -212,7 +212,7 @@ const Index = () => {
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
-    const ongoingCount = matches.filter(match => ['LIVE', '1H', '2H', 'HT'].includes(match.status)).length;
+    const ongoingCount = matches.filter(match => ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(match.status)).length;
     const onTvCount = matches.filter(match => {
       const leagueName = typeof match.league === 'string' ? match.league : match.league?.name || '';
       return leagueName.includes('Premier League') || leagueName.includes('Champions League');
@@ -350,7 +350,7 @@ const Index = () => {
   }, [filteredMatches, activeFilterTab, pinnedLeagues]);
 
   // Get live matches count
-  const liveMatchesCount = matches.filter(match => match.status === "LIVE").length;
+  const liveMatchesCount = matches.filter(match => ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(match.status)).length;
 
   // Scroll to first match when search query changes
   useEffect(() => {
@@ -564,7 +564,7 @@ const Index = () => {
   }, [activeSport, setTopContent, favoriteIds]);
 
   const filterOptions = [
-    { key: "all", label: "All", count: matches.filter(m => m.status === 'FT' || m.status === 'SCHEDULED' || m.status === 'LIVE').length },
+    { key: "all", label: "All", count: matches.filter(m => m.status === 'FT' || m.status === 'SCHEDULED' || ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(m.status)).length },
     { key: "live", label: "Live", count: liveMatchesCount },
     { key: "today", label: "Today", count: matches.length },
   ];

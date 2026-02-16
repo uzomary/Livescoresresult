@@ -12,17 +12,26 @@ export const ArticlePage = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
     const [post, setPost] = useState<BlogPost | null>(null);
+    const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadPost = async () => {
+        const loadPostAndRelated = async () => {
             if (slug) {
                 const foundPost = await blogService.getBySlug(slug);
                 setPost(foundPost);
+
+                // Load related posts
+                const allPosts = await blogService.getPublished();
+                const filtered = allPosts
+                    .filter(p => p.slug !== slug)
+                    .slice(0, 3);
+                setRelatedPosts(filtered);
+
                 setLoading(false);
             }
         };
-        loadPost();
+        loadPostAndRelated();
     }, [slug]);
 
     if (loading) {
@@ -102,6 +111,47 @@ export const ArticlePage = () => {
                         <Markdown>{post.content}</Markdown>
                     </div>
                 </article>
+
+                {/* Other News Section */}
+                {relatedPosts.length > 0 && (
+                    <div className="mt-12">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-6">Other News</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {relatedPosts.map((otherPost) => (
+                                <div
+                                    key={otherPost.id}
+                                    className="bg-white dark:bg-card rounded-xl shadow-sm border border-gray-100 dark:border-border overflow-hidden cursor-pointer group hover:shadow-md transition-all"
+                                    onClick={() => {
+                                        navigate(`/news/${otherPost.slug}`);
+                                        window.scrollTo(0, 0);
+                                    }}
+                                >
+                                    {otherPost.image && (
+                                        <div className="h-40 overflow-hidden">
+                                            <img
+                                                src={otherPost.image}
+                                                alt={otherPost.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="p-4">
+                                        <div className="text-[10px] font-bold text-[#ff0046] uppercase mb-2">
+                                            {otherPost.category}
+                                        </div>
+                                        <h3 className="font-bold text-gray-900 dark:text-foreground line-clamp-2 leading-tight group-hover:text-[#ff0046] transition-colors">
+                                            {otherPost.title}
+                                        </h3>
+                                        <div className="mt-4 flex items-center text-xs text-gray-400 dark:text-muted-foreground font-medium">
+                                            <Calendar className="w-3 h-3 mr-1" />
+                                            {format(new Date(otherPost.createdAt), 'MMM d, yyyy')}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div >
         </div >
     );
