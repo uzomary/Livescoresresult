@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
@@ -9,6 +10,7 @@ type DropdownContextValue = {
   open: boolean
   setOpen: (v: boolean) => void
   rootRef: React.RefObject<HTMLDivElement>
+  triggerRect: DOMRect | null
 }
 
 const DropdownContext = React.createContext<DropdownContextValue | null>(null)
@@ -17,6 +19,7 @@ export interface DropdownMenuProps extends React.HTMLAttributes<HTMLDivElement> 
 
 const DropdownMenu = ({ children, className, ...props }: DropdownMenuProps) => {
   const [open, setOpen] = React.useState(false)
+  const [triggerRect, setTriggerRect] = React.useState<DOMRect | null>(null)
   const rootRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -27,14 +30,24 @@ const DropdownMenu = ({ children, className, ...props }: DropdownMenuProps) => {
         setOpen(false)
       }
     }
-    document.addEventListener("mousedown", onDocClick)
-    return () => document.removeEventListener("mousedown", onDocClick)
-  }, [])
+
+    if (open) {
+      document.addEventListener("click", onDocClick)
+    }
+    return () => document.removeEventListener("click", onDocClick)
+  }, [open])
 
   return (
     <div ref={rootRef} className={cn("relative inline-block", className)} {...props}>
-      <DropdownContext.Provider value={{ open, setOpen, rootRef }}>
-        {children}
+      <DropdownContext.Provider value={{ open, setOpen, rootRef, triggerRect }}>
+        {React.Children.map(children, child => {
+          if (React.isValidElement(child) && child.type === DropdownMenuTrigger) {
+            return React.cloneElement(child as React.ReactElement<any>, {
+              onRectChange: (rect: DOMRect) => setTriggerRect(rect)
+            })
+          }
+          return child
+        })}
       </DropdownContext.Provider>
     </div>
   )
@@ -43,21 +56,36 @@ const DropdownMenu = ({ children, className, ...props }: DropdownMenuProps) => {
 export interface DropdownMenuTriggerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
+  onRectChange?: (rect: DOMRect) => void
 }
 
 const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTriggerProps>(
-  ({ asChild, className, onClick, ...props }, ref) => {
+  ({ asChild, className, onClick, onRectChange, ...props }, ref) => {
     const ctx = React.useContext(DropdownContext)
+    const internalRef = React.useRef<HTMLButtonElement>(null)
+    const combinedRef = (node: HTMLButtonElement) => {
+      (internalRef as any).current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as any).current = node;
+    }
+
     const Comp: any = asChild ? Slot : "button"
+
+    const handleClick = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (internalRef.current) {
+        onRectChange?.(internalRef.current.getBoundingClientRect())
+      }
+      ctx?.setOpen(!ctx.open)
+      onClick?.(e as any)
+    }
 
     return (
       <Comp
-        ref={ref}
+        ref={combinedRef}
+        type={asChild ? undefined : "button"}
         className={className}
-        onClick={(e: any) => {
-          ctx?.setOpen(!ctx.open)
-          onClick?.(e)
-        }}
+        onClick={handleClick}
         {...props}
       />
     )
@@ -73,23 +101,36 @@ export interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivEl
 const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
   ({ className, align = "start", sideOffset = 4, style, ...props }, ref) => {
     const ctx = React.useContext(DropdownContext)
-    if (!ctx) return null
-    if (!ctx.open) return null
+    if (!ctx || !ctx.open || !ctx.triggerRect) return null
 
-    const alignmentClass = align === "end" ? "right-0" : align === "center" ? "left-1/2 -translate-x-1/2" : "left-0"
+    const top = ctx.triggerRect.bottom + window.scrollY + sideOffset;
+    let left = ctx.triggerRect.left + window.scrollX;
 
-    return (
+    if (align === "end") {
+      left = ctx.triggerRect.right + window.scrollX - 192; // Default width 48 * 4 = 192px
+    } else if (align === "center") {
+      left = ctx.triggerRect.left + window.scrollX + (ctx.triggerRect.width / 2) - 96;
+    }
+
+    const dropdown = (
       <div
         ref={ref}
         className={cn(
-          "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md mt-1",
-          alignmentClass,
+          "fixed z-[100] min-w-[8rem] overflow-hidden rounded-md border bg-white dark:bg-[#00141e] p-1 text-popover-foreground shadow-xl animate-in fade-in zoom-in-95 duration-100",
           className
         )}
-        style={{ marginTop: sideOffset, ...style }}
+        style={{
+          top,
+          left,
+          position: 'fixed',
+          ...style
+        }}
+        onClick={(e) => e.stopPropagation()}
         {...props}
       />
     )
+
+    return createPortal(dropdown, document.body)
   }
 )
 DropdownMenuContent.displayName = "DropdownMenuContent"
@@ -110,11 +151,12 @@ const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenuItemPro
         type={asChild ? undefined : "button"}
         role="menuitem"
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors hover:bg-gray-100 dark:hover:bg-white/5 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           inset && "pl-8",
           className
         )}
         onClick={(e: any) => {
+          e.stopPropagation()
           onClick?.(e)
           ctx?.setOpen(false)
         }}
@@ -125,10 +167,10 @@ const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenuItemPro
 )
 DropdownMenuItem.displayName = "DropdownMenuItem"
 
-// Lightweight stubs to prevent import breakage; they render simple wrappers
+// Lightweight stubs to prevent import breakage
 const passthrough = (Comp: any) => Comp as any
-const DropdownMenuGroup = passthrough(({ children }: any) => <div>{children}</div>)
 const DropdownMenuPortal = passthrough(({ children }: any) => <>{children}</>)
+const DropdownMenuGroup = passthrough(({ children }: any) => <div>{children}</div>)
 const DropdownMenuSub = passthrough(({ children }: any) => <div>{children}</div>)
 const DropdownMenuSubContent = passthrough(({ children, className }: any) => (
   <div className={cn("z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg", className)}>{children}</div>

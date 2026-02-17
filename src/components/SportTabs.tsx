@@ -171,12 +171,15 @@ export const SportTabs = ({ activeSport, onSportChange, favoritesCount = 0 }: Sp
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button className={cn(
-                                "relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-1.5 px-1 md:px-3 py-2 md:py-2.5 text-[8px] md:text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
-                                hiddenTabs.some(t => t.id === activeSport)
-                                    ? "text-[#ff0046] border-[#ff0046]"
-                                    : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
-                            )}>
+                            <button
+                                type="button"
+                                className={cn(
+                                    "relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-1.5 px-3 md:px-3 py-2 md:py-2.5 text-[8px] md:text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase cursor-pointer",
+                                    hiddenTabs.some(t => t.id === activeSport)
+                                        ? "text-[#ff0046] border-[#ff0046]"
+                                        : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+                                )}
+                            >
                                 <MoreHorizontal className="w-4 h-4" />
                                 MORE
                             </button>
