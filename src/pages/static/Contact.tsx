@@ -31,21 +31,21 @@ const Contact = () => {
                             <Mail className="w-8 h-8 text-[#ff0046] mb-4" />
                             <h3 className="font-bold text-[#00141e] text-lg mb-2">Email Us</h3>
                             <p className="text-sm text-gray-600 mb-4">For general inquiries and support.</p>
-                            <a href="mailto:support@livescoresresult.com" className="text-[#ff0046] hover:underline font-medium">support@livescoresresult.com</a>
+                            <a href="#" className="text-[#ff0046] hover:underline font-medium">support@livescoresresult.com</a>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                             <MessageSquare className="w-8 h-8 text-[#ff0046] mb-4" />
                             <h3 className="font-bold text-[#00141e] text-lg mb-2">Feedback</h3>
                             <p className="text-sm text-gray-600 mb-4">Help us improve our platform.</p>
-                            <a href="mailto:feedback@livescoresresult.com" className="text-[#ff0046] hover:underline font-medium">feedback@livescoresresult.com</a>
+                            <a href="#" className="text-[#ff0046] hover:underline font-medium">feedback@livescoresresult.com</a>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                             <Phone className="w-8 h-8 text-[#ff0046] mb-4" />
                             <h3 className="font-bold text-[#00141e] text-lg mb-2">Advertising</h3>
                             <p className="text-sm text-gray-600 mb-4">For partnership opportunities.</p>
-                            <a href="mailto:sales@livescoresresult.com" className="text-[#ff0046] hover:underline font-medium">sales@livescoresresult.com</a>
+                            <a href="#" className="text-[#ff0046] hover:underline font-medium">sales@livescoresresult.com</a>
                         </div>
                     </div>
 

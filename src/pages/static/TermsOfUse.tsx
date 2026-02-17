@@ -23,14 +23,14 @@ const TermsOfUse = () => {
                         <section>
                             <h2 className="text-xl font-bold text-[#00141e] mb-4">1. Acceptance of Terms</h2>
                             <p>
-                                By accessing and using Livescoresresult ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.
+                                By accessing and using LiveScoresResult ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-[#00141e] mb-4">2. Description of Service</h2>
                             <p>
-                                Livescoresresult provides users with access to real-time football scores, fixtures, standings, and related sports information. The Service is provided "as is" and is for informational purposes only.
+                                LiveScoresResult provides users with access to real-time football scores, fixtures, standings, and related sports information. The Service is provided "as is" and is for informational purposes only.
                             </p>
                         </section>
 
@@ -51,7 +51,7 @@ const TermsOfUse = () => {
                         <section>
                             <h2 className="text-xl font-bold text-[#00141e] mb-4">5. Betting & Gambling</h2>
                             <p>
-                                Livescoresresult is NOT a gambling site. Any information regarding odds or betting is for informational purposes only. We do not accept bets or provide gambling services. Users are responsible for complying with the laws and regulations in their own jurisdiction regarding online gambling.
+                                LiveScoresResult is NOT a gambling site. Any information regarding odds or betting is for informational purposes only. We do not accept bets or provide gambling services. Users are responsible for complying with the laws and regulations in their own jurisdiction regarding online gambling.
                             </p>
                         </section>
 

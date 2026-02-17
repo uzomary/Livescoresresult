@@ -43,7 +43,7 @@ const MetaTags = ({
   const organizationLdJson = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Livescoresresult',
+    name: 'LiveScoresResult',
     url: CANONICAL_BASE,
     logo: ogImage,
   };
@@ -51,7 +51,7 @@ const MetaTags = ({
   const websiteLdJson = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Livescoresresult',
+    name: 'LiveScoresResult',
     url: CANONICAL_BASE,
     potentialAction: {
       '@type': 'SearchAction',
@@ -68,7 +68,7 @@ const MetaTags = ({
 
       {/* Open Graph */}
       <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="livescoreresult" />
+      <meta property="og:site_name" content="LiveScoresResult" />
       <meta property="og:title" content={pageTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />

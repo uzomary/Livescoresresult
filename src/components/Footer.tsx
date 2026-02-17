@@ -42,7 +42,7 @@ const Footer = ({ className = '' }: FooterProps) => {
 
           {/* Livescoresresult */}
           <div className="space-y-4">
-            <h3 className="font-medium text-lg text-[#e5e7eb]">Livescoresresult</h3>
+            <h3 className="font-medium text-lg text-[#e5e7eb]">LiveScoresResult</h3>
             <div className="flex flex-col space-y-2">
               <Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors underline decoration-gray-600 hover:decoration-white underline-offset-4">Terms of Use</Link>
               <Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors underline decoration-gray-600 hover:decoration-white underline-offset-4">Privacy Policy</Link>
@@ -55,13 +55,13 @@ const Footer = ({ className = '' }: FooterProps) => {
           <div className="space-y-4">
             <h3 className="font-medium text-lg text-[#e5e7eb]">Follow Us</h3>
             <div className="flex gap-4">
-              <a href="https://facebook.com/livescoresresult" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
                 <Facebook className="w-6 h-6" />
               </a>
-              <a href="https://twitter.com/livescoresresult" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
                 <Twitter className="w-6 h-6" />
               </a>
-              <a href="https://instagram.com/livescoresresult" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300 transition-colors">
                 <Instagram className="w-6 h-6" />
               </a>
             </div>

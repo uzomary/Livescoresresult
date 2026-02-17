@@ -14,7 +14,7 @@ const Advertise = () => {
                                 Back to Home
                             </Link>
                             <h1 className="text-3xl sm:text-4xl font-black text-[#00141e] mb-4">
-                                Advertise with Livescoresresult
+                                Advertise with LiveScoresResult
                             </h1>
                             <p className="text-lg text-gray-500 max-w-2xl mx-auto">
                                 Reach millions of passionate football fans worldwide. Elevate your brand with our premium advertising solutions.
@@ -50,7 +50,7 @@ const Advertise = () => {
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <a href="mailto:sales@livescoresresult.com">
+                            <a href="#">
                                 <Button className="bg-[#ff0046] hover:bg-[#d9003b] text-white font-bold py-6 px-8 rounded-lg text-lg w-full sm:w-auto">
                                     <Mail className="w-5 h-5 mr-2" />
                                     Contact Sales
