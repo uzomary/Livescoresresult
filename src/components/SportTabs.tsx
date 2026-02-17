@@ -94,47 +94,110 @@ const sportTabs: SportTab[] = [
     { id: 'volleyball', label: 'VOLLEYBALL', icon: <VolleyballIcon /> },
 ];
 
+import { MoreHorizontal } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 export const SportTabs = ({ activeSport, onSportChange, favoritesCount = 0 }: SportTabsProps) => {
+    // Show 3 tabs + More button on mobile to fit 5 items (Fav, Football, Pools, Basketball, More)
+    const visibleTabs = sportTabs.slice(0, 3);
+    const hiddenTabs = sportTabs.slice(3);
+
+    const TabButton = ({ tab, isActive, onClick }: { tab: SportTab, isActive: boolean, onClick: () => void }) => (
+        <button
+            onClick={onClick}
+            className={cn(
+                "relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-1.5 px-3.5 md:px-3 py-2 md:py-2.5 text-[8px] md:text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
+                isActive
+                    ? "text-[#ff0046] border-[#ff0046]"
+                    : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+            )}
+        >
+            {tab.icon}
+            {tab.label}
+            {tab.id === 'favorites' && favoritesCount > 0 && (
+                <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-[#ff0046] text-white text-[10px] font-bold rounded-full px-1 leading-none">
+                    {favoritesCount}
+                </span>
+            )}
+        </button>
+    );
+
+    const PoolsLink = () => (
+        <a
+            href="https://poolsupdate.com/pools_results.php"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-1.5 px-1 md:px-3 py-2 md:py-2.5 text-[8px] md:text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
+        >
+            <TrophyIcon />
+            POOLS RESULTS
+        </a>
+    );
+
     return (
-        <div className="overflow-x-auto scrollbar-hide px-6 pt-4">
+        <div className="px-6 pt-4 overflow-x-auto scrollbar-hide">
             <div className="flex items-center justify-between w-full border-b border-gray-100">
-                {sportTabs.map((tab) => (
-                    <>
-                        <button
-                            key={tab.id}
-                            onClick={() => onSportChange(tab.id)}
-                            className={cn(
-                                "relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
-                                activeSport === tab.id
+                {/* Desktop View - All Tabs */}
+                <div className="hidden md:flex items-center justify-between w-full">
+                    {sportTabs.map((tab) => (
+                        <div key={tab.id} className="flex items-center">
+                            <TabButton
+                                tab={tab}
+                                isActive={activeSport === tab.id}
+                                onClick={() => onSportChange(tab.id)}
+                            />
+                            {tab.id === 'football' && <PoolsLink />}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Mobile View - 4 Tabs + Dropdown */}
+                <div className="flex md:hidden items-center w-full relative">
+                    {visibleTabs.map((tab) => (
+                        <div key={tab.id} className="flex items-center">
+                            <TabButton
+                                tab={tab}
+                                isActive={activeSport === tab.id}
+                                onClick={() => onSportChange(tab.id)}
+                            />
+                            {tab.id === 'football' && <PoolsLink />}
+                        </div>
+                    ))}
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className={cn(
+                                "relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-1.5 px-1 md:px-3 py-2 md:py-2.5 text-[8px] md:text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase",
+                                hiddenTabs.some(t => t.id === activeSport)
                                     ? "text-[#ff0046] border-[#ff0046]"
                                     : "text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
-                            )}
-                        >
-                            {tab.icon}
-                            {tab.label}
-                            {tab.id === 'favorites' && favoritesCount > 0 && (
-                                <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-[#ff0046] text-white text-[10px] font-bold rounded-full px-1 leading-none">
-                                    {favoritesCount}
-                                </span>
-                            )}
-                        </button>
-
-                        {/* Pools Results Link - After Football */}
-                        {tab.id === 'football' && (
-                            <a
-                                href="https://poolsupdate.com/pools_results.php"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-bold tracking-wider transition-all whitespace-nowrap border-b-2 uppercase text-gray-500 border-transparent hover:text-gray-800 hover:border-gray-300"
-                            >
-                                <TrophyIcon />
-                                POOLS RESULTS
-                            </a>
-                        )}
-                    </>
-                ))}
-
-
+                            )}>
+                                <MoreHorizontal className="w-4 h-4" />
+                                MORE
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-card">
+                            {hiddenTabs.map((tab) => (
+                                <DropdownMenuItem
+                                    key={tab.id}
+                                    onClick={() => onSportChange(tab.id)}
+                                    className={cn(
+                                        "flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase cursor-pointer",
+                                        activeSport === tab.id ? "text-[#ff0046] bg-red-50" : "text-gray-600 dark:text-gray-300"
+                                    )}
+                                >
+                                    {tab.icon}
+                                    {tab.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </div>
     );

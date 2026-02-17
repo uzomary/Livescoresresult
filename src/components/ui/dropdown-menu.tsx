@@ -13,7 +13,7 @@ type DropdownContextValue = {
 
 const DropdownContext = React.createContext<DropdownContextValue | null>(null)
 
-export interface DropdownMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DropdownMenuProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const DropdownMenu = ({ children, className, ...props }: DropdownMenuProps) => {
   const [open, setOpen] = React.useState(false)
@@ -96,23 +96,25 @@ DropdownMenuContent.displayName = "DropdownMenuContent"
 
 export interface DropdownMenuItemProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean
   inset?: boolean
 }
 
 const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenuItemProps>(
-  ({ className, inset, onClick, ...props }, ref) => {
+  ({ className, inset, asChild = false, onClick, ...props }, ref) => {
     const ctx = React.useContext(DropdownContext)
+    const Comp = asChild ? Slot : "button"
     return (
-      <button
+      <Comp
         ref={ref}
-        type="button"
+        type={asChild ? undefined : "button"}
         role="menuitem"
         className={cn(
           "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           inset && "pl-8",
           className
         )}
-        onClick={(e) => {
+        onClick={(e: any) => {
           onClick?.(e)
           ctx?.setOpen(false)
         }}

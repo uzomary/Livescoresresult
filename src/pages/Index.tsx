@@ -291,41 +291,76 @@ const Index = () => {
 
       // Top 5 European Leagues & Cups
       'Premier League (England)': 10,
-      'Premier League': 10,
       'FA Cup (England)': 10.1,
       'FA Cup': 10.1,
       'Carabao Cup (England)': 10.2,
       'Carabao Cup': 10.2,
 
       'LaLiga (Spain)': 11,
-      'LaLiga': 11,
       'La Liga (Spain)': 11,
-      'La Liga': 11,
       'Primera División (Spain)': 11,
       'Spanish La Liga': 11,
       'Copa del Rey (Spain)': 11.1,
       'Copa del Rey': 11.1,
 
       'Serie A (Italy)': 12,
-      'Serie A': 12,
       'Italian Serie A': 12,
       'Coppa Italia (Italy)': 12.1,
       'Coppa Italia': 12.1,
 
       'Bundesliga (Germany)': 13,
-      'Bundesliga': 13,
       'German Bundesliga': 13,
       'DFB Pokal (Germany)': 13.1,
       'DFB Pokal': 13.1,
 
       'Ligue 1 (France)': 14,
-      'Ligue 1': 14,
       'French Ligue 1': 14,
       'Coupe de France (France)': 14.1,
       'Coupe de France': 14.1,
 
+      // Other Top European Leagues (Priority 15-20)
+      'Primeira Liga (Portugal)': 15,
+      'Portuguese Liga': 15,
+      'Liga Portugal': 15,
+
+      'Eredivisie (Netherlands)': 16,
+      'Dutch Eredivisie': 16,
+      'Eredivisie': 16,
+
+      'Premiership (Scotland)': 17,
+      'Scottish Premiership': 17,
+      'Scottish Premier League': 17,
+
+      'Jupiler Pro League (Belgium)': 18,
+      'Jupiler Pro League': 18,
+      'Belgian Pro League': 18,
+      'Pro League (Belgium)': 18,
+
+      'Süper Lig (Turkey)': 19,
+      'Süper Lig': 19,
+      'Turkish Super Lig': 19,
+
       // All other leagues get default priority (100) and sort alphabetically
       ...customPriorities // Merge custom priorities from admin panel
+    };
+
+    // Priority map by League ID (Overrules string matching)
+    // IDs based on API-Football standard
+    const leaguePriorityById: Record<number, number> = {
+      2: 1,    // UEFA Champions League
+      3: 2,    // UEFA Europa League
+      848: 3,  // UEFA Conference League
+      39: 10,  // Premier League (England)
+      140: 11, // La Liga (Spain)
+      135: 12, // Serie A (Italy)
+      78: 13,  // Bundesliga (Germany)
+      61: 14,  // Ligue 1 (France)
+      45: 10.1, // FA Cup (England)
+      48: 10.2, // Carabao Cup (England)
+      143: 11.1, // Copa del Rey (Spain)
+      137: 12.1, // Coppa Italia (Italy)
+      529: 13.1, // DFB Pokal (Germany)
+      66: 14.1, // Coupe de France (France)
     };
 
     // Sort groups by pinned status first, then by priority
@@ -339,14 +374,17 @@ const Index = () => {
 
       // If both pinned or both not pinned, sort by priority
       const getPriority = (league: string, matches: Match[]) => {
-        // Try exact match first
+        // Try exact ID match first (Most reliable)
+        const leagueId = Number(matches[0]?.league?.id);
+        if (!isNaN(leagueId) && leaguePriorityById[leagueId] !== undefined) {
+          return leaguePriorityById[leagueId];
+        }
+
+        // Try exact string match
         if (leaguePriority[league] !== undefined) return leaguePriority[league];
 
-        // Try match without country if formatted as "League (Country)"
-        const simpleName = league.split('(')[0].trim();
-        if (leaguePriority[simpleName] !== undefined) return leaguePriority[simpleName];
-
         // Try match with country if not already present
+        const simpleName = league.split('(')[0].trim();
         const country = matches[0]?.league?.country;
         if (country) {
           const nameWithCountry = `${simpleName} (${country})`;
