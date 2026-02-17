@@ -8,7 +8,7 @@
 
 //   const navItems = [
 //     { label: "Home", path: "/" },
-//     { label: "News", path: "https://blog.livescoreresult.com", target: "_blank" },
+//     { label: "News", path: "https://blog.livescoresresult.com", target: "_blank" },
 //   ];
 
 //   return (

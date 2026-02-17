@@ -22,7 +22,7 @@ interface WordPressApiResponse {
   total: number;
 }
 
-const WORDPRESS_BASE_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://blog.livescoreresult.com';
+const WORDPRESS_BASE_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://blog.livescoresresult.com';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 // Cache for WordPress posts

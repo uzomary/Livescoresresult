@@ -8,10 +8,10 @@ interface MetaTagsProps {
   url?: string;
 }
 
-const DEFAULT_TITLE = 'livescoreresult';
+const DEFAULT_TITLE = 'LiveScoresResult';
 const DEFAULT_DESCRIPTION = 'Live football scores, fixtures, and standings';
 const DEFAULT_IMAGE = assets.preloader;
-const CANONICAL_BASE = 'https://livescoreresult.com';
+const CANONICAL_BASE = 'https://livescoresresult.com';
 
 const MetaTags = ({
   title = '',
@@ -43,7 +43,7 @@ const MetaTags = ({
   const organizationLdJson = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'livescoreresult',
+    name: 'Livescoresresult',
     url: CANONICAL_BASE,
     logo: ogImage,
   };
@@ -51,7 +51,7 @@ const MetaTags = ({
   const websiteLdJson = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'livescoreresult',
+    name: 'Livescoresresult',
     url: CANONICAL_BASE,
     potentialAction: {
       '@type': 'SearchAction',
