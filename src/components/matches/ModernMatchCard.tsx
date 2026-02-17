@@ -82,6 +82,9 @@ export const ModernMatchCard = ({ match, onClick }: ModernMatchCardProps) => {
             <span className="text-foreground font-medium text-sm truncate">
               {match.homeTeam.name}
             </span>
+            {match.homeTeam.redCards !== undefined && match.homeTeam.redCards > 0 && (
+              <div className="w-1.5 h-3 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.homeTeam.redCards} Red Card(s)`} />
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -107,6 +110,9 @@ export const ModernMatchCard = ({ match, onClick }: ModernMatchCardProps) => {
             <span className="text-white font-medium text-sm truncate">
               {match.awayTeam.name}
             </span>
+            {match.awayTeam.redCards !== undefined && match.awayTeam.redCards > 0 && (
+              <div className="w-1.5 h-3 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.awayTeam.redCards} Red Card(s)`} />
+            )}
           </div>
 
           <div className="flex items-center gap-3">

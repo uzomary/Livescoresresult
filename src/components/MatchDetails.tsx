@@ -29,9 +29,11 @@ import {
     transformEvents,
     transformStatistics,
     transformLineups,
+    transformInjuries,
     MatchEvent,
     MatchStatistic,
-    TeamLineup
+    TeamLineup,
+    MatchInjury
 } from "@/utils/matchDetailsTransform";
 import OddsTabNew from "@/components/match/OddsTabNew";
 
@@ -231,12 +233,26 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
         refetchOnMount: false,
     });
 
+    const { data: injuriesData } = useQuery({
+        queryKey: ['injuries', matchId],
+        queryFn: () => matchId ? footballApi.getFixtureInjuries(matchId) : Promise.reject("No ID"),
+        // Only fetch when SUMMARY sub-tab is active
+        enabled: !!fixtureData && !!matchId && activeSubTab === 'SUMMARY',
+        staleTime: 0, // Fetch immediately, no cache
+        refetchOnWindowFocus: true,
+    });
+
     // Data Preparation - After all hooks
     const fixture = fixtureData?.response?.[0];
     let match = fixture ? transformFixture(fixture) : null;
     const events: MatchEvent[] = eventsData?.response ? transformEvents(eventsData.response, fixture?.teams?.home?.id || 0) : [];
     const statistics: MatchStatistic[] = statsData?.response ? transformStatistics(statsData.response) : [];
     const lineups: TeamLineup[] = lineupsData?.response ? transformLineups(lineupsData.response) : [];
+    const injuries: MatchInjury[] = injuriesData?.response ? transformInjuries(injuriesData.response) : [];
+
+    // Group injuries by team
+    const homeInjuries = injuries.filter(i => i.teamId === homeTeamId);
+    const awayInjuries = injuries.filter(i => i.teamId === awayTeamId);
 
     // Extract added time from the most recent event (events have time.extra field)
     if (match && eventsData?.response && eventsData.response.length > 0) {
@@ -622,23 +638,49 @@ const MatchDetails = ({ matchId: propMatchId, onBack: propOnBack }: MatchDetails
                         {/* 3. Injured/Suspended Players */}
                         <div className="bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm rounded-lg p-6 sm:mx-0">
                             <h3 className="text-[#00141e] dark:text-foreground font-bold text-lg mb-4">Injuries & Suspensions</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-2 gap-4">
                                 {/* Home Team */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
                                         <img src={match.homeTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                        <h4 className="text-sm font-bold text-[#00141e] dark:text-foreground">{match.homeTeam.name}</h4>
+                                        <h4 className="text-xs font-bold text-[#00141e] dark:text-foreground">{match.homeTeam.name}</h4>
                                     </div>
-                                    <p className="text-gray-400 text-sm text-center py-4">No injuries or suspensions reported</p>
+                                    <div className="space-y-3">
+                                        {homeInjuries.length > 0 ? (
+                                            homeInjuries.map((injury, idx) => (
+                                                <div key={idx} className="flex flex-col">
+                                                    <span className="text-xs font-bold text-[#00141e] dark:text-foreground leading-none">{injury.player.name}</span>
+                                                    <span className="text-[9px] text-gray-500 dark:text-muted-foreground uppercase">
+                                                        {injury.type} {injury.reason ? `- ${injury.reason}` : ''}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-400 text-xs italic">No injuries or suspensions reported</p>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Away Team */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
                                         <img src={match.awayTeam.logo} className="w-5 h-5 object-contain" alt="" />
-                                        <h4 className="text-sm font-bold text-[#00141e] dark:text-foreground">{match.awayTeam.name}</h4>
+                                        <h4 className="text-xs font-bold text-[#00141e] dark:text-foreground">{match.awayTeam.name}</h4>
                                     </div>
-                                    <p className="text-gray-400 text-sm text-center py-4">No injuries or suspensions reported</p>
+                                    <div className="space-y-3">
+                                        {awayInjuries.length > 0 ? (
+                                            awayInjuries.map((injury, idx) => (
+                                                <div key={idx} className="flex flex-col">
+                                                    <span className="text-xs font-bold text-[#00141e] dark:text-foreground leading-none">{injury.player.name}</span>
+                                                    <span className="text-[9px] text-gray-500 dark:text-muted-foreground uppercase">
+                                                        {injury.type} {injury.reason ? `- ${injury.reason}` : ''}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-400 text-xs italic">No injuries or suspensions reported</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

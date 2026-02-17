@@ -26,12 +26,14 @@ export interface Match {
     name: string;
     logo: string;
     score?: number;
+    redCards?: number;
   };
   awayTeam: {
     id: number;
     name: string;
     logo: string;
     score?: number;
+    redCards?: number;
   };
   status: "LIVE" | "HT" | "FT" | "SCHEDULED" | "1H" | "2H" | "FINISHED" | "AET" | "PEN" | "PENALTY" | "ET" | "P" | "BT" | "SUSP" | "INT" | "PST" | "CANC" | "ABD" | "AWD" | "WO";
   time: string;
@@ -118,13 +120,17 @@ export const transformFixture = (apiFixture: ApiFixture): Match => {
       id: apiFixture.teams.home.id,
       name: apiFixture.teams.home.name,
       logo: apiFixture.teams.home.logo,
-      score: apiFixture.goals.home ?? undefined
+      score: apiFixture.goals.home ?? undefined,
+      redCards: apiFixture.teams.home.redcard ??
+        (apiFixture.events ? apiFixture.events.filter(e => e.team.id === apiFixture.teams.home.id && e.type === 'Card' && e.detail.toLowerCase().includes('red')).length : undefined)
     },
     awayTeam: {
       id: apiFixture.teams.away.id,
       name: apiFixture.teams.away.name,
       logo: apiFixture.teams.away.logo,
-      score: apiFixture.goals.away ?? undefined
+      score: apiFixture.goals.away ?? undefined,
+      redCards: apiFixture.teams.away.redcard ??
+        (apiFixture.events ? apiFixture.events.filter(e => e.team.id === apiFixture.teams.away.id && e.type === 'Card' && e.detail.toLowerCase().includes('red')).length : undefined)
     },
     status: mapStatus(apiFixture.fixture.status.short),
     time: formatTime(apiFixture.fixture.date, apiFixture.fixture.status.short),

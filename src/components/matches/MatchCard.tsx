@@ -291,6 +291,9 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
           <span className={`${homeWonInExtraTime ? 'font-bold' : 'font-medium'} text-xs sm:text-[15px] truncate`}>
             {match.homeTeam.name}{homeWonInExtraTime && ' *'}
           </span>
+          {match.homeTeam.redCards !== undefined && match.homeTeam.redCards > 0 && (
+            <div className="w-1.5 h-3 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.homeTeam.redCards} Red Card(s)`} />
+          )}
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <TeamLogo
@@ -301,6 +304,9 @@ export const MatchCard = ({ match, onClick }: MatchCardProps) => {
           <span className={`${awayWonInExtraTime ? 'font-bold' : 'font-medium'} text-xs sm:text-[15px] truncate`}>
             {match.awayTeam.name}{awayWonInExtraTime && ' *'}
           </span>
+          {match.awayTeam.redCards !== undefined && match.awayTeam.redCards > 0 && (
+            <div className="w-1.5 h-3 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.awayTeam.redCards} Red Card(s)`} />
+          )}
         </div>
       </div>
 

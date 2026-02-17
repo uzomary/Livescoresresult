@@ -132,6 +132,9 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
             <span className="text-gray-900 dark:text-foreground text-xs font-semibold truncate">
               {match.homeTeam.name.split('(')[0].trim()}
             </span>
+            {match.homeTeam.redCards !== undefined && match.homeTeam.redCards > 0 && (
+              <div className="w-1.5 h-2.5 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.homeTeam.redCards} Red Card(s)`} />
+            )}
           </div>
 
           {/* Away Team */}
@@ -144,6 +147,9 @@ export const CompactMatchCard = ({ match, onClick }: CompactMatchCardProps) => {
             <span className="text-gray-900 dark:text-foreground text-xs font-semibold truncate">
               {match.awayTeam.name.split('(')[0].trim()}
             </span>
+            {match.awayTeam.redCards !== undefined && match.awayTeam.redCards > 0 && (
+              <div className="w-1.5 h-2.5 bg-red-600 rounded-[1px] flex-shrink-0 ml-1" title={`${match.awayTeam.redCards} Red Card(s)`} />
+            )}
           </div>
         </div>
 

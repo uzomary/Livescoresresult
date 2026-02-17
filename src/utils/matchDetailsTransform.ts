@@ -1,5 +1,5 @@
 
-import { ApiEvent, ApiStatistic, ApiLineup } from '@/services/footballApi';
+import { ApiEvent, ApiStatistic, ApiLineup, ApiInjury } from '@/services/footballApi';
 
 export interface MatchEvent {
   minute: number;
@@ -37,6 +37,17 @@ export interface TeamLineup {
     name: string;
     photo: string;
   };
+}
+
+export interface MatchInjury {
+  player: {
+    id: number;
+    name: string;
+    photo: string;
+  };
+  teamId: number;
+  type: string;
+  reason: string;
 }
 
 const mapEventType = (type: string, detail: string): MatchEvent['type'] => {
@@ -171,5 +182,18 @@ export const transformLineups = (lineups: ApiLineup[]): TeamLineup[] => {
       name: lineup.coach?.name || 'Unknown Coach',
       photo: lineup.coach?.photo || ''
     }
+  }));
+};
+
+export const transformInjuries = (injuries: ApiInjury[]): MatchInjury[] => {
+  return injuries.map(injury => ({
+    player: {
+      id: injury.player.id,
+      name: injury.player.name,
+      photo: injury.player.photo
+    },
+    teamId: injury.team.id,
+    type: injury.player.type,
+    reason: injury.player.reason
   }));
 };

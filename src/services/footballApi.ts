@@ -344,12 +344,14 @@ export interface ApiFixture {
       name: string;
       logo: string;
       winner: boolean | null;
+      redcard: number | null;
     };
     away: {
       id: number;
       name: string;
       logo: string;
       winner: boolean | null;
+      redcard: number | null;
     };
   };
   goals: {
@@ -374,6 +376,7 @@ export interface ApiFixture {
       away: number | null;
     };
   };
+  events?: ApiEvent[];
   odds?: {
     home: string;
     draw: string;
@@ -469,6 +472,35 @@ export interface ApiLineup {
     id: number;
     name: string;
     photo: string;
+  };
+}
+
+export interface ApiInjury {
+  player: {
+    id: number;
+    name: string;
+    photo: string;
+    type: string;
+    reason: string;
+  };
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+  };
+  fixture: {
+    id: number;
+    timezone: string;
+    date: string;
+    timestamp: number;
+  };
+  league: {
+    id: number;
+    season: number;
+    name: string;
+    country: string;
+    logo: string;
+    flag: string;
   };
 }
 
@@ -681,6 +713,15 @@ export const footballApi = {
       fixture: fixtureId
     });
     // Successfully fetched lineups
+    return data;
+  },
+
+  async getFixtureInjuries(fixtureId: string): Promise<{ response: ApiInjury[] }> {
+    // Fetching injuries for fixture
+    const data = await makeApiRequestWithCache('/injuries', {
+      fixture: fixtureId
+    }, 0); // Disable cache for injuries
+    // Successfully fetched injuries
     return data;
   },
 
