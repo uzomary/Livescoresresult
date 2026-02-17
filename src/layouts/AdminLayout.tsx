@@ -10,7 +10,8 @@ import {
     Menu,
     X,
     Plus,
-    Loader2
+    Loader2,
+    List
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,7 @@ const AdminLayout = () => {
 
     const navItems = [
         { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+        { label: "League Priority", icon: List, path: "/admin/league-priorities" },
         { label: "New Post", icon: Plus, path: "/admin/posts/new" },
     ];
 

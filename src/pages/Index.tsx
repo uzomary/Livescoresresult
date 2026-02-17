@@ -27,6 +27,7 @@ import { createMatchUrl } from "@/utils/routing";
 import { TopNavigation } from "@/components/TopNavigation";
 import { SportTabs, SportId } from "@/components/SportTabs";
 import { favoritesService } from "@/services/favoritesService";
+import { leaguePriorityService } from "@/services/leaguePriorityService";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<"home" | "match" | "player" | "standings">("home");
@@ -56,6 +57,16 @@ const Index = () => {
     };
     window.addEventListener('favorites-updated', handleFavoritesUpdate);
     return () => window.removeEventListener('favorites-updated', handleFavoritesUpdate);
+  }, []);
+
+  // Fetch custom league priorities
+  const [customPriorities, setCustomPriorities] = useState<Record<string, number>>({});
+  useEffect(() => {
+    const fetchPriorities = async () => {
+      const priorities = await leaguePriorityService.getAll();
+      setCustomPriorities(priorities);
+    };
+    fetchPriorities();
   }, []);
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
@@ -265,11 +276,18 @@ const Index = () => {
       'Champions League': 1,
       'Champions League (Europe)': 1,
       'UEFA Champions League': 1,
+      'Champions League (World)': 1,
+      'UEFA Champions League (World)': 1,
       'Europa League': 2,
       'Europa League (Europe)': 2,
       'UEFA Europa League': 2,
+      'Europa League (World)': 2,
+      'UEFA Europa League (World)': 2,
       'Conference League': 3,
       'Conference League (Europe)': 3,
+      'Conference League (World)': 3,
+      'UEFA Conference League': 3,
+      'UEFA Conference League (World)': 3,
 
       // Top 5 European Leagues & Cups
       'Premier League (England)': 10,
@@ -307,6 +325,7 @@ const Index = () => {
       'Coupe de France': 14.1,
 
       // All other leagues get default priority (100) and sort alphabetically
+      ...customPriorities // Merge custom priorities from admin panel
     };
 
     // Sort groups by pinned status first, then by priority
@@ -319,8 +338,27 @@ const Index = () => {
       if (!isPinnedA && isPinnedB) return 1;
 
       // If both pinned or both not pinned, sort by priority
-      const priorityA = leaguePriority[leagueA] || 100;
-      const priorityB = leaguePriority[leagueB] || 100;
+      const getPriority = (league: string, matches: Match[]) => {
+        // Try exact match first
+        if (leaguePriority[league] !== undefined) return leaguePriority[league];
+
+        // Try match without country if formatted as "League (Country)"
+        const simpleName = league.split('(')[0].trim();
+        if (leaguePriority[simpleName] !== undefined) return leaguePriority[simpleName];
+
+        // Try match with country if not already present
+        const country = matches[0]?.league?.country;
+        if (country) {
+          const nameWithCountry = `${simpleName} (${country})`;
+          if (leaguePriority[nameWithCountry] !== undefined) return leaguePriority[nameWithCountry];
+        }
+
+        return 100; // Default
+      };
+
+      const priorityA = getPriority(leagueA, matchesA);
+      const priorityB = getPriority(leagueB, matchesB);
+
       if (priorityA !== priorityB) return priorityA - priorityB;
 
       // Same priority — sort alphabetically by country first
@@ -347,7 +385,7 @@ const Index = () => {
     });
 
     return sortedGroupsObject;
-  }, [filteredMatches, activeFilterTab, pinnedLeagues]);
+  }, [filteredMatches, activeFilterTab, pinnedLeagues, customPriorities]);
 
   // Get live matches count
   const liveMatchesCount = matches.filter(match => ['LIVE', '1H', '2H', 'HT', 'ET', 'P', 'PENALTY'].includes(match.status)).length;

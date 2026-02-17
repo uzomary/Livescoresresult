@@ -29,6 +29,7 @@ import MainLayout from "@/layouts/MainLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import { AuthProvider } from "@/context/AuthContext";
 import { AdminDashboard } from "@/pages/admin/Dashboard";
+import { LeaguePriorityPage } from "@/pages/admin/LeaguePriority";
 import { PostEditor } from "@/pages/admin/PostEditor";
 import { ArticlePage } from "@/pages/ArticlePage";
 import { LoginPage } from "@/pages/admin/LoginPage";
@@ -74,6 +75,7 @@ function App() {
               {/* Admin Routes - No MainLayout */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="league-priorities" element={<LeaguePriorityPage />} />
                 <Route path="posts/new" element={<PostEditor />} />
                 <Route path="posts/edit/:id" element={<PostEditor />} />
               </Route>
