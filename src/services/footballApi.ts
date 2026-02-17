@@ -725,6 +725,40 @@ export const footballApi = {
     return data;
   },
 
+  async getLiveRedCards(): Promise<Record<string, { home: number; away: number }>> {
+    try {
+      const data = await makeApiRequestWithCache('/fixtures', { live: 'all' }, 30);
+      const redCardsMap: Record<string, { home: number; away: number }> = {};
+
+      if (data?.response && Array.isArray(data.response)) {
+        data.response.forEach((item: any) => {
+          const fixtureId = item.fixture.id.toString();
+          const events = item.events || [];
+
+          const homeRedCards = events.filter((e: any) =>
+            e.team.id === item.teams.home.id &&
+            e.type === 'Card' &&
+            e.detail.toLowerCase().includes('red')
+          ).length;
+
+          const awayRedCards = events.filter((e: any) =>
+            e.team.id === item.teams.away.id &&
+            e.type === 'Card' &&
+            e.detail.toLowerCase().includes('red')
+          ).length;
+
+          if (homeRedCards > 0 || awayRedCards > 0) {
+            redCardsMap[fixtureId] = { home: homeRedCards, away: awayRedCards };
+          }
+        });
+      }
+      return redCardsMap;
+    } catch (error) {
+      console.error('Failed to fetch live red cards:', error);
+      return {};
+    }
+  },
+
   async searchTeams(query: string): Promise<{ response: ApiTeam[] }> {
     const response = await fetch(`${API_URL}/teams?search=${encodeURIComponent(query)}`, {
       headers

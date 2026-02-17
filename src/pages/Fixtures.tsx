@@ -104,14 +104,31 @@ const Fixtures = () => {
   const transformedMatches = useMemo(() => {
     if (!fixturesData?.response || !Array.isArray(fixturesData.response)) return [];
     try {
-      const matches = transformFixtureData(fixturesData.response);
-      // Transformed matches
+      let matches = transformFixtureData(fixturesData.response);
+
+      // Apply persistent red cards for the selected date
+      const stored = localStorage.getItem(`redcards_${formattedDate}`);
+      if (stored) {
+        const persistentRedCards = JSON.parse(stored);
+        matches = matches.map(m => {
+          const rc = persistentRedCards[m.id];
+          if (rc) {
+            return {
+              ...m,
+              homeTeam: { ...m.homeTeam, redCards: rc.home || m.homeTeam.redCards },
+              awayTeam: { ...m.awayTeam, redCards: rc.away || m.awayTeam.redCards }
+            };
+          }
+          return m;
+        });
+      }
+
       return matches;
     } catch (err) {
       // Error transforming fixtures
       return [];
     }
-  }, [fixturesData]);
+  }, [fixturesData, formattedDate]);
 
   const handleMatchClick = (match: Match) => {
     navigateToMatch(match);

@@ -148,8 +148,53 @@ const LeagueDetailsPage = () => {
     staleTime: CACHE_DURATION.FIXTURES
   });
 
-  const upcomingFixtures = fixturesData?.upcoming || [];
-  const completedMatches = fixturesData?.results || [];
+  const storedRedCards = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const stored = localStorage.getItem(`redcards_${today}`);
+    return stored ? JSON.parse(stored) : {};
+  }, []);
+
+  const upcomingFixtures = useMemo(() => {
+    const upcoming = fixturesData?.upcoming || [];
+    return upcoming.map((f: any) => {
+      const rc = storedRedCards[f.fixture.id.toString()];
+      if (rc) {
+        return {
+          ...f,
+          teams: {
+            ...f.teams,
+            home: { ...f.teams.home, redcard: rc.home || f.teams.home.redcard },
+            away: { ...f.teams.away, redcard: rc.away || f.teams.away.redcard }
+          }
+        };
+      }
+      return f;
+    });
+  }, [fixturesData, storedRedCards]);
+  const completedMatches = useMemo(() => {
+    const results = fixturesData?.results || [];
+    if (!results.length) return results;
+
+    // Fetch persistent red cards for today (or the fixtures' dates)
+    const today = new Date().toISOString().split('T')[0];
+    const stored = localStorage.getItem(`redcards_${today}`);
+    const persistentRedCards = stored ? JSON.parse(stored) : {};
+
+    return results.map((f: any) => {
+      const rc = persistentRedCards[f.fixture.id.toString()];
+      if (rc) {
+        return {
+          ...f,
+          teams: {
+            ...f.teams,
+            home: { ...f.teams.home, redcard: rc.home || f.teams.home.redcard },
+            away: { ...f.teams.away, redcard: rc.away || f.teams.away.redcard }
+          }
+        };
+      }
+      return f;
+    });
+  }, [fixturesData]);
 
   if (loading) {
     return (
@@ -341,13 +386,23 @@ const LeagueDetailsPage = () => {
                         </div>
                         <div className="flex-1 flex flex-row items-center gap-2 px-2">
                           <div className="flex items-center gap-1.5 flex-1 justify-end">
-                            <span className="text-sm font-medium text-[#00141e] dark:text-foreground text-right truncate">{shortenTeamName(fixture.teams.home.name, isMobile)}</span>
+                            <div className="flex flex-col items-end">
+                              <span className="text-sm font-medium text-[#00141e] dark:text-foreground text-right truncate">{shortenTeamName(fixture.teams.home.name, isMobile)}</span>
+                              {fixture.teams.home.redcard > 0 && (
+                                <div className="w-2 h-3 bg-red-600 rounded-[1px] mt-0.5" title={`${fixture.teams.home.redcard} Red Card(s)`} />
+                              )}
+                            </div>
                             {fixture.teams.home.logo && <img src={fixture.teams.home.logo} alt="" className="w-5 h-5 object-contain" />}
                           </div>
                           <div className="text-xs font-bold text-gray-400 dark:text-muted-foreground text-center min-w-[24px] bg-gray-100 dark:bg-accent/50 rounded px-1 py-0.5">VS</div>
                           <div className="flex items-center gap-1.5 flex-1">
                             {fixture.teams.away.logo && <img src={fixture.teams.away.logo} alt="" className="w-5 h-5 object-contain" />}
-                            <span className="text-sm font-medium text-[#00141e] dark:text-foreground truncate">{shortenTeamName(fixture.teams.away.name, isMobile)}</span>
+                            <div className="flex flex-col items-start">
+                              <span className="text-sm font-medium text-[#00141e] dark:text-foreground truncate">{shortenTeamName(fixture.teams.away.name, isMobile)}</span>
+                              {fixture.teams.away.redcard > 0 && (
+                                <div className="w-2 h-3 bg-red-600 rounded-[1px] mt-0.5" title={`${fixture.teams.away.redcard} Red Card(s)`} />
+                              )}
+                            </div>
                           </div>
                         </div>
                         <button className="p-2 hover:bg-gray-100 rounded-full hidden sm:block">
@@ -380,9 +435,14 @@ const LeagueDetailsPage = () => {
                         </div>
                         <div className="flex-1 flex flex-row items-center gap-2 px-2">
                           <div className="flex items-center gap-1.5 flex-1 justify-end">
-                            <span className={`text-sm truncate text-right ${fixture.teams.home.winner ? 'text-[#00141e] dark:text-foreground font-bold' : 'text-gray-600 dark:text-muted-foreground'}`}>
-                              {shortenTeamName(fixture.teams.home.name, isMobile)}
-                            </span>
+                            <div className="flex flex-col items-end">
+                              <span className={`text-sm truncate text-right ${fixture.teams.home.winner ? 'text-[#00141e] dark:text-foreground font-bold' : 'text-gray-600 dark:text-muted-foreground'}`}>
+                                {shortenTeamName(fixture.teams.home.name, isMobile)}
+                              </span>
+                              {fixture.teams.home.redcard > 0 && (
+                                <div className="w-2 h-3 bg-red-600 rounded-[1px] mt-0.5" title={`${fixture.teams.home.redcard} Red Card(s)`} />
+                              )}
+                            </div>
                             {fixture.teams.home.logo && <img src={fixture.teams.home.logo} alt="" className="w-5 h-5 object-contain" />}
                           </div>
                           <div className="flex gap-4 text-sm font-bold text-[#00141e] dark:text-foreground min-w-[40px] justify-center bg-gray-100 dark:bg-accent/50 rounded px-2 py-1">
@@ -392,9 +452,14 @@ const LeagueDetailsPage = () => {
                           </div>
                           <div className="flex items-center gap-1.5 flex-1">
                             {fixture.teams.away.logo && <img src={fixture.teams.away.logo} alt="" className="w-5 h-5 object-contain" />}
-                            <span className={`text-sm truncate ${fixture.teams.away.winner ? 'text-[#00141e] dark:text-foreground font-bold' : 'text-gray-600 dark:text-muted-foreground'}`}>
-                              {shortenTeamName(fixture.teams.away.name, isMobile)}
-                            </span>
+                            <div className="flex flex-col items-start">
+                              <span className={`text-sm truncate ${fixture.teams.away.winner ? 'text-[#00141e] dark:text-foreground font-bold' : 'text-gray-600 dark:text-muted-foreground'}`}>
+                                {shortenTeamName(fixture.teams.away.name, isMobile)}
+                              </span>
+                              {fixture.teams.away.redcard > 0 && (
+                                <div className="w-2 h-3 bg-red-600 rounded-[1px] mt-0.5" title={`${fixture.teams.away.redcard} Red Card(s)`} />
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

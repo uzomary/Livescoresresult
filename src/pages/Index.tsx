@@ -122,16 +122,51 @@ const Index = () => {
     refetchOnWindowFocus: false,
   });
 
+  // Background Live Red Cards query — only if football is active and we have live matches or it's today
+  const isToday = formattedDate === new Date().toISOString().split('T')[0];
+  const { data: liveRedCards } = useQuery({
+    queryKey: ['live-red-cards'],
+    queryFn: () => footballApi.getLiveRedCards(),
+    enabled: isFootball && isToday,
+    refetchInterval: 30000, // Sync every 30 seconds
+    staleTime: 25000,
+  });
+
+  // Persist red cards to localStorage so they remain after match ends
+  const [persistentRedCards, setPersistentRedCards] = useState<Record<string, { home: number; away: number }>>(() => {
+    const stored = localStorage.getItem(`redcards_${formattedDate}`);
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  useEffect(() => {
+    if (liveRedCards && Object.keys(liveRedCards).length > 0) {
+      setPersistentRedCards(prev => {
+        const next = { ...prev };
+        let changed = false;
+        Object.entries(liveRedCards).forEach(([id, cards]) => {
+          if (!prev[id] || prev[id].home !== cards.home || prev[id].away !== cards.away) {
+            next[id] = cards;
+            changed = true;
+          }
+        });
+        if (changed) {
+          localStorage.setItem(`redcards_${formattedDate}`, JSON.stringify(next));
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [liveRedCards, formattedDate]);
+
   // Merge odds into fixtures when available
   const fixturesWithOdds = useMemo(() => {
     if (!fixturesData) return null;
-    if (!oddsData || Object.keys(oddsData).length === 0) return fixturesData;
 
     return {
       ...fixturesData,
       response: fixturesData.response.map((fixture: any) => ({
         ...fixture,
-        odds: oddsData[fixture.fixture.id] || fixture.odds
+        odds: oddsData?.[fixture.fixture.id] || fixture.odds
       }))
     };
   }, [fixturesData, oddsData]);
@@ -169,17 +204,33 @@ const Index = () => {
   const error = isFootball ? errorFootball : errorMultiSport;
 
   const matches: Match[] = useMemo(() => {
+    let footballMatches = fixturesWithOdds ? transformFixtures(fixturesWithOdds.response) : [];
+
+    // Apply persistent red cards (from sync or storage)
+    if (persistentRedCards && Object.keys(persistentRedCards).length > 0) {
+      footballMatches = footballMatches.map(m => {
+        const rc = persistentRedCards[m.id];
+        if (rc) {
+          return {
+            ...m,
+            homeTeam: { ...m.homeTeam, redCards: rc.home || m.homeTeam.redCards },
+            awayTeam: { ...m.awayTeam, redCards: rc.away || m.awayTeam.redCards }
+          };
+        }
+        return m;
+      });
+    }
+
     if (activeSport === 'favorites') {
-      const footballMatches = fixturesWithOdds ? transformFixtures(fixturesWithOdds.response) : [];
       const otherMatches = multiSportData || [];
       const allFetched = [...footballMatches, ...otherMatches];
       return allFetched.filter(m => favoriteIds.includes(m.id));
     }
 
     return isFootball
-      ? (fixturesWithOdds ? transformFixtures(fixturesWithOdds.response) : [])
+      ? footballMatches
       : (multiSportData || []);
-  }, [activeSport, isFootball, fixturesWithOdds, multiSportData, favoriteIds]);
+  }, [activeSport, isFootball, fixturesWithOdds, multiSportData, favoriteIds, liveRedCards]);
 
   // Filter matches based on active filter tab and search query
   const filterAndSearchMatches = useCallback((matches: Match[]) => {
