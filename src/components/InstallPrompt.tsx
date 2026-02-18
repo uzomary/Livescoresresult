@@ -129,7 +129,7 @@ export default function InstallPrompt() {
                 </button>
 
                 <div className="install-prompt-icon">
-                    <img src="/preloader.png" alt="LSR" width={48} height={48} />
+                    <img src="/preloader.png" alt="LiveScoreResult" width={48} height={48} />
                 </div>
 
                 <div className="install-prompt-content">
