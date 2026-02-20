@@ -33,6 +33,7 @@ import { LeaguePriorityPage } from "@/pages/admin/LeaguePriority";
 import { PostEditor } from "@/pages/admin/PostEditor";
 import { ArticlePage } from "@/pages/ArticlePage";
 import { LoginPage } from "@/pages/admin/LoginPage";
+import { FooterLinksPage } from "@/pages/admin/FooterLinks";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,6 +79,7 @@ function App() {
                 <Route path="league-priorities" element={<LeaguePriorityPage />} />
                 <Route path="posts/new" element={<PostEditor />} />
                 <Route path="posts/edit/:id" element={<PostEditor />} />
+                <Route path="footer-links" element={<FooterLinksPage />} />
               </Route>
               <Route path="/admin/login" element={<LoginPage />} />
 

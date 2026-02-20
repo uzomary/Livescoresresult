@@ -11,7 +11,8 @@ import {
     X,
     Plus,
     Loader2,
-    List
+    List,
+    Link2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ const AdminLayout = () => {
         { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
         { label: "League Priority", icon: List, path: "/admin/league-priorities" },
         { label: "New Post", icon: Plus, path: "/admin/posts/new" },
+        { label: "Footer Links", icon: Link2, path: "/admin/footer-links" },
     ];
 
     return (

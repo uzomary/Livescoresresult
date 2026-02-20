@@ -906,14 +906,28 @@ export const footballApi = {
 
   async getCountries(): Promise<{ response: Array<{ name: string; code: string; flag: string }> }> {
     try {
+      const cacheKey = '/countries_{}';
+      const cached = getCachedData(cacheKey);
+
+      // If we have a cached version but it's empty/invalid, clear it out.
+      if (cached && (!cached.response || !Array.isArray(cached.response) || cached.response.length === 0)) {
+        localStorage.removeItem(`football_cache_${cacheKey}`);
+      }
+
       const data = await makeApiRequestWithCache('/countries', {}, 24 * 60 * 60 * 1000); // Cache for 24 hours
 
       if (!data?.response || !Array.isArray(data.response)) {
+        // If the new response is also bad, don't cache it for 24 hours
+        localStorage.removeItem(`football_cache_${cacheKey}`);
         return { response: [] };
       }
 
       // Filter out invalid entries if any
       const validCountries = data.response.filter((c: any) => c.name && c.code);
+
+      if (validCountries.length === 0) {
+        localStorage.removeItem(`football_cache_${cacheKey}`);
+      }
 
       return { response: validCountries };
     } catch (error) {

@@ -1,12 +1,20 @@
 import { Link } from "react-router-dom";
 import { assets } from "@/assets/images";
 import { Facebook, Instagram, Twitter, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { footerLinkService, FooterLink } from "@/services/footerLinkService";
 
 interface FooterProps {
   className?: string;
 }
 
 const Footer = ({ className = '' }: FooterProps) => {
+  const [dynamicLinks, setDynamicLinks] = useState<FooterLink[]>([]);
+
+  useEffect(() => {
+    footerLinkService.getAll().then(setDynamicLinks);
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -14,7 +22,7 @@ const Footer = ({ className = '' }: FooterProps) => {
   return (
     <footer className={`bg-[#00141e] text-white pt-16 pb-8 border-t border-white/10 mt-auto ${className}`.trim()}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${dynamicLinks.length > 0 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-8 lg:gap-12 mb-12`}>
           {/* Major Leagues */}
           <div className="space-y-4">
             <h3 className="font-medium text-lg text-[#e5e7eb]">Major Leagues</h3>
@@ -66,6 +74,20 @@ const Footer = ({ className = '' }: FooterProps) => {
               </a>
             </div>
           </div>
+
+          {/* Dynamic Links */}
+          {dynamicLinks.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="font-medium text-lg text-[#e5e7eb]">Partner Links</h3>
+              <div className="flex flex-col space-y-2">
+                {dynamicLinks.map(link => (
+                  <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors underline decoration-gray-600 hover:decoration-white underline-offset-4">
+                    {link.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bottom Section */}
