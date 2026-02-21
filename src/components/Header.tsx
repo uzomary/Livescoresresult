@@ -61,7 +61,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           <div className="w-8 h-8 flex items-center justify-center bg-transparent">
             <img src='/preloader.png' alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-bold text-xl tracking-wide">LiveScoreResult</span>
+          <span className="font-bold text-xl tracking-wide">LiveScoresResult</span>
         </Link>
 
         {/* Right Actions */}

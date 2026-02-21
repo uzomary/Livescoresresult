@@ -738,8 +738,8 @@ const Index = () => {
       {currentView === "home" ? (
         <>
           <MetaTags
-            title="LiveScores Result - Live Football Scores, Results, Fixtures"
-            description="Get real-time football scores, live match updates, and comprehensive fixture information from leagues worldwide. Your ultimate football companion."
+            title="Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results, Complete football match live score."
+            description="Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results, Complete football match live score."
           />
 
           <div className="space-y-6">
