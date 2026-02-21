@@ -51,7 +51,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     <header className="sticky top-0 z-50 w-full bg-[#001e28] text-white">
       {/* Top Info Bar */}
       <div className="bg-[#00141e] px-4 py-1.5 text-[10px] text-gray-400 truncate border-b border-white/5">
-        Football Livescore, Latest Results, Premier League, LaLiga, Seria A
+        Livescores livescore, Latest Football Scores, Premier League Scores, LaLiga, Seria A
       </div>
 
       {/* Main Header Row */}
@@ -61,7 +61,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           <div className="w-8 h-8 flex items-center justify-center bg-transparent">
             <img src='/preloader.png' alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-bold text-xl tracking-wide">LiveScoreResult</span>
+          <span className="font-bold text-xl tracking-wide">LiveScoresResult</span>
         </Link>
 
         {/* Right Actions */}
