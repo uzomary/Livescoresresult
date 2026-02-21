@@ -9,7 +9,7 @@ interface MetaTagsProps {
 }
 
 const DEFAULT_TITLE = 'LiveScoresResult';
-const DEFAULT_DESCRIPTION = 'Live football scores, fixtures, and standings';
+const DEFAULT_DESCRIPTION = 'Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results. Complete football match live score.';
 const DEFAULT_IMAGE = assets.preloader;
 const CANONICAL_BASE = 'https://livescoresresult.com';
 
