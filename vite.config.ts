@@ -16,8 +16,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['preloader.png', 'robots.txt'],
       manifest: {
-        name: 'LiveScore Result',
-        short_name: 'LiveScore Result',
+        name: 'LiveScores Result',
+        short_name: 'LiveScores Result',
         description: 'Live football scores, fixtures, standings & results',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',

@@ -8,7 +8,7 @@ interface MetaTagsProps {
   url?: string;
 }
 
-const DEFAULT_TITLE = 'LiveScoresResult';
+const DEFAULT_TITLE = 'LiveScores Result - Latest Football Scores, Today Livescores Livescore';
 const DEFAULT_DESCRIPTION = 'Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results. Complete football match live score.';
 const DEFAULT_IMAGE = assets.preloader;
 const CANONICAL_BASE = 'https://livescoresresult.com';

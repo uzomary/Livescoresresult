@@ -737,10 +737,7 @@ const Index = () => {
     <div className="w-full overflow-visible">
       {currentView === "home" ? (
         <>
-          <MetaTags
-            title="Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results, Complete football match live score."
-            description="Get all livescore live. Track all live football scores, flashlivesoccer, futbol24 livescore, bbc football scores, and premier league results, Complete football match live score."
-          />
+          <MetaTags />
 
           <div className="space-y-6">
             {/* Date Navigation */}

@@ -246,7 +246,7 @@ const Fixtures = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <MetaTags
-        title="Football Fixtures & Live Scores | livescoreresult"
+        title="Football Fixtures & Live Scores"
         description={`Football fixtures and live scores for ${format(selectedDate, 'MMMM d, yyyy')}. Get real-time match updates, results and upcoming fixtures from all major leagues.`}
         url="/fixtures"
       />

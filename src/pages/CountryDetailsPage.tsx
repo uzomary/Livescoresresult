@@ -39,7 +39,7 @@ const CountryDetailsPage = () => {
     return (
         <div className="space-y-6">
             <MetaTags
-                title={`${formattedName} Football Leagues & Cups | Livescore`}
+                title={`${formattedName} Football Leagues & Cups`}
                 description={`Follow all football leagues and cup competitions in ${formattedName}. Live scores, results, fixtures and standings.`}
             />
 
