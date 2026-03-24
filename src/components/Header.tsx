@@ -51,7 +51,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     <header className="sticky top-0 z-50 w-full bg-[#001e28] text-white">
       {/* Top Info Bar */}
       <div className="bg-[#00141e] px-4 py-1.5 text-[10px] text-gray-400 truncate border-b border-white/5">
-        Football Livescore, Latest Results, Premier League, LaLiga, Seria A
+        Livescores livescore, Latest Football Scores, Premier League Scores, LaLiga, Seria A
       </div>
 
       {/* Main Header Row */}
