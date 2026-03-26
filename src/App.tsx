@@ -7,6 +7,8 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // Components
 import { Skeleton } from "@/components/ui/skeleton";
+import ScrollToTop from "@/components/ScrollToTop";
+
 
 // Lazy load pages
 const Index = lazy(() => import("@/pages/Index"));
@@ -72,7 +74,9 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <AuthProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
+
               {/* Admin Routes - No MainLayout */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />

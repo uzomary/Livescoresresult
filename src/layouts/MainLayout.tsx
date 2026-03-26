@@ -76,14 +76,10 @@ const MainLayout = ({ children, showMobileNav = true }: MainLayoutProps) => {
     setTopContent(null);
   }, [location.pathname]);
 
-  // Scroll to top on route change
+  // Scroll to top on route change is now handled by the ScrollToTop component in App.tsx
   const mainContentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (mainContentRef.current) {
-      mainContentRef.current.scrollTo(0, 0);
-    }
-  }, [location.pathname]);
+
 
   // Check if current page is match details
   const isMatchDetails = location.pathname.startsWith('/match/');
