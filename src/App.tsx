@@ -64,6 +64,7 @@ const MatchDetailsWrapper = () => {
   return <MatchDetails matchId={matchId} onBack={() => navigate(-1)} />;
 };
 import InstallPrompt from "@/components/InstallPrompt";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <AuthProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               {/* Admin Routes - No MainLayout */}
               <Route path="/admin" element={<AdminLayout />}>
