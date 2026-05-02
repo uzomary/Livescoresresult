@@ -7,7 +7,6 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // Components
 import { Skeleton } from "@/components/ui/skeleton";
-import ScrollToTop from "@/components/ScrollToTop";
 
 
 // Lazy load pages
@@ -66,6 +65,7 @@ const MatchDetailsWrapper = () => {
   return <MatchDetails matchId={matchId} onBack={() => navigate(-1)} />;
 };
 import InstallPrompt from "@/components/InstallPrompt";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function App() {
   return (
