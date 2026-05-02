@@ -8,6 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 // Components
 import { Skeleton } from "@/components/ui/skeleton";
 
+
 // Lazy load pages
 const Index = lazy(() => import("@/pages/Index"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -75,6 +76,7 @@ function App() {
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
+
               {/* Admin Routes - No MainLayout */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
